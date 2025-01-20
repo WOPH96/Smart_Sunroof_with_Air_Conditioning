@@ -57,17 +57,40 @@ void core0_main(void)
             db_msg.TH_sensor.B.Flag = 0;  // 필수 처리!
             // 처리 로직 예시
             if (db_msg.TH_sensor.B.Temp_Hum_alive == 1)
-            {                           // 받은 데이터의 Temp_Hum_alive 값이 1이라면
-                OurCanACControl ACCmsg; // 에어컨 팬 컨트롤 로직을 수정하여
-                ACCmsg.B.Air_fan_speed = 2;
-                ACCmsg.B.Air_state = 1;
-                output_message(&ACCmsg, AC_CONTROL_ID); // Can버스에 전송하는 예제
+            { // 받은 데이터의 Temp_Hum_alive 값이 1이라면
+                // 에어컨 팬 컨트롤 로직을 수정하여
+                db_msg.smart_ac.B.Air_fan_speed = 2;
+                db_msg.smart_ac.B.Air_state = 1;
+                output_message(&db_msg.smart_ac, SMART_AC_MSG_ID); // Can버스에 전송하는 예제
 
                 // 예제를 수행하려면,
                 // 1. OurCan_def.h 내부에 DB를 참고하여 동일한 형식으로 넣고,
                 // 2. OurCan.h 내부에 DBMessages 안에 그 메시지를 선언해준다.
                 // 3. 이후 원하는 로직 작성!
             }
+            //            OurCanTHSensor temp;
+            //            temp.U = db_msg.TH_sensor.U;
+            //            output_message(&temp,TH_SENSOR_MSG_ID);
+        }
+
+        if (db_msg.in_air_quality.B.Flag == 1) // on message TH_sensor 느낌
+        {                                      // ISR이 센서 값 받았다면.
+
+            // 처리 로직 예시
+            //            if (db_msg.TH_sensor.B.Temp_Hum_alive == 1)
+            //            {                           // 받은 데이터의 Temp_Hum_alive 값이 1이라면
+            //                OurCanSmartAC ACCmsg; // 에어컨 팬 컨트롤 로직을 수정하여
+            //                ACCmsg.B.Air_fan_speed = 2;
+            //                ACCmsg.B.Air_state = 1;
+            //                output_message(&ACCmsg, SMART_AC_MSG_ID); // Can버스에 전송하는 예제
+            //
+            //                // 예제를 수행하려면,
+            //                // 1. OurCan_def.h 내부에 DB를 참고하여 동일한 형식으로 넣고,
+            //                // 2. OurCan.h 내부에 DBMessages 안에 그 메시지를 선언해준다.
+            //                // 3. 이후 원하는 로직 작성!
+            //            }
+            db_msg.in_air_quality.B.Flag = 0; // 필수 처리!
+            output_message(&db_msg.in_air_quality, IN_AIR_QUAILITY_MSG_ID);
         }
     }
 }
