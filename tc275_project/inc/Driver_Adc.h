@@ -31,7 +31,7 @@ IFX_EXTERN App_VadcAutoScan g_VadcAutoScan;
 /***********************************************************************/
 /*Global Function Prototype*/ 
 /***********************************************************************/
-extern void Driver_Adc_Init(uint32 chnIx);
+extern void init_sensor_driver(uint32 chnIx);
 extern void Driver_Adc0_ConvStart(void);
 extern uint32 Driver_Adc0_DataObtain(uint32 chnIx);
 

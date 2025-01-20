@@ -80,7 +80,7 @@ static void Driver_Adc0_Init(uint32 chnIx)//
 }
 
 
-void Driver_Adc_Init(uint32 chnIx)
+void init_sensor_driver(uint32 chnIx)
 {
     /*ADC0 Converter Init*/
     Driver_Adc0_Init(chnIx);//

@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * @file    Driver_Touch.c
+ * @brief   Diver Touch sensor
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
+
 /***********************************************************************/
 /*Include*/ 
 /***********************************************************************/
@@ -26,18 +33,29 @@
 /***********************************************************************/
 /*Function*/ 
 /***********************************************************************/
-
-void initLED(void)
+/**
+ * @brief  led init
+ *
+ */
+void init_led(void)
 {
     P10_IOCR0.U &= ~(0x1F << PCn_2_IDX);
     P10_IOCR0.U |= (0x10 << PCn_2_IDX);
 }
-void initGPIO(void)
+/**
+ * @brief  touch sensor gpio init
+ *
+ */
+void init_gpio(void)
 {
     IfxPort_setPinMode(&MODULE_P14, 0, IfxPort_Mode_inputPullUp);//input
 }
-
-IfxPort_State Touch(void)
+/**
+ * @brief  touch 센서 데이터 읽어오는 함수
+ * @return touch on/off
+ *
+ */
+IfxPort_State get_touch_condition(void)
 {
     IfxPort_State TouchState=0;
     TouchState = IfxPort_getPinState(&MODULE_P14, 0);

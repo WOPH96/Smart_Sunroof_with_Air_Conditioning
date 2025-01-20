@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * @file    Driver_Air.h
+ * @brief   Diver air sensor
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
 #ifndef DRIVER_Air
 #define DRIVER_Air
 
@@ -21,7 +27,7 @@ typedef struct {
 /***********************************************************************/
 /*Define*/ 
 /***********************************************************************/
-#define Air_Pin 4
+#define AIR_PIN 4
 #define COa 605.18
 #define COb -3.937
 #define Alcohola 77.255
@@ -42,8 +48,8 @@ typedef struct {
 /***********************************************************************/
 /*Global Function Prototype*/ 
 /***********************************************************************/
-extern float calculatePPM(float a, float b, float ratio, float setup);
-extern Gas Air(void);
+extern float calculate_ppm(float a, float b, float ratio, float setup);
+extern Gas get_air_condition(void);
 
 
 #endif /* DRIVER_STM */

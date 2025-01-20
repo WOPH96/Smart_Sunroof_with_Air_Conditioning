@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * @file    Driver_Easy.c
+ * @brief   Diver Easy Module Shield sensor
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
+
 /***********************************************************************/
 /*Include*/ 
 /***********************************************************************/
@@ -24,18 +31,25 @@
 /***********************************************************************/
 /*Function*/ 
 /***********************************************************************/
-
-uint32 Light(void)
+/**
+ * @brief  조도센서 데이터 읽어오는 함수
+ *
+ */
+uint32 get_light_condition(void)
 {
     uint32 lightadcResult = 0;
-    lightadcResult = Driver_Adc0_DataObtain(Light_Pin);
+    lightadcResult = Driver_Adc0_DataObtain(LIGHT_PIN);
     Driver_Adc0_ConvStart();
     return lightadcResult;
 }
-uint32 Resist(void)
+/**
+ * @brief  저항 데이터 읽어오는 함수
+ *
+ */
+uint32 get_resist_condition(void)
 {
     uint32 resistadcResult = 0;
-    resistadcResult = Driver_Adc0_DataObtain(R_Pin);
+    resistadcResult = Driver_Adc0_DataObtain(R_PIN);
     Driver_Adc0_ConvStart();
     return resistadcResult;
 }

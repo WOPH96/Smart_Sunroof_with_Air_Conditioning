@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * @file    Driver_Easy.h
+ * @brief   Diver Easy Module Shield sensor
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
 #ifndef DRIVER_Easy
 #define DRIVER_Easy
 
@@ -16,8 +22,8 @@
 /***********************************************************************/
 /*Define*/ 
 /***********************************************************************/
-#define Light_Pin 6
-#define R_Pin 7
+#define LIGHT_PIN 6
+#define R_PIN 7
 
 /***********************************************************************/
 /*External Variable*/ 
@@ -28,7 +34,7 @@
 /***********************************************************************/
 /*Global Function Prototype*/ 
 /***********************************************************************/
-extern uint32 Light(void);
-extern uint32 Resist(void);
+extern uint32 get_light_condition(void);
+extern uint32 get_resist_condition(void);
 
 #endif /* DRIVER_STM */

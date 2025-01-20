@@ -1,4 +1,9 @@
-
+/*******************************************************************************
+ * @file    Sensor_main.c
+ * @brief   Get Sensor value body
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
 #include "Ifx_Types.h"
 #include "IfxCpu.h"
 #include "IfxScuWdt.h"
@@ -10,9 +15,9 @@
 #include "sound_sensor.h"
 #include "rain_sensor.h"
 
-#define Air_Pin 4
-#define Light_Pin 6
-#define R_Pin 7
+#define AIR_PIN 4
+#define LIGHT_PIN 6
+#define R_PIN 7
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
 
@@ -20,9 +25,9 @@ float dB = 0.0f;
 float maxdB = 0.0f;
 boolean is_rain = FALSE;
 uint32 rain_adc = 0.0f;
-Gas gas = {0.0f,0.0f,0.0f,0.0f};
-uint32 resist=0;
-uint32 light = 0;
+Gas gas_adc = {0.0f,0.0f,0.0f,0.0f};
+uint32 resist_adc=0;
+uint32 light_adc = 0;
 IfxPort_State touch = 0;
 void core0_main(void)
 {
@@ -37,21 +42,22 @@ void core0_main(void)
     /* Wait for CPU sync event */
     IfxCpu_emitEvent(&g_cpuSyncEvent);
     IfxCpu_waitEvent(&g_cpuSyncEvent, 1);
-    initLED();
-    Driver_Adc_Init(Air_Pin); //Air
-    Driver_Adc_Init(Light_Pin); //Light
-    Driver_Adc_Init(R_Pin); //Resistance
-    initGPIO();
+    init_led();
+    init_gpio();
+    init_sensor_driver(AIR_PIN); //Air
+    init_sensor_driver(LIGHT_PIN); //Light
+    init_sensor_driver(R_PIN); //Resistance
+
 
     init_sound_sensor();
     init_rain_sensor();
 
     while(1)
     {
-        gas = Air();
-        light = Light();
-        resist= Resist();
-        touch = Touch();
+        gas_adc = get_air_condition();
+        light_adc = get_light_condition();
+        resist_adc= get_resist_condition();
+        touch = get_touch_condition();
 
         dB = get_decibel();
         if (maxdB < dB) {

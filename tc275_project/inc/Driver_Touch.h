@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * @file    Driver_Touch.h
+ * @brief   Diver Touch sensor
+ * @version 1.0
+ * @date    2025-01-20
+ ******************************************************************************/
 #ifndef DRIVER_Touch
 #define DRIVER_Touch
 
@@ -24,8 +30,8 @@
 /***********************************************************************/
 /*Global Function Prototype*/ 
 /***********************************************************************/
-extern IfxPort_State Touch(void);
-extern void initLED(void);
-extern void initGPIO(void);
+extern IfxPort_State get_touch_condition(void);
+extern void init_led(void);
+extern void init_gpio(void);
 
 #endif /* DRIVER_STM */
