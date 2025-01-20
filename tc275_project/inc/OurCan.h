@@ -1,5 +1,5 @@
 /**********************************************************************************************************************
- * \file OurCan_regdef.h
+ * \file OurCan.h
  * \copyright Copyright (C) Infineon Technologies AG 2019
  *
  * Use of this file is subject to the terms of use agreed between (i) you or the company in which ordinary course of
@@ -25,56 +25,49 @@
  * IN THE SOFTWARE.
  *********************************************************************************************************************/
 
-#ifndef OURCAN_DEF_H_
-#define OURCAN_DEF_H_
+#ifndef OURCAN_H_
+#define OURCAN_H_
 
 /*********************************************************************************************************************/
 /*-----------------------------------------------------Includes------------------------------------------------------*/
+#include "OurCan_message.h"
+#include "IfxMultican_Can.h"
+#include "IfxPort_PinMap.h"
+#include "IfxPort.h"
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
+
+// CAN 노드 및 메시지 핸들러 선언
+#define CAN_TX_MESSAGE_ID 0x100
+#define CAN_RX_MESSAGE_ID 0x123
+
+// CANDB ID 정의
+#define TH_SENSOR_ID 0x7FF
+#define AC_CONTROL_ID 0x7FE
+
+// CAN RXTX 정의
+#define TC275_CAN0 IfxMultican_SrcId_0
+#define CAN0_RX IfxMultican_RXD0B_P20_7_IN
+#define CAN0_TX IfxMultican_TXD0_P20_8_OUT
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*-------------------------------------------------Global variables--------------------------------------------------*/
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*-------------------------------------------------Data Structures---------------------------------------------------*/
-
-// 모든 메시지가 4바이트 이하라고 가정해야 가능, 8바이트 메시지 쓸거면 unsigned long으로 바꿔야
-// Message Name : Function
 typedef struct
 {
-    unsigned int Temp_Hum_alive : 1; /**< \brief [0:0] 전원 (ON/OFF) */
-    unsigned int Temperature : 6;    /**< \brief [6:1] 온도 (0~50) */
-    unsigned int Humiditiy : 7;      /**< \brief [13:7] 습도 (0~90) */
-    unsigned int Flag : 1;           /**< \brief -> Interrupt Flag*/
+    OurCanTHSensor TH_sensor;
+    OurCanACControl AC_control;
+} DBMessages;
 
-} OurCanTHSensorBits;
-
-typedef union
-{
-    unsigned int U;       /**< \brief Unsigned access */
-    signed int I;         /**< \brief Signed access */
-    OurCanTHSensorBits B; /**< \brief Bitfield access */
-} OurCanTHSensor;
-
-typedef struct
-{
-    unsigned int Air_state : 2;     /**< \brief [1:0] 전원 (0~2) */
-    unsigned int Air_fan_speed : 2; /**< \brief [2:1] 온도 (0~2) */
-    unsigned int Flag : 1;          /**< \brief -> Interrupt Flag*/
-
-} OurCanACControlBits;
-
-typedef union
-{
-    unsigned int U;        /**< \brief Unsigned access */
-    signed int I;          /**< \brief Signed access */
-    OurCanACControlBits B; /**< \brief Bitfield access */
-} OurCanACControl;
+extern DBMessages db_msg;
 
 /*********************************************************************************************************************/
 
@@ -84,6 +77,9 @@ typedef union
 
 /*********************************************************************************************************************/
 /*------------------------------------------------Function Prototypes------------------------------------------------*/
+void initCanDB(void);
+void output_message(void *msg, uint32 msgID);
+void initCan(void);
 /*********************************************************************************************************************/
 
-#endif /* OURCAN_DEF_H_ */
+#endif /* OURCAN_H_ */
