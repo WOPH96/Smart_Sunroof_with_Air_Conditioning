@@ -224,7 +224,7 @@ typedef struct
 
 typedef struct
 {
-    unsigned int Audio_file : 4; /**< \brief [3:0] Audio file selection */
+    unsigned int Audio_file : 6; /**< \brief [3:0] Audio file selection */
     unsigned int Flag : 1;
 } OurCanSmartAudioBits;
 
