@@ -43,7 +43,7 @@ BO_ 1810 safety_control_window_msg: 8 IN_TC275
  SG_ motor1_smart_state : 0|2@1+ (1,0) [0|3] "" Vector__XXX
 
 BO_ 1843 Smart_control_audio_msg: 8 IN_TC275
- SG_ Audio_file : 0|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Audio_file : 0|6@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1845 Smart_control_ac_msg: 8 IN_TC275
  SG_ Air_fan_speed : 2|2@1+ (1,0) [0|0] "" Vector__XXX
