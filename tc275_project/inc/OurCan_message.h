@@ -1,5 +1,5 @@
 /**********************************************************************************************************************
- * \file OurCan.h
+ * \file OurCan_message.h
  * \copyright Copyright (C) Infineon Technologies AG 2019
  *
  * Use of this file is subject to the terms of use agreed between (i) you or the company in which ordinary course of
@@ -25,50 +25,41 @@
  * IN THE SOFTWARE.
  *********************************************************************************************************************/
 
-#ifndef OURCAN_H_
-#define OURCAN_H_
+#ifndef OURCAN_MESSAGE_H_
+#define OURCAN_MESSAGE_H_
 
 /*********************************************************************************************************************/
 /*-----------------------------------------------------Includes------------------------------------------------------*/
+#include "OurCan_signal.h"
 
-#include "OurCan_message.h"
-#include "IfxMultican_Can.h"
-#include "IfxPort_PinMap.h"
-#include "IfxPort.h"
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
-
-// CAN 노드 및 메시지 핸들러 선언
-#define CAN_TX_MESSAGE_ID 0x100
-#define CAN_RX_MESSAGE_ID 0x123
-
 // CANDB ID 정의
 #define TH_SENSOR_ID 0x7FF
 #define AC_CONTROL_ID 0x7FE
-
-// CAN RXTX 정의
-#define TC275_CAN0 IfxMultican_SrcId_0
-#define CAN0_RX IfxMultican_RXD0B_P20_7_IN
-#define CAN0_TX IfxMultican_TXD0_P20_8_OUT
-
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*-------------------------------------------------Global variables--------------------------------------------------*/
-
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*-------------------------------------------------Data Structures---------------------------------------------------*/
-typedef struct
+typedef union
 {
-    OurCanTHSensor TH_sensor;
-    OurCanACControl AC_control;
-} DBMessages;
+    unsigned int U;       /**< \brief Unsigned access */
+    signed int I;         /**< \brief Signed access */
+    OurCanTHSensorBits B; /**< \brief Bitfield access */
+} OurCanTHSensor;
 
-extern DBMessages db_msg;
+typedef union
+{
+    unsigned int U;        /**< \brief Unsigned access */
+    signed int I;          /**< \brief Signed access */
+    OurCanACControlBits B; /**< \brief Bitfield access */
+} OurCanACControl;
 
 /*********************************************************************************************************************/
 
@@ -78,9 +69,6 @@ extern DBMessages db_msg;
 
 /*********************************************************************************************************************/
 /*------------------------------------------------Function Prototypes------------------------------------------------*/
-void initCanDB(void);
-void output_message(void *msg, uint32 msgID);
-void initCan(void);
 /*********************************************************************************************************************/
 
-#endif /* OURCAN_H_ */
+#endif /* OURCAN_MESSAGE_H_ */
