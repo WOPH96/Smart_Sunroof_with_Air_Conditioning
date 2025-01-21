@@ -3,7 +3,7 @@
 
 # 산출물 사이트 관리
 
-JIRA : https://hlygo23.atlassian.net/jira/core/projects/JE1/board  
+JIRA : https://hlygo23.atlassian.net/jira/software/projects/FOUR/boards/7
 Confluence : https://hlygo23.atlassian.net/wiki/spaces/FourEver/embed/3702785?atl_f=PAGETREE
 
 # 코딩 컨벤션 명명 규칙 (Naming Conventions)
