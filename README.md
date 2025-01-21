@@ -1,12 +1,11 @@
 # 프로젝트 주제
 
 
+# 산출물 사이트 관리
+JIRA : https://hlygo23.atlassian.net/jira/core/projects/JE1/board
+Confluence : https://hlygo23.atlassian.net/wiki/spaces/FourEver/embed/3702785?atl_f=PAGETREE
 
-# 코딩 컨벤션
-
-https://hlygo23.atlassian.net/wiki/spaces/FourEver/pages/edit-v2/4653149
-
-# 명명 규칙 (Naming Conventions)
+# 코딩 컨벤션 명명 규칙 (Naming Conventions)
 
 ## 1.1 일반 규칙
 
