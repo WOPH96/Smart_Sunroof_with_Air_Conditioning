@@ -57,6 +57,7 @@ Gas get_air_condition(void)
     nowppm.Alcohol=0;
     nowppm.CO2=0;
     nowppm.NH4=0;
+
     float CO=0;
     float Alcohol=0;
     float CO2=0;
