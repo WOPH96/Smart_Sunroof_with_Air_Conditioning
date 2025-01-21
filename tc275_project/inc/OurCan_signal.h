@@ -1,5 +1,5 @@
 /**********************************************************************************************************************
- * \file OurCan_regdef.h
+ * \file OurCan_signal.h
  * \copyright Copyright (C) Infineon Technologies AG 2019
  *
  * Use of this file is subject to the terms of use agreed between (i) you or the company in which ordinary course of
@@ -133,8 +133,8 @@ typedef struct
 // Environment Sensor Signal Definitions
 typedef struct
 {
-    unsigned int weather_temp : 7;      /**< \brief [6:0] Weather temperature */
-    unsigned int weather_real_temp : 7; /**< \brief [13:7] Real temperature */
+    unsigned int weather_temp : 10;      /**< \brief [6:0] Weather temperature */
+    unsigned int weather_real_temp : 10; /**< \brief [13:7] Real temperature */
     unsigned int Flag : 1;
 } OurCanWeatherBits;
 
