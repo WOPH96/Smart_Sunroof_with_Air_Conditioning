@@ -33,8 +33,7 @@
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
-#define EIGHTBYTE_F 0xFFFFFFFFFFFFFFFF
-#define FOURBYTE_F 0xFFFFFFFF
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -58,7 +57,7 @@ DBMessages db_msg;
 
 /*********************************************************************************************************************/
 /*---------------------------------------------Function Implementations----------------------------------------------*/
-IFX_INTERRUPT(RX_Int0Handler, 0, 10);
+IFX_INTERRUPT(RX_Int0Handler, 0, 101);
 // void RX_Int0Handler (void){}
 void RX_Int0Handler(void)
 {
@@ -74,6 +73,8 @@ void RX_Int0Handler(void)
         {
             db_msg.motor1_window.U = ((uint64)readmsg.data[1] << 32) | ((uint64)readmsg.data[0]);
             db_msg.motor1_window.B.Flag = 1;
+            //            db_msg.motor1_window = *(OurCanMotor1Window*)readmsg.data;
+            //            db_msg.motor1_window.B.Flag = 1;
             break;
         }
         case MOTOR2_SUNROOF_MSG_ID:
@@ -291,9 +292,10 @@ void output_message(void *msg, uint32 msgID)
     case MOTOR1_WINDOW_MSG_ID:
     {
         OurCanMotor1Window *motor_msg = (OurCanMotor1Window *)msg;
-        send_data[0] = (motor_msg->U >> 32) & FOURBYTE_F;
-        send_data[1] = (motor_msg->U) & FOURBYTE_F;
+        send_data[0] = (motor_msg->U) & FOURBYTE_F;
+        send_data[1] = (motor_msg->U >> 32) & FOURBYTE_F;
         IfxMultican_Message_init(&tx_msg, MOTOR1_WINDOW_MSG_ID, send_data[0], send_data[1], IfxMultican_DataLengthCode_8);
+
         break;
     }
 
@@ -528,7 +530,7 @@ void initCan(void)
     IfxMultican_Can_initModuleConfig(&canConfig, &MODULE_CAN);
 
     //     CAN0 인터럽트 활성화
-    canConfig.nodePointer[TC275_CAN0].priority = 10;
+    canConfig.nodePointer[TC275_CAN0].priority = 101;
     canConfig.nodePointer[TC275_CAN0].typeOfService = IfxSrc_Tos_cpu0;
 
     IfxMultican_Can_initModule(&can, &canConfig);
