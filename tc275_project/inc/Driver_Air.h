@@ -18,10 +18,11 @@
 /*Typedef*/ 
 /***********************************************************************/
 typedef struct {
-    float CO;         // PPM 계산에 사용되는 상수 a
-    float Alcohol;         // PPM 계산에 사용되는 상수 b
-    float CO2;     // PPM 계산을 위한 보정값
-    float NH4;       // 계산된 PPM 값
+    uint32 adc;
+    uint32 CO;
+    uint32 Alcohol;
+    uint32 CO2;
+    uint32 NH4;
 } Gas;
 
 /***********************************************************************/

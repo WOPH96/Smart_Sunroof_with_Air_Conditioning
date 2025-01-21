@@ -46,19 +46,19 @@ void init_led(void)
  * @brief  touch sensor gpio init
  *
  */
-void init_gpio(void)
+void init_gpio_touch(uint8 num)
 {
-    IfxPort_setPinMode(&MODULE_P14, 0, IfxPort_Mode_inputPullUp);//input
+    IfxPort_setPinMode(&MODULE_P14, num, IfxPort_Mode_inputPullUp);//input
 }
 /**
  * @brief  touch 센서 데이터 읽어오는 함수
  * @return touch on/off
  *
  */
-IfxPort_State get_touch_condition(void)
+IfxPort_State get_touch_condition(uint8 num)
 {
     IfxPort_State TouchState=0;
-    TouchState = IfxPort_getPinState(&MODULE_P14, 0);
+    TouchState = IfxPort_getPinState(&MODULE_P14, num);
     if (TouchState == 1)
         IfxPort_setPinState(&MODULE_P10, 2, IfxPort_State_high);
     else
