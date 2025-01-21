@@ -1,5 +1,5 @@
 /*******************************************************************************
- * @file    Driver_DTC11.h
+ * @file    Driver_DHT11.h
  * @brief   temperature, humidity
  * @version 1.0
  * @date    2025-01-21

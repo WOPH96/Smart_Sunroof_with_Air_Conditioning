@@ -38,7 +38,7 @@
 
 #include "sound_sensor.h"
 #include "rain_sensor.h"
-#include "Driver_DTC11.h"
+#include "Driver_DHT11.h"
 
 //GPIO related
 #define PCn_2_IDX 19

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * @file    Driver_DTC11.c
+ * @file    Driver_DHT11.c
  * @brief   temperature, humidity
  * @version 1.0
  * @date    2025-01-21
  ******************************************************************************/
-#include "Driver_DTC11.h"
+#include "Driver_DHT11.h"
 
 Temp_Hum get_temp_hum(void)
 {
