@@ -178,16 +178,16 @@ float convert_to_decibel(uint32 analogValue) {
  * @return float: 데시별 결과값
  * @note   2ms 이상의 주기에서 수행해야함
  */
-float get_decibel(void) {
+uint8 get_decibel(void) {
     start_sound_sensor_conversion();
     waitTime(1); // adc 변환 시간 확보
     uint32 adc_result = obtain_sound_sensor_data();
 
     //디버깅을 위한 부분
     g_sound_sensor_adc_result = adc_result;
-    start_sound_sensor_conversion();
 
-    return convert_to_decibel(adc_result);
+    uint8 u8_decibel = (uint8)convert_to_decibel(adc_result);
+    return u8_decibel;
 }
 
 
