@@ -95,8 +95,8 @@ BO_ 1867 Dust_msg: 8 RPI
  SG_ weather_dust : 0|3@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1869 Weather_msg: 8 RPI
- SG_ weather_real_temp : 7|7@1+ (1,-30) [-30|97] "" Vector__XXX
- SG_ weather_temp : 0|7@1+ (1,-30) [-30|97] "" Vector__XXX
+ SG_ weather_real_temp : 10|10@1+ (1,-30) [-30|993] "" Vector__XXX
+ SG_ weather_temp : 0|10@1+ (1,-30) [-30|993] "" Vector__XXX
 
 BO_ 1824 Driver_C_msg: 8 RPI
  SG_ mode_smart : 0|1@1+ (1,0) [0|0] "" Vector__XXX
