@@ -209,9 +209,10 @@ void core0_main(void)
     initCan();
     initCanDB();
 
-    smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL); // 엔진 시작했다고 가정
-
+    Driver_Stm_Init();
     initShellInterface();
+
+    smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL); // 엔진 시작했다고 가정
 
     while (1)
     {
@@ -219,6 +220,8 @@ void core0_main(void)
         AppScheduling();
 
         ////////////////////////////////////////////////////////////////////
+
+#if 1
         //사용자 안전
         if (db_msg.motor1_window.B.Flag == 1) // 창문 메세지를 받을 때,
         {
@@ -455,7 +458,7 @@ void core0_main(void)
             }
         }
         ////////////////////////////////////////////////////////////////////
-
+#endif
     } //while(1)
 
     return;
@@ -515,7 +518,7 @@ void command_function(ControlCommandInfo* command_info, uint8 command, uint8 sub
 {
     if (command_info->state == ON) // 스마트 제어 모드가 켜져있는 상태에서
     {
-        if (command_info->priority <= priority) // 우선순위가 더 높거나 같은 새로운 명령이 들어오면, 교체
+        if (command_info->priority >= priority) // 우선순위가 더 높거나 같은 새로운 명령이 들어오면, 교체
         {
             command_info->priority = priority;
             command_info->control_command = command;
@@ -673,6 +676,10 @@ void make_can_message()
     db_msg.in_air_quality.B.air_NH4 = in_gas.NH4;
     db_msg.in_air_quality.B.air_alch = in_gas.Alcohol;
 
+    //test
+    in_gas.CO2 = 1100;
+    //
+
     output_message(&db_msg.in_air_quality, IN_AIR_QUAILITY_MSG_ID);
 
     //내부 온습도 센서 데이터 output
@@ -698,8 +705,8 @@ void AppTask100ms(void)
 
     countdown_action_counter();
 
-    suntouch = get_touch_condition(SUN_TOUCH_PIN);
-    wintouch = get_touch_condition(WIN_TOUCH_PIN);
+    //suntouch = get_touch_condition(SUN_TOUCH_PIN);
+    //wintouch = get_touch_condition(WIN_TOUCH_PIN);
 
     //내부공기질센서
 
@@ -751,7 +758,7 @@ void AppTask1000ms(void)
 {
     stTestCnt.u32nuCnt1000ms++;
 
-    in_temp_hum = get_temp_hum();
+    //in_temp_hum = get_temp_hum();
 
     //내부 동작 카운터 줄이기
     for (int index = 1; index <= CONTROL_MODULE; index++)
