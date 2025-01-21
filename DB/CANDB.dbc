@@ -1,0 +1,165 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: OUT_TC275 IN_TC275 STM32 RPI
+
+
+BO_ 1809 safety_control_sunroof_msg: 8 IN_TC275
+ SG_ motor2_smart_state : 0|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1810 safety_control_window_msg: 8 IN_TC275
+ SG_ motor1_smart_state : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1843 Smart_control_audio_msg: 8 IN_TC275
+ SG_ Audio_file : 0|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1845 Smart_control_ac_msg: 8 IN_TC275
+ SG_ Air_fan_speed : 2|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Air_state : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1844 Smart_control_heat_msg: 8 IN_TC275
+ SG_ Heater_fan_speed : 2|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Heater_state : 0|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1841 Smart_control_sunroof_msg: 8 IN_TC275
+ SG_ motor2_smart_state : 0|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1842 Smart_control_window_msg: 8 IN_TC275
+ SG_ motor1_state : 2|7@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ motor1_smart_state : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1868 TH_Sensor_msg: 8 IN_TC275
+ SG_ Humiditiy : 7|7@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Temperature : 1|6@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Temp_Hum_alive : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1865 In_AirQuality_msg: 8 IN_TC275
+ SG_ air_alch : 33|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_NH4 : 23|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_CO : 13|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_CO2 : 1|12@1+ (1,0) [0|4095] "" Vector__XXX
+ SG_ AQ_alive : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1866 Out_Air_Quality_msg: 8 OUT_TC275
+ SG_ AQ_alive : 42|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_alch : 32|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_NH4 : 22|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_CO : 12|10@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_CO2 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
+
+BO_ 1870 dB_msg: 8 OUT_TC275
+ SG_ db_alive : 8|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ db_outside : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1863 Rain_msg: 8 OUT_TC275
+ SG_ raining_alive : 1|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ raining_status : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1864 Light_msg: 8 OUT_TC275
+ SG_ Light_alive : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Light_pct : 0|7@1+ (1,0) [0|127] "" Vector__XXX
+
+BO_ 1867 Dust_msg: 8 RPI
+ SG_ weather_dust : 0|3@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1869 Weather_msg: 8 RPI
+ SG_ weather_real_temp : 7|7@1+ (1,-30) [-30|97] "" Vector__XXX
+ SG_ weather_temp : 0|7@1+ (1,-30) [-30|97] "" Vector__XXX
+
+BO_ 1824 Driver_C_msg: 8 RPI
+ SG_ mode_smart : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1830 Driver_E_msg: 8 RPI
+ SG_ engine_mode : 0|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1829 Driver_A_msg: 8 RPI
+ SG_ driver_air : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1828 Driver_H_msg: 8 RPI
+ SG_ driver_heater : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1825 Driver_S_msg: 8 RPI
+ SG_ driver_sunroof : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1826 Driver_W_msg: 8 RPI
+ SG_ driver_window : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1903 Battery_msg: 8 STM32
+ SG_ Battery_alive : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Battery_use : 14|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Battery_spare_state : 7|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ Battery_state : 0|7@1+ (1,0) [0|127] "" Vector__XXX
+
+BO_ 1875 Audio_msg: 8 STM32
+ SG_ Audio_alive : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Audio_running : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1877 Airconditioner_msg: 8 STM32
+ SG_ AC_alive : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ AC_running : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1876 Heater_msg: 8 STM32
+ SG_ Heater_alive : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Heater_running : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1873 Motor2_sunroof_msg: 8 STM32
+ SG_ motor2_tick_counter : 3|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motor2_alive : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ motor2_running : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1874 Motor1_window_msg: 8 STM32
+ SG_ motor1_tick_counter : 3|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motor1_alive : 2|1@1+ (1,0) [0|1.84467440737096E+19] "" Vector__XXX
+ SG_ motor1_running : 0|2@1+ (1,0) [0|1.84467440737096E+19] "" Vector__XXX
+
+
+
+BA_DEF_  "MultiplexExtEnabled" ENUM  "No","Yes";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "MultiplexExtEnabled" "No";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+
