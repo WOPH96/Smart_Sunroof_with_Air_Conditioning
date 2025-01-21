@@ -3,16 +3,16 @@
 
 # 산출물 사이트 관리
 
-JIRA : https://hlygo23.atlassian.net/jira/core/projects/JE1/board
+JIRA : https://hlygo23.atlassian.net/jira/core/projects/JE1/board  
 Confluence : https://hlygo23.atlassian.net/wiki/spaces/FourEver/embed/3702785?atl_f=PAGETREE
 
 # 코딩 컨벤션 명명 규칙 (Naming Conventions)
 
 ## 1.1 일반 규칙
 
-모든 식별자는 영문 알파벳, 숫자, 언더스코어(_)만 사용
-모든 식별자는 의미있고 명확한 이름 사용
-약어 사용을 최소화하고, 사용 시 팀 내 공통 약어 목록 관리
+모든 식별자는 영문 알파벳, 숫자, 언더스코어(_)만 사용  
+모든 식별자는 의미있고 명확한 이름 사용  
+약어 사용을 최소화하고, 사용 시 팀 내 공통 약어 목록 관리  
 
 ## 1.2 상세 규칙
 
@@ -50,7 +50,7 @@ Confluence : https://hlygo23.atlassian.net/wiki/spaces/FourEver/embed/3702785?at
 
 ## 2.1 들여쓰기 및 중괄호
 
-들여쓰기는 4칸 공백 사용 (탭 문자 사용 금지)
+들여쓰기는 4칸 공백 사용 (탭 문자 사용 금지)  
 중괄호는 아래 스타일 준수
 
 ```
@@ -66,7 +66,7 @@ else
 
 ## 2.2 줄 길이 및 줄바꿈
 
-한 줄은 최대 80자로 제한
+한 줄은 최대 80자로 제한  
 긴 문장의 경우 적절한 위치에서 줄 바꿈
 
 ```
@@ -79,7 +79,7 @@ long_function_name(parameter1,
 
 ## 3.1 변수 선언 및 초기화
 
-모든 변수는 선언과 동시에 초기화
+모든 변수는 선언과 동시에 초기화  
 포인터는 NULL로 초기화
 
 ```
@@ -89,7 +89,7 @@ uint8_t* ptr = NULL;
 
 ## 3.2 메모리 관리
 
-동적 메모리 할당 사용 금지(사용 시 알려줄 것)
+동적 메모리 할당 사용 금지(사용 시 알려줄 것)  
 버퍼 크기 상수는 반드시 정의하여 사용
 
 ```
@@ -101,7 +101,7 @@ static uint8_t buffer[BUFFER_SIZE];
 
 ## 3.3 인터럽트 처리
 
-인터럽트 서비스 루틴(ISR)은 최대한 짧게 유지
+인터럽트 서비스 루틴(ISR)은 최대한 짧게 유지  
 ISR 내에서 긴 연산이나 블로킹 함수 호출 금지
 
 ```
@@ -139,7 +139,7 @@ uint8_t read_sensor(uint8_t sensor_id)
 
 ## 4.3 인라인 주석
 
-복잡한 로직이나 중요한 경고사항에 대해서만 작성
+복잡한 로직이나 중요한 경고사항에 대해서만 작성  
 명확한 코드는 주석 불필요
 
 # 5. 기본 검토 항목
