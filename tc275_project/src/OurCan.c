@@ -57,7 +57,7 @@ DBMessages db_msg;
 
 /*********************************************************************************************************************/
 /*---------------------------------------------Function Implementations----------------------------------------------*/
-IFX_INTERRUPT(RX_Int0Handler, 0, 10);
+IFX_INTERRUPT(RX_Int0Handler, 0, 101);
 // void RX_Int0Handler (void){}
 void RX_Int0Handler(void)
 {
@@ -530,7 +530,7 @@ void initCan(void)
     IfxMultican_Can_initModuleConfig(&canConfig, &MODULE_CAN);
 
     //     CAN0 인터럽트 활성화
-    canConfig.nodePointer[TC275_CAN0].priority = 10;
+    canConfig.nodePointer[TC275_CAN0].priority = 101;
     canConfig.nodePointer[TC275_CAN0].typeOfService = IfxSrc_Tos_cpu0;
 
     IfxMultican_Can_initModule(&can, &canConfig);
