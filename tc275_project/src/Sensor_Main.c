@@ -29,7 +29,7 @@
 #include "IfxScuWdt.h"
 #include "IfxPort.h"
 #include "IfxPort_PinMap.h"
-
+#include "OurCan.h"
 #include "Driver_Stm.h"
 #include "Driver_Adc.h"
 #include "Driver_Easy.h"
@@ -125,6 +125,11 @@ int core0_main(void)
     IfxCpu_waitEvent(&g_cpuSyncEvent, 1);
 
     initGPIO();
+
+    // CAN init
+    initCan();
+    initCanDB();
+
     Driver_Stm_Init();
     init_led();
     init_gpio_touch(SUN_TOUCH_PIN);
@@ -172,30 +177,38 @@ void AppTask10ms(void)
 {
     stTestCnt.u32nuCnt10ms++;
     cnt10++;
-    gas_adc = get_air_condition();
     light_adc = get_light_condition();
-    resist_adc= get_resist_condition();
+    dB = get_decibel();
+    if (maxdB < dB) {
+        maxdB = dB;
+    }
+    //스케쥴링 예시코드 10ms 주기로 db 메시지 전송
+    db_msg.light.B.Light_pct = light_adc;
+    db_msg.light.B.Light_alive = 1;
+    output_message(&db_msg.light, LIGHT_MSG_ID);
+    db_msg.db.B.db_outside = dB;
+    db_msg.db.B.db_alive = 1;
+    output_message(&db_msg.db, DB_MSG_ID);
 }
 
 void AppTask100ms(void)
 {
     stTestCnt.u32nuCnt100ms++;
     cnt100++;
-    suntouch = get_touch_condition(SUN_TOUCH_PIN);
-    wintouch = get_touch_condition(WIN_TOUCH_PIN);
-    dB = get_decibel();
-    if (maxdB < dB) {
-        maxdB = dB;
-    }
-
+    //suntouch = get_touch_condition(SUN_TOUCH_PIN);
+    //wintouch = get_touch_condition(WIN_TOUCH_PIN);
     is_rain = is_raining();
     rain_adc = get_rain_sensor_analog_value();
+    db_msg.rain.B.raining_status = rain_adc;
+    db_msg.rain.B.raining_alive = 1;
+    output_message(&db_msg.rain, RAIN_MSG_ID);
 }
 
 void AppTask1000ms(void)
 {
     cnt1000++;
     now_temp_hum = get_temp_hum();
+    gas_adc = get_air_condition();
     static int flag = 0;
     if(flag == 0)
     {
@@ -207,6 +220,12 @@ void AppTask1000ms(void)
         IfxPort_setPinHigh(IfxPort_P10_2.port, IfxPort_P10_2.pinIndex);
         flag = 0;
     }
+    db_msg.out_air_quality.B.air_CO2 = gas_adc.CO2;
+    db_msg.out_air_quality.B.air_CO = gas_adc.CO;
+    db_msg.out_air_quality.B.air_NH4 = gas_adc.NH4;
+    db_msg.out_air_quality.B.air_alch = gas_adc.Alcohol;
+    db_msg.out_air_quality.B.AQ_alive = 1;
+    output_message(&db_msg.out_air_quality, OUT_AIR_QUALITY_MSG_ID);
     stTestCnt.u32nuCnt1000ms++;
 
 }
