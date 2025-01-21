@@ -30,7 +30,7 @@
 
 #include "OurCan.h"
 #include "Driver_Stm.h"
-// #include "ASCLIN_Shell_UART.h"
+#include "ASCLIN_Shell_UART.h"
 
 typedef struct
 {
@@ -74,16 +74,18 @@ void core0_main(void)
 
     // Serial Debug용, 아직 미구현
     //    initSerialInterface();
+    initShellInterface();
 
     while (1)
     {
+        runShellInterface();
         AppScheduling();
         if (db_msg.TH_sensor.B.Flag == 1) // on message TH_sensor 느낌
         {                                 // ISR이 센서 값 받았다면.
             db_msg.TH_sensor.B.Flag = 0;  // 필수 처리!
             // 처리 로직 예시
 
-            db_msg.smart_ac.B.Air_fan_speed = 2; // 필수 처리!
+            db_msg.smart_ac.B.Air_fan_speed = 2;
             output_message(&db_msg.smart_ac, SMART_AC_MSG_ID);
         }
 
@@ -103,7 +105,7 @@ void AppTask1ms(void)
 {
     stTestCnt.u32nuCnt1ms++;
     {
-        // 스케쥴링 예시코드 1ms 주기로 공기질 메시지 전송
+        //        //스케쥴링 예시코드 1ms 주기로 공기질 메시지 전송
         db_msg.out_air_quality.B.AQ_alive = 1;
         db_msg.out_air_quality.B.air_CO2 = 1024;
         db_msg.out_air_quality.B.air_CO = 584;
@@ -118,10 +120,10 @@ void AppTask10ms(void)
     stTestCnt.u32nuCnt10ms++;
 
     {
-        // 스케쥴링 예시코드 10ms 주기로 db 메시지 전송
-        db_msg.db.B.db_alive = 1;
-        db_msg.db.B.db_outside = 100;
-        output_message(&db_msg.db, DB_MSG_ID);
+        //        //스케쥴링 예시코드 10ms 주기로 db 메시지 전송
+        //        db_msg.db.B.db_alive = 1;
+        //        db_msg.db.B.db_outside = 100;
+        //        output_message(&db_msg.db, DB_MSG_ID);
     }
 }
 
@@ -129,10 +131,10 @@ void AppTask100ms(void)
 {
     stTestCnt.u32nuCnt100ms++;
     {
-        // 스케쥴링 예시코드 100ms 주기로 비 감지 메시지 전송
-        db_msg.rain.B.raining_alive = 1;
-        db_msg.rain.B.raining_status = 1;
-        output_message(&db_msg.rain, RAIN_MSG_ID);
+        //        //스케쥴링 예시코드 100ms 주기로 비 감지 메시지 전송
+        //        db_msg.rain.B.raining_alive = 1;
+        //        db_msg.rain.B.raining_status = 1;
+        //        output_message(&db_msg.rain, RAIN_MSG_ID);
     }
 }
 
@@ -140,6 +142,12 @@ void AppTask1000ms(void)
 {
 
     stTestCnt.u32nuCnt1000ms++;
+    {
+        // 스케쥴링 예시코드 1000ms 주기로 광량 감지 메시지 전송
+        //        db_msg.light.B.Light_alive =1;
+        //        db_msg.light.B.Light_pct = stTestCnt.u32nuCnt1000ms%100;
+        //        output_message(&db_msg.light, LIGHT_MSG_ID);
+    }
 }
 
 void AppScheduling(void)
