@@ -30,7 +30,6 @@
 
 /*********************************************************************************************************************/
 /*-----------------------------------------------------Includes------------------------------------------------------*/
-
 #include "OurCan_message.h"
 #include "IfxMultican_Can.h"
 #include "IfxPort_PinMap.h"
@@ -44,14 +43,13 @@
 #define CAN_TX_MESSAGE_ID 0x100
 #define CAN_RX_MESSAGE_ID 0x123
 
-// CANDB ID 정의
-#define TH_SENSOR_ID 0x7FF
-#define AC_CONTROL_ID 0x7FE
-
 // CAN RXTX 정의
 #define TC275_CAN0 IfxMultican_SrcId_0
 #define CAN0_RX IfxMultican_RXD0B_P20_7_IN
 #define CAN0_TX IfxMultican_TXD0_P20_8_OUT
+
+#define EIGHTBYTE_F 0xFFFFFFFFFFFFFFFF
+#define FOURBYTE_F 0xFFFFFFFF
 
 /*********************************************************************************************************************/
 
@@ -64,8 +62,33 @@
 /*-------------------------------------------------Data Structures---------------------------------------------------*/
 typedef struct
 {
+    OurCanMotor1Window motor1_window;
+    OurCanMotor2Sunroof motor2_sunroof;
+    OurCanHeater heater;
+    OurCanAC ac;
+    OurCanAudio audio;
+    OurCanBattery battery;
+    OurCanDriverWindow driver_window;
+    OurCanDriverSunroof driver_sunroof;
+    OurCanDriverHeater driver_heater;
+    OurCanDriverAir driver_air;
+    OurCanDriverEngine driver_engine;
+    OurCanDriverControl driver_control;
+    OurCanWeather weather;
+    OurCanDust dust;
+    OurCanLight light;
+    OurCanRain rain;
+    OurCanDB db;
     OurCanTHSensor TH_sensor;
-    OurCanACControl AC_control;
+    OurCanOutAirQuality out_air_quality;
+    OurCanInAirQuality in_air_quality;
+    OurCanSmartWindow smart_window;
+    OurCanSmartSunroof smart_sunroof;
+    OurCanSmartHeater smart_heater;
+    OurCanSmartAC smart_ac;
+    OurCanSmartAudio smart_audio;
+    OurCanSafetyWindow safety_window;
+    OurCanSafetySunroof safety_sunroof;
 } DBMessages;
 
 extern DBMessages db_msg;

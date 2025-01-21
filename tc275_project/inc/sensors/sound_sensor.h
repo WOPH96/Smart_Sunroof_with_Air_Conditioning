@@ -57,7 +57,7 @@ void start_sound_sensor_conversion(void);
 uint32 obtain_sound_sensor_data(void);
 extern uint32 get_sound_sensor_analog_value(void);
 float convert_to_decibel(uint32 analogValue);
-extern float get_decibel(void);
+extern uint8 get_decibel(void);
 /*********************************************************************************************************************/
 
 
