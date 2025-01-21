@@ -28,6 +28,8 @@
 
 #include "sound_sensor.h"
 #include "rain_sensor.h"
+
+#include "ASCLIN_Shell_UART.h"
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -207,10 +209,13 @@ void core0_main(void)
     initCan();
     initCanDB();
 
-    smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL);
+    smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL); // 엔진 시작했다고 가정
 
-    while(1)
+    initShellInterface();
+
+    while (1)
     {
+        runShellInterface();
         AppScheduling();
 
         ////////////////////////////////////////////////////////////////////
