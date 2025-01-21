@@ -29,6 +29,25 @@
 #include "IfxScuWdt.h"
 
 #include "OurCan.h"
+#include "Driver_Stm.h"
+// #include "ASCLIN_Shell_UART.h"
+
+typedef struct
+{
+    uint32 u32nuCnt1ms;
+    uint32 u32nuCnt10ms;
+    uint32 u32nuCnt100ms;
+    uint32 u32nuCnt1000ms;
+
+} Taskcnt;
+
+void AppScheduling(void);
+void AppTask1ms(void);
+void AppTask10ms(void);
+void AppTask100ms(void);
+void AppTask1000ms(void);
+
+Taskcnt stTestCnt;
 
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
@@ -46,51 +65,107 @@ void core0_main(void)
     IfxCpu_emitEvent(&g_cpuSyncEvent);
     IfxCpu_waitEvent(&g_cpuSyncEvent, 1);
 
+    // CAN init
     initCan();
     initCanDB();
-    //    uint32 datas[2]={0x12340000,0x12340000};
-    //    initMultican();
+
+    // 스케쥴링 init
+    Driver_Stm_Init();
+
+    // Serial Debug용, 아직 미구현
+    //    initSerialInterface();
+
     while (1)
     {
+        AppScheduling();
         if (db_msg.TH_sensor.B.Flag == 1) // on message TH_sensor 느낌
         {                                 // ISR이 센서 값 받았다면.
             db_msg.TH_sensor.B.Flag = 0;  // 필수 처리!
             // 처리 로직 예시
-            if (db_msg.TH_sensor.B.Temp_Hum_alive == 1)
-            { // 받은 데이터의 Temp_Hum_alive 값이 1이라면
-                // 에어컨 팬 컨트롤 로직을 수정하여
-                db_msg.smart_ac.B.Air_fan_speed = 2;
-                db_msg.smart_ac.B.Air_state = 1;
-                output_message(&db_msg.smart_ac, SMART_AC_MSG_ID); // Can버스에 전송하는 예제
 
-                // 예제를 수행하려면,
-                // 1. OurCan_def.h 내부에 DB를 참고하여 동일한 형식으로 넣고,
-                // 2. OurCan.h 내부에 DBMessages 안에 그 메시지를 선언해준다.
-                // 3. 이후 원하는 로직 작성!
-            }
-            //            OurCanTHSensor temp;
-            //            temp.U = db_msg.TH_sensor.U;
-            //            output_message(&temp,TH_SENSOR_MSG_ID);
+            db_msg.smart_ac.B.Air_fan_speed = 2; // 필수 처리!
+            output_message(&db_msg.smart_ac, SMART_AC_MSG_ID);
         }
 
-        if (db_msg.in_air_quality.B.Flag == 1) // on message TH_sensor 느낌
-        {                                      // ISR이 센서 값 받았다면.
+        //        if(db_msg.motor1_window.B.Flag == 1){
+        //            db_msg.motor1_window.B.Flag = 0;
+        ////            db_msg.motor2_sunroof.B.motor2_alive = db_msg.motor1_window.B.motor1_alive;
+        ////            db_msg.motor2_sunroof.B.motor2_running = db_msg.motor1_window.B.motor1_running;
+        ////            db_msg.motor2_sunroof.B.motor2_tick_counter = db_msg.motor1_window.B.motor1_tick_counter;
+        //
+        //            output_message(&db_msg.motor1_window,MOTOR1_WINDOW_MSG_ID);
+        //
+        //        }
+    }
+}
 
-            // 처리 로직 예시
-            //            if (db_msg.TH_sensor.B.Temp_Hum_alive == 1)
-            //            {                           // 받은 데이터의 Temp_Hum_alive 값이 1이라면
-            //                OurCanSmartAC ACCmsg; // 에어컨 팬 컨트롤 로직을 수정하여
-            //                ACCmsg.B.Air_fan_speed = 2;
-            //                ACCmsg.B.Air_state = 1;
-            //                output_message(&ACCmsg, SMART_AC_MSG_ID); // Can버스에 전송하는 예제
-            //
-            //                // 예제를 수행하려면,
-            //                // 1. OurCan_def.h 내부에 DB를 참고하여 동일한 형식으로 넣고,
-            //                // 2. OurCan.h 내부에 DBMessages 안에 그 메시지를 선언해준다.
-            //                // 3. 이후 원하는 로직 작성!
-            //            }
-            db_msg.in_air_quality.B.Flag = 0; // 필수 처리!
-            output_message(&db_msg.in_air_quality, IN_AIR_QUAILITY_MSG_ID);
+void AppTask1ms(void)
+{
+    stTestCnt.u32nuCnt1ms++;
+    {
+        // 스케쥴링 예시코드 1ms 주기로 공기질 메시지 전송
+        db_msg.out_air_quality.B.AQ_alive = 1;
+        db_msg.out_air_quality.B.air_CO2 = 1024;
+        db_msg.out_air_quality.B.air_CO = 584;
+        db_msg.out_air_quality.B.air_NH4 = 10;
+        db_msg.out_air_quality.B.air_alch = 1;
+        output_message(&db_msg.out_air_quality, OUT_AIR_QUALITY_MSG_ID);
+    }
+}
+
+void AppTask10ms(void)
+{
+    stTestCnt.u32nuCnt10ms++;
+
+    {
+        // 스케쥴링 예시코드 10ms 주기로 db 메시지 전송
+        db_msg.db.B.db_alive = 1;
+        db_msg.db.B.db_outside = 100;
+        output_message(&db_msg.db, DB_MSG_ID);
+    }
+}
+
+void AppTask100ms(void)
+{
+    stTestCnt.u32nuCnt100ms++;
+    {
+        // 스케쥴링 예시코드 100ms 주기로 비 감지 메시지 전송
+        db_msg.rain.B.raining_alive = 1;
+        db_msg.rain.B.raining_status = 1;
+        output_message(&db_msg.rain, RAIN_MSG_ID);
+    }
+}
+
+void AppTask1000ms(void)
+{
+
+    stTestCnt.u32nuCnt1000ms++;
+}
+
+void AppScheduling(void)
+{
+
+    if (stSchedulingInfo.u8nuScheduling1msFlag == 1u)
+    {
+        stSchedulingInfo.u8nuScheduling1msFlag = 0u;
+
+        AppTask1ms();
+
+        if (stSchedulingInfo.u8nuScheduling10msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling10msFlag = 0u;
+            AppTask10ms();
+        }
+
+        if (stSchedulingInfo.u8nuScheduling100msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling100msFlag = 0u;
+            AppTask100ms();
+        }
+        if (stSchedulingInfo.u8nuScheduling1000msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling1000msFlag = 0u;
+            AppTask1000ms();
         }
     }
 }

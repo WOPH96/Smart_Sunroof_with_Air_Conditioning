@@ -33,8 +33,7 @@
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
-#define EIGHTBYTE_F 0xFFFFFFFFFFFFFFFF
-#define FOURBYTE_F 0xFFFFFFFF
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -74,6 +73,8 @@ void RX_Int0Handler(void)
         {
             db_msg.motor1_window.U = ((uint64)readmsg.data[1] << 32) | ((uint64)readmsg.data[0]);
             db_msg.motor1_window.B.Flag = 1;
+            //            db_msg.motor1_window = *(OurCanMotor1Window*)readmsg.data;
+            //            db_msg.motor1_window.B.Flag = 1;
             break;
         }
         case MOTOR2_SUNROOF_MSG_ID:
@@ -291,9 +292,10 @@ void output_message(void *msg, uint32 msgID)
     case MOTOR1_WINDOW_MSG_ID:
     {
         OurCanMotor1Window *motor_msg = (OurCanMotor1Window *)msg;
-        send_data[0] = (motor_msg->U >> 32) & FOURBYTE_F;
-        send_data[1] = (motor_msg->U) & FOURBYTE_F;
+        send_data[0] = (motor_msg->U) & FOURBYTE_F;
+        send_data[1] = (motor_msg->U >> 32) & FOURBYTE_F;
         IfxMultican_Message_init(&tx_msg, MOTOR1_WINDOW_MSG_ID, send_data[0], send_data[1], IfxMultican_DataLengthCode_8);
+
         break;
     }
 
