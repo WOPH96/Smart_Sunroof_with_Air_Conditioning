@@ -111,10 +111,10 @@ BO_ 1828 Driver_H_msg: 8 RPI
  SG_ driver_heater : 0|1@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1825 Driver_S_msg: 8 RPI
- SG_ driver_sunroof : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ driver_sunroof : 0|2@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 1826 Driver_W_msg: 8 RPI
- SG_ driver_window : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ driver_window : 0|2@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 1903 Battery_msg: 8 STM32
  SG_ Battery_alive : 16|1@1+ (1,0) [0|1] "" Vector__XXX

@@ -96,13 +96,13 @@ typedef struct
 // Driver Control Signal Definitions
 typedef struct
 {
-    unsigned int driver_window : 1; /**< \brief [0:0] Driver window control */
+    unsigned int driver_window : 2; /**< \brief [0:0] Driver window control */
     unsigned int Flag : 1;
 } OurCanDriverWindowBits;
 
 typedef struct
 {
-    unsigned int driver_sunroof : 1; /**< \brief [0:0] Driver sunroof control */
+    unsigned int driver_sunroof : 2; /**< \brief [0:0] Driver sunroof control */
     unsigned int Flag : 1;
 } OurCanDriverSunroofBits;
 
