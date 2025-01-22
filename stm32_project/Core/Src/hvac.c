@@ -5,6 +5,7 @@
  *      Author: USER
  */
 #include "gpio.h"
+#include "hvac.h"
 
 
 uint8_t heater_led_state = 0;
