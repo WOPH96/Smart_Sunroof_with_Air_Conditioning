@@ -37,15 +37,15 @@ void consume_car_battery()
 void charge_solar_battery()
 {
 	if (!vehicle.sunroof_open)
-	{													 // 선루프가 닫혀 있을 때만 충전
-		int charge_amount = (int) (40* vehicle.light_intensity * 0.01); // 조도에 비례한 충전
+	{																	// 선루프가 닫혀 있을 때만 충전
+		int charge_amount = (int)(40 * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
 		if (vehicle.solar_battery + charge_amount < MAX_CHARGE_ECO)
 		{
 			vehicle.solar_battery += charge_amount;
 		}
 		else
 		{
-			vehicle.solar_battery = MAX_CHARGE_ECO-1;
+			vehicle.solar_battery = MAX_CHARGE_ECO - 1;
 		}
 	}
 }
