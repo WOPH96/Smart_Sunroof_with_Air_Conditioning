@@ -14,7 +14,7 @@
 
 #include "LCD_Logic.h"
 #include "LCD_def.h"
-#include "can.h"
+
 
 VehicleState vehicle;
 
@@ -113,9 +113,11 @@ void consume_solar_battery()
 // 상태 업데이트 함수
 void update_vehicle_vehicle()
 {
+
 	consume_car_battery();
 	charge_solar_battery();
 	consume_solar_battery();
+
 }
 
 void init_vehicle_state()
@@ -130,3 +132,9 @@ void init_vehicle_state()
 	vehicle.motor_speed = 6;
 }
 
+void battery_data_out(){
+	db_msg.battery.B.Battery_alive = actuator_power;
+	db_msg.battery.B.Battery_use = 3; // 2개 다씀
+
+	output_message(&db_msg.battery, BATTERY_MSG_ID);
+}
