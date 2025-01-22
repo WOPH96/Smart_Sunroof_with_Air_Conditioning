@@ -20,6 +20,7 @@
 #include "STM_LCD16X2.h"
 #include "LCD_Logic.h"
 
+
 //***** Variables *****//
 static const uint32_t writeTimeConstant = 10;
 static uint8_t mode_8_4_I2C = 1;
@@ -405,6 +406,7 @@ void show_LCD()
 
 	/* 차량 에너지 로직 */
 	int car_engy = (int)(vehicle.car_battery * 100 / MAX_CHARGE_CAR);
+	db_msg.battery.B.Battery_state = car_engy;
 	//	if(*car_engy > 99) *car_engy= 0; //99 위는 99 / 0 아래는 00으로 고정
 
 	/* * * * * * * * * * * * * * */
@@ -423,6 +425,7 @@ void show_LCD()
 
 	/* 태양광 충전 배터리 로직 */
 	int eco_bat = (int)(vehicle.solar_battery * 100 / MAX_CHARGE_ECO);
+	db_msg.battery.B.Battery_spare_state = eco_bat;
 	//	if(eco_bat < 0) eco_bat= 99;
 	/* * * * * * * * * * * * * * */
 #ifdef VER1
