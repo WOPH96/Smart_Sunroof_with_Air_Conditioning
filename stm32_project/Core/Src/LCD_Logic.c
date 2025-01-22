@@ -123,8 +123,8 @@ void update_vehicle_vehicle()
 void init_vehicle_state()
 {
 
-	vehicle.car_battery = MAX_CHARGE_CAR / 2;	// 77.4k = 100% 초기값 38700
-	vehicle.solar_battery = MAX_CHARGE_ECO / 2; // 4.8k = 100% 초기값 2400
+	vehicle.car_battery = MAX_CHARGE_CAR ;	// 77.4k = 100% 초기값 38700
+	vehicle.solar_battery = MAX_CHARGE_ECO ; // 4.8k = 100% 초기값 2400
 
 	//임의 값들
 	vehicle.light_intensity = 80;
@@ -134,7 +134,7 @@ void init_vehicle_state()
 
 void battery_data_out(){
 	db_msg.battery.B.Battery_alive = actuator_power;
-	db_msg.battery.B.Battery_use = 3; // 2개 다씀
+
 
 	output_message(&db_msg.battery, BATTERY_MSG_ID);
 }
