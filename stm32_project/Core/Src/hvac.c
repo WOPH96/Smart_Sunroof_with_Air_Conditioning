@@ -11,8 +11,7 @@
 uint8_t heater_led_state = 0;
 uint8_t ac_led_state = 0;
 uint8_t pan_state = 0;
-uint8_t heater_power = 0;
-uint8_t ac_power = 0;
+
 
 void driver_ac(uint8_t state)
 {
@@ -119,7 +118,7 @@ void off_ac(void)
 	// 에어컨 켜저있을때만
 	if (ac_led_state == 1)
 	{
-		ac_led_state = 1;
+		ac_led_state = 0;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 		pan_state = 0;

@@ -54,6 +54,8 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 int _write(int file, char *ptr, int len);
+
+extern uint8_t actuator_power;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
