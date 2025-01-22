@@ -43,19 +43,19 @@ void Query_Status(void) {
 
 void Sound_Track(uint8_t nums){
 	if (nums==19){
-	Send_cmd(0x0F, 1, 1);}
+	Send_cmd(0x03, 0x00, 1);}
 	if (nums==20){
-	Send_cmd(0x0F, 2, 1);}
+		Send_cmd(0x03, 0x00, 1);}
 	if (nums==21){
-	Send_cmd(0x0F, 3, 1);}
+		Send_cmd(0x03, 0x00, 2);}
 	if (nums==22){
-	Send_cmd(0x0F, 4, 1);}
+		Send_cmd(0x03, 0x00, 3);}
 	if (nums==23){
-	Send_cmd(0x0F, 5, 1);}
+		Send_cmd(0x03, 0x00, 4);}
 	if (nums==24){
-	Send_cmd(0x0F, 6, 1);}
+		Send_cmd(0x03, 0x00, 5);}
 	if (nums==25){
-	Send_cmd(0x0F, 7, 1);}
+		Send_cmd(0x03, 0x00, 6);}
 
 	audio_flag=0;
 }
