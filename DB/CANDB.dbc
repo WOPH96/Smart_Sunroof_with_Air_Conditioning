@@ -36,6 +36,13 @@ BS_:
 BU_: OUT_TC275 IN_TC275 STM32 RPI
 
 
+BO_ 1904 smart_control_state_msg: 8 IN_TC275
+ SG_ audio_smart_control : 4|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_smart_control : 3|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ heater_smart_control : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ motor2_smart_control : 1|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ motor1_smart_control : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
 BO_ 1809 safety_control_sunroof_msg: 8 IN_TC275
  SG_ motor2_smart_state : 0|2@1+ (1,0) [0|0] "" Vector__XXX
 

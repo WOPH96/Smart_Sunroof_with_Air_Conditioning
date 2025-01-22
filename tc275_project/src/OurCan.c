@@ -233,6 +233,12 @@ void RX_Int0Handler(void)
             db_msg.safety_sunroof.B.Flag = 1;
             break;
         }
+        case SMART_CONTROL_STATE_MSG_ID:
+        {
+            db_msg.smart_ctrl_state.U = ((uint64)readmsg.data[1] << 32) | ((uint64)readmsg.data[0]);
+            db_msg.safety_sunroof.B.Flag = 1;
+            break;
+        }
         default:
             break;
         }
@@ -277,9 +283,13 @@ void initCanDB(void)
     db_msg.smart_ac.U = 0;
     db_msg.smart_audio.U = 0;
 
+    db_msg.smart_ctrl_state.U = 0;
+
     // Safety Control Messages
     db_msg.safety_window.U = 0;
     db_msg.safety_sunroof.U = 0;
+
+    //for loop로 개선 가능할듯. long long 사이즈만큼 포인터 값이니까..
 }
 
 void output_message(void *msg, uint32 msgID)
@@ -511,6 +521,14 @@ void output_message(void *msg, uint32 msgID)
         send_data[0] = (safe_sr->U) & FOURBYTE_F;
         send_data[1] = (safe_sr->U >> 32) & FOURBYTE_F;
         IfxMultican_Message_init(&tx_msg, SAFETY_SUNROOF_MSG_ID, send_data[0], send_data[1], IfxMultican_DataLengthCode_8);
+        break;
+    }
+    case SMART_CONTROL_STATE_MSG_ID:
+    {
+        OurCanSmartState *smart_state = (OurCanSmartState *)msg;
+        send_data[0] = (smart_state->U) & FOURBYTE_F;
+        send_data[1] = (smart_state->U >> 32) & FOURBYTE_F;
+        IfxMultican_Message_init(&tx_msg, SMART_CONTROL_STATE_MSG_ID, send_data[0], send_data[1], IfxMultican_DataLengthCode_8);
         break;
     }
 
