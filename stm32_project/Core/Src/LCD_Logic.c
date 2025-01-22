@@ -13,16 +13,19 @@
 #include <stdio.h>
 
 #include "LCD_Logic.h"
+#include "LCD_def.h"
+#include "can.h"
 
 VehicleState vehicle;
 
 // 차량 배터리 소모 계산
 void consume_car_battery()
 {
-	if (vehicle.is_driving)
+	if (vehicle.is_driving) // 메시지 생기면 대체
 	{
-		int consumption = 10 * vehicle.motor_speed; // 모터 속도에 비례한 배터리 소모
-		if (vehicle.car_battery > consumption)
+		// 메시지 생기면 대체
+		int consumption = MOTOR_CONSUM * vehicle.motor_speed; // 차량 이동 속도 (모터) 값에 비례
+		if (vehicle.car_battery >= consumption)
 		{
 			vehicle.car_battery -= consumption;
 		}
@@ -36,9 +39,14 @@ void consume_car_battery()
 // 태양광 배터리 충전 계산
 void charge_solar_battery()
 {
-	if (!vehicle.sunroof_open)
+	//하드웨어랑 합의보고, 선루프가 열리는 정도에 대한 비례식을 세울지 말지 고민 - Tick_count = 0~100
+	// 선루프가 닫혔을 때
+	if (db_msg.motor2_sunroof.B.motor2_alive == 1 && db_msg.motor2_sunroof.B.motor2_tick_counter>0)
 	{																	// 선루프가 닫혀 있을 때만 충전
-		int charge_amount = (int)(40 * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
+		//light.B.Light_pct = 일단 60정도면 어두운데, 임의로 값 조정
+//		float charge_amount = (ECOBAT_CHARGING * db_msg.light.B.Light_pct * 0.01); // 조도에 비례한 충전
+		float charge_amount = (ECOBAT_CHARGING * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
+
 		if (vehicle.solar_battery + charge_amount < MAX_CHARGE_ECO)
 		{
 			vehicle.solar_battery += charge_amount;
@@ -53,17 +61,45 @@ void charge_solar_battery()
 // 태양광 배터리 소모 계산
 void consume_solar_battery()
 {
-	int consumption = 0;
-	if (vehicle.ac_on)
-		consumption += 8; // 에어컨 사용
-	if (vehicle.heater_on)
-		consumption += 5; // 히터 사용
-	if (vehicle.window_open)
-		consumption += 2; // 창문 작동
-	if (vehicle.sunroof_open)
-		consumption += 3; // 선루프 작동
+	float consumption = 0.0;
+	if (db_msg.ac.B.AC_alive==1 && db_msg.ac.B.AC_running>=1) // 에어컨 사용
+	{
+		switch (db_msg.ac.B.AC_running){
+		case (WEAK): // enum 데이터로 변경
+		{
+			consumption += AC_WEAK_CONSUM;
+			break;
+		}
+		case (STRONG):
+			consumption += AC_WEAK_CONSUM *1.5;
+			break;
+		}
+	}
+	if (db_msg.heater.B.Heater_alive==1 && db_msg.heater.B.Heater_running>=1) // 에어컨 사용
+	{
+		switch (db_msg.heater.B.Heater_running){
+		case (WEAK): // enum 데이터로 변경
+		{
+			consumption += HEATER_WEAK_CONSUM; // 히터 사용
+			break;
+		}
+		case (STRONG):
+			consumption += HEATER_WEAK_CONSUM * 1.5;
+			break;
+		}
+	}
 
-	if (vehicle.solar_battery > consumption)
+	if (db_msg.motor1_window.B.motor1_alive == 1 && db_msg.motor1_window.B.motor1_running >= 1)
+		consumption += WINDOW_CONSUM; // 창문 작동
+
+	if (db_msg.motor2_sunroof.B.motor2_alive == 1 && db_msg.motor2_sunroof.B.motor2_running >=1)
+		consumption += SUNROOF_CONSUM; // 선루프 작동
+
+	if (db_msg.audio.B.Audio_alive == 1 && db_msg.audio.B.Audio_running ==1){
+		consumption += AUDIO_CONSUM;
+	}
+
+	if (vehicle.solar_battery >= consumption)
 		vehicle.solar_battery -= consumption;
 	else
 	{
@@ -87,35 +123,10 @@ void init_vehicle_state()
 
 	vehicle.car_battery = MAX_CHARGE_CAR / 2;	// 77.4k = 100% 초기값 38700
 	vehicle.solar_battery = MAX_CHARGE_ECO / 2; // 4.8k = 100% 초기값 2400
-	vehicle.sunroof_open = 0;
-	vehicle.window_open = 0;
+
+	//임의 값들
 	vehicle.light_intensity = 80;
 	vehicle.is_driving = 1;
-	vehicle.ac_on = 1;
-	vehicle.heater_on = 0;
 	vehicle.motor_speed = 6;
 }
 
-// 메인 함수
-// int main() {
-//    // 초기 상태 설정
-//    Vehiclevehicle vehicle = {
-//        .car_battery = MAX_CHARGE_CAR, // 77.4k = 100%
-//        .solar_battery = MAX_CHARGE_ECO, // 4.8k = 100%
-//        .sunroof_open = 0,
-//        .window_open = 0,
-//        .light_intensity = 80,
-//        .is_driving = 1,
-//        .ac_on = 1,
-//        .heater_on = 0,
-//        .motor_speed = 6
-//    };
-//
-//
-//    // 상태 업데이트, LCD출력 100ms 주기에 넣기
-//    update_vehicle_vehicle();
-//    show_LCD();
-//
-//    // 결과 출력
-//    return 0;
-//}

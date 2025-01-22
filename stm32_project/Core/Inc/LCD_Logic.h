@@ -14,8 +14,8 @@
 // 구조체 정의
 typedef struct
 {
-    int car_battery;   // 차량 배터리 잔량 (%)
-    int solar_battery; // 태양광 배터리 잔량 (%)
+    float car_battery;   // 차량 배터리 잔량 (%)
+    float solar_battery; // 태양광 배터리 잔량 (%)
 
     /*아래 정보들은, db_msg.으로 접근 */
     int sunroof_open;    // 선루프 상태 (0: 닫힘, 1: 열림)
