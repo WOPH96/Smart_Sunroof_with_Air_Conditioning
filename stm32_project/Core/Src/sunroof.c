@@ -51,7 +51,7 @@ void Sunroof_ControlMode(void) {
         if (override_sun == 0) { // 선루프 열기 버튼 누름
             Sunroof_Open(0);  // 선루프 완전히 열기
         } else if (override_sun == 2) { // 선루프 닫기 버튼 누름
-            Sunroof_Close(0);   // 선루프 완전히 닫기
+            Sunroof_Close(100);   // 선루프 완전히 닫기
         } else if (override_sun == 1 || override_sun == 3) { // 버튼 떼면 정지
             Sunroof_Stop();
         }
@@ -111,7 +111,7 @@ void Sunroof_Close(int percent) {
 void Sunroof_UpdateState(void) {
     if (sunroof_state == SUNROOF_OPENING) {
         sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
-        sunroof_pulse_count = 100 - (sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
+        sunroof_pulse_count = 100-(sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
 
         // 목표 위치 도달 시 동작 멈춤
         if (sunroof_pulse_count >= target_position_sun) {
@@ -145,8 +145,8 @@ static void Sunroof_SetPWM(uint16_t speed) {
 // 모터 방향 설정
 static void Sunroof_SetDirection(int direction) {
     if (direction == 1) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // 정방향
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET); // 정방향
     } else if (direction == -1) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // 역방향
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET); // 역방향
     }
 }
