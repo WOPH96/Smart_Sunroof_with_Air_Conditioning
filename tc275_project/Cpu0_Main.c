@@ -1,7 +1,7 @@
 /**********************************************************************************************************************
  * @file    Cpu0_Main.c
  * @brief   Logic Inner TC275
- * @version 0.7
+ * @version 0.9
  * @date    2025-01-22
  *********************************************************************************************************************/
 
@@ -195,7 +195,7 @@ SmartControlState control_state;
 
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
-Gas in_gas = {0, 0, 0, 0};
+Gas in_gas = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 IfxPort_State suntouch = 0;
 IfxPort_State wintouch = 0;
 Temp_Hum in_temp_hum = { 0, 20, 20, 20, 20 };
@@ -273,8 +273,7 @@ void core0_main(void)
     // init sensor
     init_led();
     init_sensor_driver(AIR_PIN); //Air
-    init_sensor_driver(LIGHT_PIN); //Light
-    init_sensor_driver(R_PIN); //Resistance
+    //init_sensor_driver(R_PIN); //Resistance
     init_gpio_touch(SUN_TOUCH_PIN);
     init_gpio_touch(WIN_TOUCH_PIN);
 
@@ -1054,6 +1053,8 @@ void AppTask100ms(void)
 void AppTask1000ms(void)
 {
     stTestCnt.u32nuCnt1000ms++;
+
+    in_gas = get_air_condition();
 
     //스마트 제어 모드가 켜져있거나, 꺼져있는 모듈에 대한 출력
     db_msg.smart_ctrl_state.B.motor1_smart_control = command_info[WINDOW].state;
