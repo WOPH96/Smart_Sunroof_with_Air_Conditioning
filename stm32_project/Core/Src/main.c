@@ -150,6 +150,7 @@ int main(void)
 	set_can_filter();
 	start_can();
 	initCanDB();
+	init_LCD();
 	init_vehicle_state();
 	//can_send_test();
 	printf("Start\r\n");

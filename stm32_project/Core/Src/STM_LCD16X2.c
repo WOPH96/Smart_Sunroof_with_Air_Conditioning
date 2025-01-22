@@ -15,7 +15,6 @@
 											 https://www.youtube.com/watch?v=YDJISiPUdA8
 */
 
-
 //***** Header files *****//
 #include "STM_LCD16X2.h"
 #include "LCD_Logic.h"
@@ -23,20 +22,28 @@
 //***** Variables *****//
 static const uint32_t writeTimeConstant = 10;
 static uint8_t mode_8_4_I2C = 1;
-static GPIO_TypeDef* PORT_RS_and_E;							  // RS and E PORT
-static uint16_t PIN_RS, PIN_E;									  // RS and E pins
-static GPIO_TypeDef* PORT_LSB;										// LSBs D0, D1, D2 and D3 PORT
-static uint16_t D0_PIN, D1_PIN, D2_PIN, D3_PIN;	// LSBs D0, D1, D2 and D3 pins
-static GPIO_TypeDef* PORT_MSB;										// MSBs D5, D6, D7 and D8 PORT
-static uint16_t D4_PIN, D5_PIN, D6_PIN, D7_PIN;	// MSBs D5, D6, D7 and D8 pins
+static GPIO_TypeDef *PORT_RS_and_E;				// RS and E PORT
+static uint16_t PIN_RS, PIN_E;					// RS and E pins
+static GPIO_TypeDef *PORT_LSB;					// LSBs D0, D1, D2 and D3 PORT
+static uint16_t D0_PIN, D1_PIN, D2_PIN, D3_PIN; // LSBs D0, D1, D2 and D3 pins
+static GPIO_TypeDef *PORT_MSB;					// MSBs D5, D6, D7 and D8 PORT
+static uint16_t D4_PIN, D5_PIN, D6_PIN, D7_PIN; // MSBs D5, D6, D7 and D8 pins
 
 static uint8_t DisplayControl = 0x0F;
 static uint8_t FunctionSet = 0x38;
 
 static char str[20];
 //***** Functions definitions *****//
-//Private functions
-//1) Enable EN pulse
+// Private functions
+// 1) Enable EN pulse
+static void LCD1602_TIM_MicorSecDelay(uint32_t uSecDelay)
+{
+	TIM2->ARR = uSecDelay - 1;
+	TIM2->SR &= ~(0x0001); // Clear UEV flag
+	TIM2->CR1 |= 1UL;
+	while ((TIM2->SR & 0x0001) != 1)
+		;
+}
 static void LCD1602_EnablePulse(void)
 {
 	HAL_GPIO_WritePin(PORT_RS_and_E, PIN_E, GPIO_PIN_SET);
@@ -44,132 +51,128 @@ static void LCD1602_EnablePulse(void)
 	HAL_GPIO_WritePin(PORT_RS_and_E, PIN_E, GPIO_PIN_RESET);
 	LCD1602_TIM_MicorSecDelay(60);
 }
-//2) RS control
+// 2) RS control
 static void LCD1602_RS(bool state)
 {
-	if(state) HAL_GPIO_WritePin(PORT_RS_and_E, PIN_RS, GPIO_PIN_SET);
-	else HAL_GPIO_WritePin(PORT_RS_and_E, PIN_RS, GPIO_PIN_RESET);
+	if (state)
+		HAL_GPIO_WritePin(PORT_RS_and_E, PIN_RS, GPIO_PIN_SET);
+	else
+		HAL_GPIO_WritePin(PORT_RS_and_E, PIN_RS, GPIO_PIN_RESET);
 }
 
-//3) Write Parallel interface
+// 3) Write Parallel interface
 static void LCD1602_write(uint8_t byte)
 {
-	uint8_t LSB_nibble = byte&0xF, MSB_nibble = (byte>>4)&0xF;
+	uint8_t LSB_nibble = byte & 0xF, MSB_nibble = (byte >> 4) & 0xF;
 
-	if(mode_8_4_I2C == 1)		//8bits mode
+	if (mode_8_4_I2C == 1) // 8bits mode
 	{
-		//write data to output pins
-		//LSB data
-		HAL_GPIO_WritePin(PORT_LSB, D0_PIN, (GPIO_PinState)(LSB_nibble&0x1));
-		HAL_GPIO_WritePin(PORT_LSB, D1_PIN, (GPIO_PinState)(LSB_nibble&0x2));
-		HAL_GPIO_WritePin(PORT_LSB, D2_PIN, (GPIO_PinState)(LSB_nibble&0x4));
-		HAL_GPIO_WritePin(PORT_LSB, D3_PIN, (GPIO_PinState)(LSB_nibble&0x8));
-		//MSB data
-		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(MSB_nibble&0x1));
-		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(MSB_nibble&0x2));
-		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(MSB_nibble&0x4));
-		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(MSB_nibble&0x8));
-		//Write the Enable pulse
+		// write data to output pins
+		// LSB data
+		HAL_GPIO_WritePin(PORT_LSB, D0_PIN, (GPIO_PinState)(LSB_nibble & 0x1));
+		HAL_GPIO_WritePin(PORT_LSB, D1_PIN, (GPIO_PinState)(LSB_nibble & 0x2));
+		HAL_GPIO_WritePin(PORT_LSB, D2_PIN, (GPIO_PinState)(LSB_nibble & 0x4));
+		HAL_GPIO_WritePin(PORT_LSB, D3_PIN, (GPIO_PinState)(LSB_nibble & 0x8));
+		// MSB data
+		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(MSB_nibble & 0x1));
+		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(MSB_nibble & 0x2));
+		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(MSB_nibble & 0x4));
+		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(MSB_nibble & 0x8));
+		// Write the Enable pulse
 		LCD1602_EnablePulse();
 	}
-	else if(mode_8_4_I2C == 2)	//4 bits mode
+	else if (mode_8_4_I2C == 2) // 4 bits mode
 	{
-		//write data to output pins
-		//MSB data
-		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(MSB_nibble&0x1));
-		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(MSB_nibble&0x2));
-		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(MSB_nibble&0x4));
-		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(MSB_nibble&0x8));
-		//Write the Enable pulse
+		// write data to output pins
+		// MSB data
+		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(MSB_nibble & 0x1));
+		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(MSB_nibble & 0x2));
+		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(MSB_nibble & 0x4));
+		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(MSB_nibble & 0x8));
+		// Write the Enable pulse
 		LCD1602_EnablePulse();
 
-		//LSB data
-		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(LSB_nibble&0x1));
-		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(LSB_nibble&0x2));
-		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(LSB_nibble&0x4));
-		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(LSB_nibble&0x8));
-		//Write the Enable pulse
+		// LSB data
+		HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(LSB_nibble & 0x1));
+		HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(LSB_nibble & 0x2));
+		HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(LSB_nibble & 0x4));
+		HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(LSB_nibble & 0x8));
+		// Write the Enable pulse
 		LCD1602_EnablePulse();
 	}
 }
-//4) Microsecond delay functions
+// 4) Microsecond delay functions
 static void LCD1602_TIM_Config(void)
 {
 	RCC_ClkInitTypeDef myCLKtypeDef;
 	uint32_t clockSpeed;
 	uint32_t flashLatencyVar;
 	HAL_RCC_GetClockConfig(&myCLKtypeDef, &flashLatencyVar);
-	if(myCLKtypeDef.APB1CLKDivider == RCC_HCLK_DIV1)
+	if (myCLKtypeDef.APB1CLKDivider == RCC_HCLK_DIV1)
 	{
 		clockSpeed = HAL_RCC_GetPCLK1Freq();
 	}
 	else
 	{
-		clockSpeed = HAL_RCC_GetPCLK1Freq()*2;
+		clockSpeed = HAL_RCC_GetPCLK1Freq() * 2;
 	}
 	clockSpeed *= 0.000001;
 
-	//Enable clock for TIM2 timer
-	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;  // 0x1
-	//Set the mode to Count up
+	// Enable clock for TIM2 timer
+	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // 0x1
+	// Set the mode to Count up
 	TIM2->CR1 &= ~(0x0010);
-	//Enable Update Event
+	// Enable Update Event
 	TIM2->CR1 &= ~(0x0001);
-	//Update request source
+	// Update request source
 	TIM2->CR1 &= ~(1UL << 2);
 	// Set bit 3 High to enable One-Pulse mode
 	TIM2->CR1 |= (1UL << 3);
-	//Set the Prescalar
-	TIM2->PSC = clockSpeed-1;
-	//Set and Auto-Reload Value to delay the timer 1 sec
-	TIM2->ARR = 10-1; 								// The Flag sets when overflows
-	//Event generation handling to reset the counter
-	TIM2->EGR = 1; 					//Update generate auto
-	TIM2->SR &= ~(0x0001);	//Clear Update interrupt flag
+	// Set the Prescalar
+	TIM2->PSC = clockSpeed - 1;
+	// Set and Auto-Reload Value to delay the timer 1 sec
+	TIM2->ARR = 10 - 1; // The Flag sets when overflows
+	// Event generation handling to reset the counter
+	TIM2->EGR = 1;		   // Update generate auto
+	TIM2->SR &= ~(0x0001); // Clear Update interrupt flag
 }
-static void LCD1602_TIM_MicorSecDelay(uint32_t uSecDelay)
-{
-	TIM2->ARR = uSecDelay-1;
-	TIM2->SR &= ~(0x0001);  // Clear UEV flag
-	TIM2->CR1 |= 1UL;
-	while((TIM2->SR&0x0001) != 1);
-}
-//5) Write command
+
+// 5) Write command
 static void LCD1602_writeCommand(uint8_t command)
 {
-	//Set RS to 0
+	// Set RS to 0
 	LCD1602_RS(false);
-	//Call low level write parallel function
+	// Call low level write parallel function
 	LCD1602_write(command);
 }
-//6) Write 8 bits data
+// 6) Write 8 bits data
 static void LCD1602_writeData(uint8_t data)
 {
-	//Set RS to 1
+	// Set RS to 1
 	LCD1602_RS(true);
-	//Call low level write parallel function
+	// Call low level write parallel function
 	LCD1602_write(data);
 }
-//7) Write 4 bits command, *FOR 4 BITS MODE ONLY*
+// 7) Write 4 bits command, *FOR 4 BITS MODE ONLY*
 static void LCD1602_write4bitCommand(uint8_t nibble)
 {
-	uint8_t LSB_nibble = nibble&0xF;
-	//Set RS to 0
+	uint8_t LSB_nibble = nibble & 0xF;
+	// Set RS to 0
 	LCD1602_RS(false);
-	//LSB data D4,D5,D6,D7
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, (GPIO_PinState)(LSB_nibble&0x1));
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, (GPIO_PinState)(LSB_nibble&0x2));
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, (GPIO_PinState)(LSB_nibble&0x4));
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, (GPIO_PinState)(LSB_nibble&0x8));
-	//Write the Enable pulse
+	// LSB data D4,D5,D6,D7
+	HAL_GPIO_WritePin(PORT_MSB, D4_PIN, (GPIO_PinState)(LSB_nibble & 0x1));
+	HAL_GPIO_WritePin(PORT_MSB, D5_PIN, (GPIO_PinState)(LSB_nibble & 0x2));
+	HAL_GPIO_WritePin(PORT_MSB, D6_PIN, (GPIO_PinState)(LSB_nibble & 0x4));
+	HAL_GPIO_WritePin(PORT_MSB, D7_PIN, (GPIO_PinState)(LSB_nibble & 0x8));
+	// Write the Enable pulse
 	LCD1602_EnablePulse();
 }
 
-//Public functions
-//1) LCD begin 8 bits function
-void LCD1602_Begin8BIT(GPIO_TypeDef* PORT_RS_E, uint16_t RS, uint16_t E, GPIO_TypeDef* PORT_LSBs0to3, uint16_t D0, uint16_t D1, uint16_t D2, uint16_t D3, GPIO_TypeDef* PORT_MSBs4to7, uint16_t D4, uint16_t D5, uint16_t D6, uint16_t D7)
+// Public functions
+// 1) LCD begin 8 bits function
+void LCD1602_Begin8BIT(GPIO_TypeDef *PORT_RS_E, uint16_t RS, uint16_t E, GPIO_TypeDef *PORT_LSBs0to3, uint16_t D0, uint16_t D1, uint16_t D2, uint16_t D3, GPIO_TypeDef *PORT_MSBs4to7, uint16_t D4, uint16_t D5, uint16_t D6, uint16_t D7)
 {
-	//Set GPIO Ports and Pins data
+	// Set GPIO Ports and Pins data
 	PORT_RS_and_E = PORT_RS_E;
 	PIN_RS = RS;
 	PIN_E = E;
@@ -183,32 +186,32 @@ void LCD1602_Begin8BIT(GPIO_TypeDef* PORT_RS_E, uint16_t RS, uint16_t E, GPIO_Ty
 	D5_PIN = D5;
 	D6_PIN = D6;
 	D7_PIN = D7;
-	//Initialise microsecond timer
+	// Initialise microsecond timer
 	LCD1602_TIM_Config();
-	//Set the mode to 8 bits
+	// Set the mode to 8 bits
 	mode_8_4_I2C = 1;
-	//Function set variable to 8 bits mode
+	// Function set variable to 8 bits mode
 	FunctionSet = 0x38;
 
-	//Initialise LCD
-	//1. Wait at least 15ms
+	// Initialise LCD
+	// 1. Wait at least 15ms
 	HAL_Delay(20);
-	//2. Attentions sequence
+	// 2. Attentions sequence
 	LCD1602_writeCommand(0x30);
 	HAL_Delay(5);
 	LCD1602_writeCommand(0x30);
 	HAL_Delay(1);
 	LCD1602_writeCommand(0x30);
 	HAL_Delay(1);
-	//3. Function set; Enable 2 lines, Data length to 8 bits
+	// 3. Function set; Enable 2 lines, Data length to 8 bits
 	LCD1602_writeCommand(LCD_FUNCTIONSET | LCD_FUNCTION_N | LCD_FUNCTION_DL);
-	//4. Display control (Display ON, Cursor ON, blink cursor)
+	// 4. Display control (Display ON, Cursor ON, blink cursor)
 	LCD1602_writeCommand(LCD_DISPLAYCONTROL | LCD_DISPLAY_B | LCD_DISPLAY_C | LCD_DISPLAY_D);
-	//5. Clear LCD and return home
+	// 5. Clear LCD and return home
 	LCD1602_writeCommand(LCD_CLEARDISPLAY);
 	HAL_Delay(2);
 }
-//2) LCD begin 4 bits function
+// 2) LCD begin 4 bits function
 
 /**
  * @brief  4BIT를 사용한 LED 초기 세팅 함수
@@ -222,9 +225,9 @@ void LCD1602_Begin8BIT(GPIO_TypeDef* PORT_RS_E, uint16_t RS, uint16_t E, GPIO_Ty
  * @param  D7 D7 핀 위치
  * @note
  */
-void LCD1602_Begin4BIT(GPIO_TypeDef* PORT_RS_E, uint16_t RS, uint16_t E, GPIO_TypeDef* PORT_MSBs4to7, uint16_t D4, uint16_t D5, uint16_t D6, uint16_t D7)
+void LCD1602_Begin4BIT(GPIO_TypeDef *PORT_RS_E, uint16_t RS, uint16_t E, GPIO_TypeDef *PORT_MSBs4to7, uint16_t D4, uint16_t D5, uint16_t D6, uint16_t D7)
 {
-	//Set GPIO Ports and Pins data
+	// Set GPIO Ports and Pins data
 	PORT_RS_and_E = PORT_RS_E;
 	PIN_RS = RS;
 	PIN_E = E;
@@ -233,48 +236,48 @@ void LCD1602_Begin4BIT(GPIO_TypeDef* PORT_RS_E, uint16_t RS, uint16_t E, GPIO_Ty
 	D5_PIN = D5;
 	D6_PIN = D6;
 	D7_PIN = D7;
-	//Initialise microsecond timer
+	// Initialise microsecond timer
 	LCD1602_TIM_Config();
-	//Set the mode to 4 bits
+	// Set the mode to 4 bits
 	mode_8_4_I2C = 2;
-	//Function set variable to 4 bits mode
+	// Function set variable to 4 bits mode
 	FunctionSet = 0x28;
 
-	//Initialise LCD
-	//1. Wait at least 15ms
+	// Initialise LCD
+	// 1. Wait at least 15ms
 	HAL_Delay(20);
-	//2. Attentions sequence
+	// 2. Attentions sequence
 	LCD1602_write4bitCommand(0x3);
 	HAL_Delay(5);
 	LCD1602_write4bitCommand(0x3);
 	HAL_Delay(1);
 	LCD1602_write4bitCommand(0x3);
 	HAL_Delay(1);
-	LCD1602_write4bitCommand(0x2);  //4 bit mode
+	LCD1602_write4bitCommand(0x2); // 4 bit mode
 	HAL_Delay(1);
-	//3. Display control (Display ON, Cursor ON, blink cursor)
+	// 3. Display control (Display ON, Cursor ON, blink cursor)
 	LCD1602_writeCommand(LCD_DISPLAYCONTROL | LCD_DISPLAY_B | LCD_DISPLAY_C | LCD_DISPLAY_D);
-	//4. Clear LCD and return home
+	// 4. Clear LCD and return home
 	LCD1602_writeCommand(LCD_CLEARDISPLAY);
 	HAL_Delay(3);
-	//4. Function set; Enable 2 lines, Data length to 8 bits
+	// 4. Function set; Enable 2 lines, Data length to 8 bits
 	LCD1602_writeCommand(LCD_FUNCTIONSET | LCD_FUNCTION_N);
 	HAL_Delay(3);
 }
-//3) LCD print string
+// 3) LCD print string
 void LCD1602_print(char string[])
 {
-	for(uint8_t i=0;  i< 16 && string[i]!=NULL; i++)
+	for (uint8_t i = 0; i < 16 && string[i] != NULL; i++)
 	{
 		LCD1602_writeData((uint8_t)string[i]);
 	}
 }
-//4) set cursor position
+// 4) set cursor position
 void LCD1602_setCursor(uint8_t row, uint8_t col)
 {
 	uint8_t maskData;
-	maskData = (col-1)&0x0F;
-	if(row==1)
+	maskData = (col - 1) & 0x0F;
+	if (row == 1)
 	{
 		maskData |= (0x80);
 		LCD1602_writeCommand(maskData);
@@ -287,13 +290,13 @@ void LCD1602_setCursor(uint8_t row, uint8_t col)
 }
 void LCD1602_1stLine(void)
 {
-	LCD1602_setCursor(1,1);
+	LCD1602_setCursor(1, 1);
 }
 void LCD1602_2ndLine(void)
 {
-	LCD1602_setCursor(2,1);
+	LCD1602_setCursor(2, 1);
 }
-//5) Enable two lines
+// 5) Enable two lines
 void LCD1602_TwoLines(void)
 {
 	FunctionSet |= (0x08);
@@ -304,7 +307,7 @@ void LCD1602_OneLine(void)
 	FunctionSet &= ~(0x08);
 	LCD1602_writeCommand(FunctionSet);
 }
-//6) Cursor ON/OFF
+// 6) Cursor ON/OFF
 void LCD1602_noCursor(void)
 {
 	DisplayControl &= ~(0x02);
@@ -315,16 +318,14 @@ void LCD1602_cursor(void)
 	DisplayControl |= (0x02);
 	LCD1602_writeCommand(DisplayControl);
 }
-//7) Clear display
+// 7) Clear display
 void LCD1602_clear(void)
 {
 	LCD1602_writeCommand(LCD_CLEARDISPLAY);
 	HAL_Delay(3);
-
 }
 
-
-//8) Blinking cursor
+// 8) Blinking cursor
 void LCD1602_noBlink(void)
 {
 	DisplayControl &= ~(0x01);
@@ -335,7 +336,7 @@ void LCD1602_blink(void)
 	DisplayControl |= 0x01;
 	LCD1602_writeCommand(DisplayControl);
 }
-//9) Display ON/OFF
+// 9) Display ON/OFF
 void LCD1602_noDisplay(void)
 {
 	DisplayControl &= ~(0x04);
@@ -346,68 +347,71 @@ void LCD1602_display(void)
 	DisplayControl |= (0x04);
 	LCD1602_writeCommand(DisplayControl);
 }
-//10) Shift Display, right or left
+// 10) Shift Display, right or left
 void LCD1602_shiftToRight(uint8_t num)
 {
-	for(uint8_t i=0; i<num;i++)
+	for (uint8_t i = 0; i < num; i++)
 	{
 		LCD1602_writeCommand(0x1c);
 	}
 }
 void LCD1602_shiftToLeft(uint8_t num)
 {
-	for(uint8_t i=0; i<num;i++)
+	for (uint8_t i = 0; i < num; i++)
 	{
 		LCD1602_writeCommand(0x18);
 	}
 }
 
 //********** Print numbers to LCD **********//
-//1. Integer
+// 1. Integer
 void LCD1602_PrintInt(int number)
 {
 	char numStr[16];
-	sprintf(numStr,"%d", number);
+	sprintf(numStr, "%d", number);
 	LCD1602_print(numStr);
 }
-//2. Float
+// 2. Float
 void LCD1602_PrintFloat(float number, int decimalPoints)
 {
 	char numStr[16];
-	sprintf(numStr,"%.*f",decimalPoints, number);
+	sprintf(numStr, "%.*f", decimalPoints, number);
 	LCD1602_print(numStr);
 }
 
-//3.캐릭터등록
-void lcdSetCGRAM(uint8_t address, uint8_t *data){
+// 3.캐릭터등록
+void lcdSetCGRAM(uint8_t address, uint8_t *data)
+{
 	LCD1602_writeCommand(0x40 | (address << 3)); // CGRAM 주소 설정
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++)
+	{
 		LCD1602_writeData(data[i]); // CGRAM에 데이터 쓰기
 	}
 }
 
-void print_sqaure(){
+void print_sqaure()
+{
 
 	LCD1602_writeData(0);
 }
 
-
-void show_LCD(){
+void show_LCD()
+{
 	LCD1602_clear();
 
 	// 첫째 줄 - 차량 에너지 표시
 	LCD1602_1stLine();
 
 	/* 차량 에너지 로직 */
-	int car_engy = (int)(vehicle.car_battery * 100 / MAX_CHARGE_CAR );
-//	if(*car_engy > 99) *car_engy= 0; //99 위는 99 / 0 아래는 00으로 고정
+	int car_engy = (int)(vehicle.car_battery * 100 / MAX_CHARGE_CAR);
+	//	if(*car_engy > 99) *car_engy= 0; //99 위는 99 / 0 아래는 00으로 고정
 
 	/* * * * * * * * * * * * * * */
 #ifdef VER1
-	sprintf(str, "CAR%02d%%",car_engy);
+	sprintf(str, "CAR%02d%%", car_engy);
 #endif
 #ifndef VER1
-	sprintf(str, "CAR-%02d%%",car_engy);
+	sprintf(str, "CAR-%02d%%", car_engy);
 #endif
 	LCD1602_print(str);
 
@@ -418,59 +422,65 @@ void show_LCD(){
 
 	/* 태양광 충전 배터리 로직 */
 	int eco_bat = (int)(vehicle.solar_battery * 100 / MAX_CHARGE_ECO);
-//	if(eco_bat < 0) eco_bat= 99;
+	//	if(eco_bat < 0) eco_bat= 99;
 	/* * * * * * * * * * * * * * */
 #ifdef VER1
-	sprintf(str, "ECO%02d%%",eco_bat);
+	sprintf(str, "ECO%02d%%", eco_bat);
 #endif
 #ifndef VER1
-	sprintf(str, "ECO-%02d%%",eco_bat);
+	sprintf(str, "ECO-%02d%%", eco_bat);
 #endif
 	LCD1602_print(str);
 
 	print_battery_img(eco_bat);
 }
 
-void init_LCD(){
+void init_LCD()
+{
 
-//	LCD1602_Begin4BIT(GPIOA, GPIO_PIN_8, GPIO_PIN_9, GPIOB, GPIO_PIN_3,
-//		GPIO_PIN_5, GPIO_PIN_4, GPIO_PIN_10);
+	//	LCD1602_Begin4BIT(GPIOA, GPIO_PIN_8, GPIO_PIN_9, GPIOB, GPIO_PIN_3,
+	//		GPIO_PIN_5, GPIO_PIN_4, GPIO_PIN_10);
 
-		//FOR 103RB LCD!!!
-	LCD1602_BeginPS4BIT(GPIOB, GPIO_PIN_2, GPIO_PIN_12, GPIOB, GPIO_PIN_13,
-	GPIO_PIN_14, GPIO_PIN_15, GPIO_PIN_1); // RS,E,D4,D5,D6,D7
+	// FOR 103RB LCD!!!
+	LCD1602_Begin4BIT(GPIOB, GPIO_PIN_2, GPIO_PIN_12, GPIOB, GPIO_PIN_13,
+					  GPIO_PIN_14, GPIO_PIN_15, GPIO_PIN_1); // RS,E,D4,D5,D6,D7
 
 	uint8_t fullSquare[8] = {
-	  0b11111,
-	  0b11111,
-	  0b11111,
-	  0b11111,
-	  0b11111,
-	  0b11111,
-	  0b11111,
-	  0b11111
-	};
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111};
 	lcdSetCGRAM(0, fullSquare);
 }
 
-void print_battery_img(int bat_val){
+void print_battery_img(int bat_val)
+{
 #ifdef VER1
 	LCD1602_print("[");
 
-	int bars = (int)((bat_val )/12.5);  // 100을 8로 나눈 값
-	for (int i = 0; i < 8; i++) {
+	int bars = (int)((bat_val) / 12.5); // 100을 8로 나눈 값
+	for (int i = 0; i < 8; i++)
+	{
 #endif
 #ifndef VER1
-	int bars = (int)((bat_val )/11);  // 100을 9로 나눈 값
-	for (int i = 0; i < 9; i++) {
+		int bars = (int)((bat_val) / 11); // 100을 9로 나눈 값
+		for (int i = 0; i < 9; i++)
+		{
 #endif
-		if (i < bars) {
-			print_sqaure();  // 채워진 칸
-		} else {
-			LCD1602_print("_");  // 빈 칸
+			if (i < bars)
+			{
+				print_sqaure(); // 채워진 칸
+			}
+			else
+			{
+				LCD1602_print("_"); // 빈 칸
+			}
 		}
-	}
 #ifdef VER1
-	LCD1602_print("]");
+		LCD1602_print("]");
 #endif
-}
+	}
