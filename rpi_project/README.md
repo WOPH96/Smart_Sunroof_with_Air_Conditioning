@@ -41,7 +41,8 @@ dust_module.py : 미세먼지 API 호출
 
 ## 코드 구조
 
-![image](https://github.com/user-attachments/assets/93f96d80-9c4b-4162-b61c-e05afa544195)
+![image](https://github.com/user-attachments/assets/b46798b5-71c0-4543-87ac-eab412b466ee)
+
 
 
 - UI : PYQT 사용
