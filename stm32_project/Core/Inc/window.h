@@ -15,6 +15,15 @@ extern volatile uint32_t window_timer_ms;    // 창문 동작 시간(ms)
 extern volatile uint32_t window_pulse_count; // 창문 위치 (0~100%)
 extern volatile WindowState window_state;            // 창문 상태
 extern volatile uint8_t running_win;
+// 창문 관련 변수
+extern int safety_win;
+extern int motor1_smart;
+extern int motor1_smart_pct;
+extern int override_win;
+extern int car_mode;
+extern int motor1_smart_flag;
+extern int override_flag_win;
+extern int safety_win_flag;
 
 
 // 상수 정의

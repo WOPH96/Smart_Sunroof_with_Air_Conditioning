@@ -21,6 +21,13 @@ extern volatile uint32_t sunroof_pulse_count;    // 선루프 위치 (0~100%)
 extern volatile uint8_t target_position_sun;         // 목표 위치 (%)
 extern volatile uint8_t running_sunroof;         // 모터 상태 (0: 정지, 1: 열림, 2: 닫힘)
 extern volatile SunroofState sunroof_state;      // 선루프 상태
+// 전역 변수 참조 (extern)
+extern int saftey_sun;
+extern int override_flag_sun;
+extern int safety_sun_flag;
+extern int motor2_smart_flag;
+extern int override_sun;
+extern int motor2_smart;
 
 // 함수 선언
 void Sunroof_Init(void);                     // 선루프 초기화

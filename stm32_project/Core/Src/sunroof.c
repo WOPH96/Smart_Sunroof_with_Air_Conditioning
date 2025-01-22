@@ -7,19 +7,20 @@ volatile uint32_t sunroof_pulse_count = 0;    // 선루프 위치 (0~100%)
 volatile uint8_t target_position_sun = 100;   // 목표 위치 (%)
 volatile uint8_t running_sunroof = 0;         // 모터 동작 상태 (0: 정지, 1: 닫, 2: 열)
 
+//전역변수 can
+int saftey_sun=0;
+int override_flag_sun=0;
+int safety_sun_flag=0;
+int motor2_smart_flag=0;
+int override_sun=0;
+int motor2_smart=0;
+
 // 선루프 상태 전역 변수
 volatile uint8_t sunroof_position = 0;        // 선루프 열림 정도 (%)
 volatile SunroofState sunroof_state = SUNROOF_STOPPED; // 선루프 상태
 
-// 전역 변수 참조 (extern)
-extern int saftey_sun;
-extern int override_flag_sun;
-extern int safety_sun_flag;
-extern int motor2_smart_flag;
-extern int override_sun;
-extern int motor2_smart;
-
 extern TIM_HandleTypeDef htim2; // 선루프 PWM 제어용 TIM 핸들러
+extern uint8_t actuator_power;
 
 // 내부 함수 선언
 static void Sunroof_SetPWM(uint16_t speed);
@@ -31,7 +32,6 @@ void Sunroof_Init(void) {
     sunroof_timer_ms = 0;
     sunroof_pulse_count = 0; // 선루프 닫힘 상태로 초기화
     sunroof_state = SUNROOF_STOPPED;
-
     Sunroof_SetPWM(0); // 초기 PWM 듀티를 0으로 설정
 
 }
@@ -68,6 +68,10 @@ void Sunroof_ControlMode(void) {
         }
         motor2_smart_flag = 0; // 이벤트 처리 완료, 플래그 초기화
         return;
+    }
+    // 4. 전원off
+    if (actuator_power==0){
+    	Sunroof_Stop();
     }
 }
 
@@ -107,19 +111,20 @@ void Sunroof_Close(int percent) {
 void Sunroof_UpdateState(void) {
     if (sunroof_state == SUNROOF_OPENING) {
         sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
-        sunroof_pulse_count = (sunroof_timer_ms * 100) / SUNROOF_OPEN_TIME_MS;
+        sunroof_pulse_count = 100 - (sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
 
         // 목표 위치 도달 시 동작 멈춤
         if (sunroof_pulse_count >= target_position_sun) {
             Sunroof_Stop();
+            return;
         }
     } else if (sunroof_state == SUNROOF_CLOSING) {
         sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
-        sunroof_pulse_count = 100 - (sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
-
+        sunroof_pulse_count = (sunroof_timer_ms * 100) / SUNROOF_OPEN_TIME_MS;
         // 목표 위치 도달 시 동작 멈춤
         if (sunroof_pulse_count <= target_position_sun) {
             Sunroof_Stop();
+            return;
         }
     }
 }
