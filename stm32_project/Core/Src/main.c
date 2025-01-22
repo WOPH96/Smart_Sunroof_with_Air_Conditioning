@@ -156,18 +156,8 @@ int main(void)
 	//can_send_test();
 	printf("Start\r\n");
 
-//	set_motor_speed(700);
-
-	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-
 	while (1) {
 		AppScheduling();
-//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-//		  HAL_Delay(5000);
-//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-//		  HAL_Delay(5000);
 
 		//motor_test();
 		 //722
@@ -184,73 +174,47 @@ int main(void)
 //			// 처리 로직 예시
 //
 //		}
-		// 724
-		if (db_msg.driver_heater.B.Flag == 1)
-		{
-			db_msg.driver_heater.B.Flag = 0;
+		  // 724
+		  if (db_msg.driver_heater.B.Flag == 1)
+		  {
+			  db_msg.driver_heater.B.Flag = 0;
+			  if (heater_power == 1)
+				  driver_heater(db_msg.driver_heater.B.driver_heater);
+		  }
+		  // 725
+		  if (db_msg.driver_air.B.Flag == 1)
+		  {
+			  db_msg.driver_air.B.Flag = 0;
+			  if (ac_power == 1)
+				  driver_ac(db_msg.driver_air.B.driver_air);
+		  }
+		  // 726 시동
+		  if (db_msg.driver_engine.B.Flag == 1)
+		  {
+			  db_msg.driver_engine.B.Flag = 0;
 
-			// 히터가 꺼져있을때만
-			if (heater_led_state == 0)
-			{
-				// 에어컨이 켜져있으면 끈다
-				if (ac_led_state == 1)
-				{
-					ac_led_state = 0;
-					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-				}
-				// 히터킨다
-				heater_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+			  // 시동 OFF
+			  if (db_msg.driver_engine.B.engine_mode == 0)
+			  {
+				  off_heater();
+				  off_ac();
+				  heater_power = 0;
+				  ac_power = 0;
+			  }
+			  // 저전력
+			  else if (db_msg.driver_engine.B.engine_mode == 1)
+			  {
+				  heater_power = 1;
+				  ac_power = 1;
+			  }
+			  // 시동 ON
+			  else if (db_msg.driver_engine.B.engine_mode == 2)
+			  {
+				  heater_power = 1;
+				  ac_power = 1;
+			  }
 
-			}
-			else
-			{
-				heater_led_state = 0;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-			}
-
-
-		}
-		// 725
-		if (db_msg.driver_air.B.Flag == 1)
-		{
-			db_msg.driver_air.B.Flag = 0;
-
-			// 에어컨이 꺼져있을때만
-			if (ac_led_state == 0)
-			{
-				// 히터가 켜져있으면 끈다
-				if (heater_led_state == 1)
-				{
-					heater_led_state = 0;
-					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-				}
-				// 에어컨 킨다
-				ac_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-
-			}
-			else
-			{
-				ac_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-			}
-		}
-//		// 726
-//		if (db_msg.driver_engine.B.Flag == 1)
-//		{
-//			db_msg.driver_engine.B.Flag = 0;
-//			// 처리 로직 예시
-//
-//
-//
-//		}
+		  }
 //		// 720
 //		if (db_msg.driver_control.B.Flag == 1)
 //		{
@@ -280,58 +244,16 @@ int main(void)
 		// 734
 		if (db_msg.smart_heater.B.Flag == 1)
 		{
-			db_msg.driver_heater.B.Flag = 0;
-
-			// 히터가 꺼져있을때만
-			if (heater_led_state == 0)
-			{
-				// 에어컨이 켜져있으면 끈다
-				if (ac_led_state == 1)
-				{
-					ac_led_state = 0;
-					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-				}
-				// 히터킨다
-				heater_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-
-			}
-			else
-			{
-				heater_led_state = 0;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-			}
+			db_msg.smart_heater.B.Flag = 0;
+			if (heater_power == 1)
+				smart_heater(db_msg.smart_heater.B.Heater_state);
 		}
 		// 735
 		if (db_msg.smart_ac.B.Flag == 1)
 		{
-			db_msg.driver_air.B.Flag = 0;
-
-			// 에어컨이 꺼져있을때만
-			if (ac_led_state == 0)
-			{
-				// 히터가 켜져있으면 끈다
-				if (heater_led_state == 1)
-				{
-					heater_led_state = 0;
-					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-				}
-				// 에어컨 킨다
-				ac_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-
-			}
-			else
-			{
-				ac_led_state = 1;
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-			}
+			db_msg.smart_ac.B.Flag = 0;
+			if (ac_power == 1)
+				smart_ac(db_msg.smart_ac.B.Air_state);
 		}
 
 //		// 733
