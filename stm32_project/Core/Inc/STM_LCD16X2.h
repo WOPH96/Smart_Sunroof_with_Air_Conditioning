@@ -54,20 +54,20 @@
 //***** Functions prototypes *****//
 //Private functions
 //1) Enable EN pulse
-static void LCD1602_EnablePulse(void);
+//static void LCD1602_EnablePulse(void);
 //2) RS control
-static void LCD1602_RS(bool state);
+//static void LCD1602_RS(bool state);
 //3) Write Parallel interface
-static void LCD1602_write(uint8_t byte);
+//static void LCD1602_write(uint8_t byte);
 //4) Microsecond delay functions
-static void LCD1602_TIM_Config(void);
-static void LCD1602_TIM_MicorSecDelay(uint32_t uSecDelay);
+//static void LCD1602_TIM_Config(void);
+//static void LCD1602_TIM_MicorSecDelay(uint32_t uSecDelay);
 //5) Write command
-static void LCD1602_writeCommand(uint8_t command);
+//static void LCD1602_writeCommand(uint8_t command);
 //6) Write 8 bits data
-static void LCD1602_writeData(uint8_t data);
+//static void LCD1602_writeData(uint8_t data);
 //7) Write 4 bits command, *FOR 4 BITS MODE ONLY*
-static void LCD1602_write4bitCommand(uint8_t nibble);
+//static void LCD1602_write4bitCommand(uint8_t nibble);
 
 //Public functions
 //1) LCD begin 8 bits function
