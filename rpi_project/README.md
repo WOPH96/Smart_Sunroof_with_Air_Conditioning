@@ -17,7 +17,8 @@
 
 ## Cluster 구성
 
-![image](https://github.com/user-attachments/assets/4937dbad-7d7f-4e2f-add2-b9f490068c5d)
+![image](https://github.com/user-attachments/assets/bb373dfa-3ee3-4f5b-a4e0-d7906ff22290)
+
 
 
 
