@@ -159,6 +159,7 @@ int main(void)
 
 	Window_Init();
 	Sunroof_Init();
+	//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 700);
 
 	printf("Start\r\n");
 
@@ -179,7 +180,7 @@ int main(void)
 		  {
 			  override_flag_sun=1;
 			  db_msg.driver_sunroof.B.Flag = 0;
-			  override_sun = db_msg.driver_window.B.driver_window;
+			  override_sun = db_msg.driver_sunroof.B.driver_sunroof;
 			// 처리 로직 예시
 
 		  }
