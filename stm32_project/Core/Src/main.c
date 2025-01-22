@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "DFPlayer.h"
+#include "hvac.h"
 
 
 #include "STM_LCD16X2.h"
@@ -65,9 +66,6 @@ typedef struct
 
 Taskcnt stTestCnt;
 
-uint8_t heater_led_state = 0;
-uint8_t ac_led_state = 0;
-uint8_t pan_state = 0;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
