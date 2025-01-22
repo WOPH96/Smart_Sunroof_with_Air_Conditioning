@@ -385,6 +385,7 @@ void AppTask100ms(void)
     Query_Status();
     {
     	if(actuator_power == 1){
+    		LCD1602_display();
 			update_vehicle_vehicle();
 			show_LCD();
     	}

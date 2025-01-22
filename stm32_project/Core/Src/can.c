@@ -228,7 +228,8 @@ void set_can_filter(void)
 	sFilterConfig.FilterBank = 3;
 	sFilterConfig.FilterIdHigh = (0x712 << 5);
 	sFilterConfig.FilterIdLow = (0x711 << 5);
-	sFilterConfig.FilterMaskIdHigh = (0x751 << 5);
+	//sFilterConfig.FilterMaskIdHigh = (0x751 << 5);
+	sFilterConfig.FilterMaskIdHigh = (0x721 << 5);
 	sFilterConfig.FilterMaskIdLow = 0x0000;
 
 	if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
