@@ -11,8 +11,7 @@
 extern uint8_t heater_led_state;
 extern uint8_t ac_led_state;
 extern uint8_t pan_state;
-extern uint8_t heater_power;
-extern uint8_t ac_power;
+
 
 void driver_ac(uint8_t state);
 void driver_heater(uint8_t state);

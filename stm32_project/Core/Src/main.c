@@ -64,6 +64,8 @@ typedef struct
 
 } Taskcnt;
 
+uint8_t actuator_power = 0;
+
 Taskcnt stTestCnt;
 
 /* USER CODE END PM */
@@ -176,14 +178,14 @@ int main(void)
 		  if (db_msg.driver_heater.B.Flag == 1)
 		  {
 			  db_msg.driver_heater.B.Flag = 0;
-			  if (heater_power == 1)
+			  if (actuator_power == 1)
 				  driver_heater(db_msg.driver_heater.B.driver_heater);
 		  }
 		  // 725
 		  if (db_msg.driver_air.B.Flag == 1)
 		  {
 			  db_msg.driver_air.B.Flag = 0;
-			  if (ac_power == 1)
+			  if (actuator_power == 1)
 				  driver_ac(db_msg.driver_air.B.driver_air);
 		  }
 		  // 726 시동
@@ -196,20 +198,17 @@ int main(void)
 			  {
 				  off_heater();
 				  off_ac();
-				  heater_power = 0;
-				  ac_power = 0;
+				  actuator_power = 0;
 			  }
 			  // 저전력
 			  else if (db_msg.driver_engine.B.engine_mode == 1)
 			  {
-				  heater_power = 1;
-				  ac_power = 1;
+				  actuator_power = 1;
 			  }
 			  // 시동 ON
 			  else if (db_msg.driver_engine.B.engine_mode == 2)
 			  {
-				  heater_power = 1;
-				  ac_power = 1;
+				  actuator_power = 1;
 			  }
 
 		  }
@@ -243,14 +242,14 @@ int main(void)
 		if (db_msg.smart_heater.B.Flag == 1)
 		{
 			db_msg.smart_heater.B.Flag = 0;
-			if (heater_power == 1)
+			if (actuator_power == 1)
 				smart_heater(db_msg.smart_heater.B.Heater_state);
 		}
 		// 735
 		if (db_msg.smart_ac.B.Flag == 1)
 		{
 			db_msg.smart_ac.B.Flag = 0;
-			if (ac_power == 1)
+			if (actuator_power == 1)
 				smart_ac(db_msg.smart_ac.B.Air_state);
 		}
 
@@ -350,14 +349,14 @@ void AppTask10ms(void)
 //		output_message(&db_msg.motor2_sunroof,MOTOR2_SUNROOF_MSG_ID);
 
 		// 754
-//		db_msg.heater.B.Heater_alive = 0;
-//		db_msg.heater.B.Heater_running = 0;
-//		output_message(&db_msg.heater,HEATER_MSG_ID);
+		db_msg.heater.B.Heater_alive = actuator_power;
+		db_msg.heater.B.Heater_running = heater_led_state;
+		output_message(&db_msg.heater,HEATER_MSG_ID);
 
 		// 755
-//		db_msg.ac.B.AC_alive = 0;
-//		db_msg.ac.B.AC_running = 0;
-//		output_message(&db_msg.ac,AIRCONDITIONER_MSG_ID);
+		db_msg.ac.B.AC_alive = actuator_power;
+		db_msg.ac.B.AC_running = ac_led_state;
+		output_message(&db_msg.ac,AIRCONDITIONER_MSG_ID);
 
 		//753
 //		db_msg.audio.B.Audio_alive = 0;
