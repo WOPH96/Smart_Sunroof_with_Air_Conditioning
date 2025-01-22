@@ -358,6 +358,12 @@ void AppTask100ms(void)
 			update_vehicle_vehicle();
 			show_LCD();
     	}
+    	else{
+    		LCD1602_noDisplay();
+    		db_msg.battery.B.Battery_use = 0;
+    		db_msg.battery.B.Battery_state = 0;
+    		db_msg.battery.B.Battery_spare_state = 0;
+    	}
     }
     {
 		// 754
