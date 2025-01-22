@@ -124,7 +124,7 @@ void init_vehicle_state()
 {
 
 	vehicle.car_battery = MAX_CHARGE_CAR ;	// 77.4k = 100% 초기값 38700
-	vehicle.solar_battery = MAX_CHARGE_ECO ; // 4.8k = 100% 초기값 2400
+	vehicle.solar_battery = MAX_CHARGE_ECO/2 ; // 4.8k = 100% 초기값 2400
 
 	//임의 값들
 	vehicle.light_intensity = 80;

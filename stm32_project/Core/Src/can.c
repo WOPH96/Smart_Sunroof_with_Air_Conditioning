@@ -546,10 +546,15 @@ void output_message(void *msg, uint32_t msgID) {
 	}
 	}
 
-	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox)
-			!= HAL_OK) {
-		printf("Can Send Fail\r\n");
-		Error_Handler();
+//	if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox)
+//			!= HAL_OK) {
+//		printf("CAN Send Fail: Error Code: 0x%08lX\r\n", HAL_CAN_GetError(&hcan));
+//		        Error_Handler();
+//		Error_Handler();
+//	}
+	while (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK) {
+	    //printf("Retrying CAN transmission...\n");
+	    HAL_Delay(1); // 10ms 대기
 	}
 
 }
