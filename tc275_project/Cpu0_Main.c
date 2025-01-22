@@ -1,8 +1,8 @@
 /**********************************************************************************************************************
  * @file    Cpu0_Main.c
  * @brief   Logic Inner TC275
- * @version 0.5
- * @date    2025-01-21
+ * @version 0.7
+ * @date    2025-01-22
  *********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -30,13 +30,13 @@
 #include "rain_sensor.h"
 
 #include "ASCLIN_Shell_UART.h"
+
+#include "queue.h"
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
 #define AIR_PIN 4
-#define LIGHT_PIN 6
-#define R_PIN 7
 #define SUN_TOUCH_PIN 0
 #define WIN_TOUCH_PIN 1
 
@@ -49,19 +49,28 @@
 
 // 100ms 기준
 #define TIME_500MS 5
+#define TIME_2S 20
 #define TIME_1MIN 600
 #define TIME_5MIN 3000
 //
 
-#define OFF 0
-#define ON 1
+#define ON 0
+#define OFF 1
 
 #define CLOSE 1
 #define OPEN 2
-#define NINTY 3
+
+#define FULL_OPEN 0
+#define SEVENTY 70
+#define NINTY 90
+#define FULL_CLOSE 100
 
 #define TURN_OFF 1
 #define TURN_ON 2
+
+#define WINTER
+//#define SUMMER
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -77,6 +86,7 @@ typedef struct
     uint32 u32nuCnt10ms;
     uint32 u32nuCnt100ms;
     uint32 u32nuCnt1000ms;
+    uint32 u32nuCnt5000ms;
 
 } Taskcnt;
 
@@ -112,12 +122,44 @@ typedef enum {
     DIRECT_CONTROL,
     WEATHER,
     TUNNEL,
+    SOLAR,
     IN_CO2,
     DUST,
     IN_TEMP,
     NOISE,
     NONE
 }PriorityType;
+
+/*
+ * queue.h 에 정의됨
+typedef enum{
+    CLOSE_WINDOW = 1,           // 창문을 닫습니다.
+    OPEN_WINDOW,                // 창문이 열립니다.
+    CLOSE_SUNROOF,              // 선루프를 닫습니다.
+    OPEN_SUNROOF,               // 선루프가 열립니다.
+    ACTIVATE_AIRCON,            // 에어컨을 작동합니다.
+    DEACTIVATE_AIRCON,          // 에어컨을 종료합니다.
+    ACTIVATE_HEATER,            // 히터를 작동합니다.
+    DEACTIVATE_HEATER,          // 히터를 종료합니다.
+    OPEN_WINDOW_AND_SUNROOF,    // 창문과 선루프가 열립니다.
+    CLOSE_WINDOW_AND_SUNROOF,   // 창문과 선루프가 닫힙니다.
+    SMART_CONTROL_PAUSE,        // 스마트 제어가 종료되고, 10분 후에 다시 작동합니다.
+    HIGH_FINE_DUST,             // 미세먼지가 많습니다.
+    IS_RAIN_DETECTED,           // 비가 옵니다.
+    INDOOR_HOT,                 // 실내가 덥습니다.
+    INDOOR_COLD,                // 실내가 춥습니다.
+    INDOOR_AIR_BAD,             // 실내 공기가 안 좋습니다.
+    ENTER_TUNNEL,               // 터널에 진입합니다.
+    EXIT_TUNNEL,                // 터널을 통과했습니다.
+    EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF, // 터널 통과 + 창문과 선루프가 열린다.
+    INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF, // 실내 공기 안좋아 + 창문과 선루프가 열린다.
+    ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF, // 터널 진입 + 창문과 선루프를 닫는다.
+    HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF, // 미세먼지 많아 + 창문과 선루프를 닫는다.
+    IS_RAIN_DETECTED_AND_CLOSE_SUNROOF, // 비가 온다 + 선루프를 닫는다.
+    INDOOR_HOT_AND_ACTIVATE_AIRCON, // 실내가 덥다 + 에어컨을 작동한다.
+    INDOOR_COLD_AND_ACTIVATE_HEATER, // 실내가 춥다 + 히터를 작동한다.
+}AudioControlState;
+*/
 
 typedef struct
 {
@@ -132,20 +174,31 @@ typedef struct
     PriorityType priority;  // 명령 우선 순위
     uint16 counter_1s;      // 닫힌 상태로 부터 시간, 환기시 시간 측정 용도, 스마트 제어 재진입 시간, 1초에 한 번 동작하도록
     uint16 counter_action_100ms; // 동작 유지 카운터. 이 값이 0이 되면 명령 우선순위, 명령 초기화, 명령에 따라 동작 유지 카운터를 달리 설정
-} ControlCommandInfo;
+}ControlCommandInfo;
+
+typedef struct
+{
+    uint8 motor1_state; // 정지, Close, Open 상태
+    uint8 motor2_state; // 정지, Close, Open 상태
+    boolean heater_state; // Turn_off, Turn_on
+    boolean air_state;    // Turn_off, Turn_on 상태
+    uint8 audio_state;  // 정지, 오디오 출력 중, 출력 안하고 있음
+}SmartControlState;
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
 /*--------------------------------------------Private Variables/Constants--------------------------------------------*/
 Taskcnt stTestCnt;
 ControlCommandInfo command_info[CONTROL_MODULE + 1]; // ALL 추가
+SmartControlState control_state;
 
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
 Gas in_gas = {0, 0, 0, 0};
 IfxPort_State suntouch = 0;
 IfxPort_State wintouch = 0;
-Temp_Hum in_temp_hum = { 0, 0, 0, 0, 0 };
+Temp_Hum in_temp_hum = { 0, 20, 20, 20, 20 };
 
 RainState weather_state = NO_RAIN;
 DustType dust_state = GOOD;
@@ -153,6 +206,22 @@ DustType dust_state = GOOD;
 boolean needs_ventilation = FALSE;
 
 uint32 light_adc = 0;
+
+uint8 light_pct = 0;
+uint8 window_state = 100;
+uint8 sunroof_state = 100;
+
+uint8 window_and_sunroof_state[2] = {0, 0}; // 0 초기화, 1 열어야 하는 상태, 2 열린 상태, 3 닫아야 하는 상태, 4 닫은 상태
+
+boolean tunnel_flag = FALSE;
+uint8 tunnel_window_state = 100; //터널 진입 시 현재 창문 위치 기록
+uint8 tunnel_sunroof_state = 100; //터널 진입 시 현재 선루프 위치 기록
+
+boolean audio_flag = FALSE;
+QUEUE *audio_queue;
+AudioControlState audio_file_num = DEFAULT;
+
+boolean engine_flag = FALSE;
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -182,6 +251,7 @@ void AppTask100ms(void);
 
 // 동작에 대한 트리거
 void AppTask1000ms(void);
+void AppTask5000ms(void);
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -218,7 +288,7 @@ void core0_main(void)
     Driver_Stm_Init();
     initShellInterface();
 
-    smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL); // 엔진 시작했다고 가정
+    audio_queue = queue_create();
 
     while (1)
     {
@@ -226,12 +296,12 @@ void core0_main(void)
         AppScheduling();
 
         ////////////////////////////////////////////////////////////////////
-
-#if 1
-        //사용자 안전
+        //사용자 안전 + 현재 제어 상태 받아오는 곳
         if (db_msg.motor1_window.B.Flag == 1) // 창문 메세지를 받을 때,
         {
             db_msg.motor1_window.B.Flag = 0;
+            control_state.motor1_state = db_msg.motor1_window.B.motor1_running;
+            window_state = db_msg.motor1_window.B.motor1_tick_counter;
             if (db_msg.motor1_window.B.motor1_running == 2) // 닫히고 있을 때,
             {
                 if (db_msg.motor1_window.B.motor1_tick_counter >= 80) // 80% 정도 닫힌 상황일 때,
@@ -247,6 +317,8 @@ void core0_main(void)
         if (db_msg.motor2_sunroof.B.Flag == 1) // 선루프 메세지를 받을 때,
         {
             db_msg.motor2_sunroof.B.Flag = 0;
+            control_state.motor2_state = db_msg.motor2_sunroof.B.motor2_running;
+            sunroof_state = db_msg.motor2_sunroof.B.motor2_tick_counter;
             if (db_msg.motor2_sunroof.B.motor2_running == 2) // 닫히고 있을 때,
             {
                 if (db_msg.motor2_sunroof.B.motor2_tick_counter >= 80) // 80% 정도 닫힌 상황일 때,
@@ -257,6 +329,24 @@ void core0_main(void)
                     }
                 }
             }
+        }
+
+        if (db_msg.heater.B.Flag == 1) // 히터 메세지를 받을 때,
+        {
+            db_msg.heater.B.Flag = 0;
+            control_state.heater_state = db_msg.heater.B.Heater_running;
+        }
+
+        if (db_msg.ac.B.Flag == 1) // 에어컨 메세지를 받을 때,
+        {
+            db_msg.ac.B.Flag = 0;
+            control_state.air_state = db_msg.ac.B.AC_running;
+        }
+
+        if (db_msg.audio.B.Flag == 1) // 오디오 메세지를 받을 때,
+        {
+            db_msg.audio.B.Flag = 0;
+            control_state.audio_state = db_msg.audio.B.Audio_running; // 오디오 동작중인지 확인
         }
         ////////////////////////////////////////////////////////////////////
 
@@ -307,21 +397,18 @@ void core0_main(void)
             db_msg.driver_engine.B.Flag = 0;
             if (db_msg.driver_engine.B.engine_mode == 0) // 시동 끔
             {
-                //시동 끔, 엔진 종료 시스템 초기화
                 smart_control_mode_off(&command_info[ALL], ENGINE_CONTROL);
-                //_system_off();
+                engine_flag = FALSE;
             }
             else if (db_msg.driver_engine.B.engine_mode == 1) // Utility 모드
             {
-                //저전력 모드로 수행, 예비 배터리 사용 코드 삽입
                 smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL);
-                //
+                engine_flag = TRUE;
             }
             else if (db_msg.driver_engine.B.engine_mode == 2) // 시동 On
             {
-                //엔진 On 시스템 초기화, 배터리 교체? 코드
                 smart_control_mode_on(&command_info[ALL], ENGINE_CONTROL);
-                //_system_on();
+                engine_flag = TRUE;
             }
         }
 
@@ -365,24 +452,41 @@ void core0_main(void)
         ////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////////////////////////////////////
-        // 터널
-        /*
-        if (터널 진입 인식 됨)
+        // 터널/광량
+        if (db_msg.light.B.Flag == 1)
         {
-            window_state = 현재 창문 모터 틱;
-            sunroof_state = 현재 선루프 모터 틱;
+            db_msg.light.B.Flag = 0;
+            light_pct = db_msg.light.B.Light_pct;
 
-            창문과 선루프를 닫는 명령
-            command_function(&command_info[WINDOW], CLOSE, CLOSE, TUNNEL);
-            command_function(&command_info[SUNROOF], CLOSE, CLOSE, TUNNEL);
+            if (tunnel_flag == FALSE && light_pct < 70)
+            {
+                tunnel_window_state = window_state;
+                tunnel_sunroof_state = sunroof_state;
+                tunnel_flag = TRUE;
+
+                command_function(&command_info[WINDOW], CLOSE, FULL_CLOSE, TUNNEL);
+                command_function(&command_info[SUNROOF], CLOSE, FULL_CLOSE, TUNNEL);
+            }
+            else if (tunnel_flag == TRUE && light_pct >= 75)
+            {
+                tunnel_flag = FALSE;
+
+                if (tunnel_window_state <95)
+                {
+                    command_function(&command_info[WINDOW], OPEN, tunnel_window_state, TUNNEL);
+                }
+                if (tunnel_sunroof_state < 95)
+                {
+                    command_function(&command_info[SUNROOF], OPEN, OPEN, TUNNEL); // 실제로는 동작하지 못함
+                }
+            }
         }
-        else if (터널 탈출 인식 됨)
+
+        if (light_pct >= 80)
         {
-            창문과 선루프를 여는 명령
-            command_function(&command_info[WINDOW], OPEN, window_state, TUNNEL);
-            command_function(&command_info[SUNROOF], OPEN, sunroof_state, TUNNEL);
+            command_function(&command_info[SUNROOF], CLOSE, CLOSE, SOLAR);
         }
-        */
+
         ////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////////////////////////////////////
@@ -424,27 +528,28 @@ void core0_main(void)
 
         ////////////////////////////////////////////////////////////////////
         //내부 온도
-        /*
-        if (겨울에 내부 온도가 실내 적정 온도보다 낮으면)
+#ifdef WINTER
+        if (in_temp_hum.temperaturehigh < 19)
         {
-            //command_function(&command_info[HEATER], TURN_ON, TURN_ON, IN_TEMP);
+            command_function(&command_info[HEATER], TURN_ON, TURN_ON, IN_TEMP);
             //밑에서 히터가 동작하면 타이머 시작, 1분 후에 창문/선루프 제어레벨 (7) 이하면 닫는다.
         }
-        else if (겨울에 내부 온도가 실내 적정 온도에 도달하면)
+        else if (in_temp_hum.temperaturehigh >= 21)
         {
-            //command_function(&command_info[HEATER], TURN_OFF, TURN_OFF, IN_TEMP);
+            command_function(&command_info[HEATER], TURN_OFF, TURN_OFF, IN_TEMP);
         }
-
-        if (여름에 내부 온도가 실내 적정 온도보다 높으면)
+#endif
+#ifdef SUMMER
+        if (in_temp_hum.temperaturehigh > 27)
         {
-            //command_function(&command_info[AIR], TURN_ON, TURN_ON, IN_TEMP);
+            command_function(&command_info[AIR], TURN_ON, TURN_ON, IN_TEMP);
             //밑에서 에어컨이 동작하면 타이머 시작, 1분 후에 창문/선루프 제어레벨 (7) 이하면 닫는다.
         }
-        else if (여름에 내부 온도가 실내 적정 온도에 도달하면)
+        else if (in_temp_hum.temperaturehigh <= 25)
         {
-            //command_function(&command_info[AIR], TURN_OFF, TURN_OFF, IN_TEMP);
+            command_function(&command_info[AIR], TURN_OFF, TURN_OFF, IN_TEMP);
         }
-        */
+#endif
         ////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////////////////////////////////////
@@ -455,12 +560,11 @@ void core0_main(void)
 
             if (db_msg.db.B.db_outside >= 80) // 80dB 이상일 때 창문, 선루프 닫음
             {
-                command_function(&command_info[WINDOW], CLOSE, CLOSE, NOISE);
+                command_function(&command_info[WINDOW], CLOSE, FULL_CLOSE, NOISE);
                 command_function(&command_info[SUNROOF], CLOSE, CLOSE, NOISE);
             }
         }
         ////////////////////////////////////////////////////////////////////
-#endif
     } //while(1)
 
     return;
@@ -485,10 +589,19 @@ void smart_control_mode_off(ControlCommandInfo* command_info, ControlType contro
             (command_info + index)->counter_1s = 0;
             (command_info + index)->counter_action_100ms = 0;
         }
+
+        while(queue_isempty(audio_queue) == FALSE) // 스마트 제어 모드 끌 때, 모든 audio_queue를 비운다.
+        {
+            queue_dequeue(audio_queue, &audio_file_num);
+        }
     }
 
     else if (control == DRIVER_CONTROL) // 사용자 조작에 의한 일시적 비활성화일 때,
     {
+        if (command_info->state == ON)
+        {
+            queue_enqueue(audio_queue, SMART_CONTROL_PAUSE);
+        }
         command_info->state = OFF;
         command_info->flag = 0;
         command_info->counter_1s = TEN_MINUTE; //10분 후 재시작을 위함
@@ -590,7 +703,15 @@ void make_can_message()
             {
                 if (command_info[index].flag == 0 || command_info[index].flag == 1 || command_info[index].flag == 2) //초기화된 상태거나 현재 동작과 반대되는 상태였다면,
                 {
-                    command_info[index].flag = 3; // 닫거나 꺼야하는 상태
+                    if ((index == WINDOW && window_state >= 95) || (index == SUNROOF && sunroof_state >= 95) ||
+                            (index == HEATER && control_state.heater_state == 0) || (index == AIR && control_state.air_state == 0))
+                    {
+                        command_info[index].flag = 4; //닫혀있는 상태
+                    }
+                    else
+                    {
+                        command_info[index].flag = 3; // 닫거나 꺼야하는 상태
+                    }
                 }
 
             }
@@ -599,7 +720,15 @@ void make_can_message()
             {
                 if (command_info[index].flag == 0 || command_info[index].flag == 3 || command_info[index].flag == 4) //초기화된 상태거나 현재 동작과 반대되는 상태였다면,
                 {
-                    command_info[index].flag = 1; // 열거나 켜야하는 상태
+                    if ((index == WINDOW && window_state < 95) || (index == SUNROOF && sunroof_state < 95) ||
+                            (index == HEATER && control_state.heater_state == 1) || (index == AIR && control_state.air_state == 1))
+                    {
+                        command_info[index].flag = 2; // 켜져있는 상태
+                    }
+                    else
+                    {
+                        command_info[index].flag = 1; // 켜야하는 상태
+                    }
                 }
             }
             /////////이벤트 처리 하기 위한 flag on
@@ -608,20 +737,15 @@ void make_can_message()
                 //창문 제어 명령 생성
                 if (index == WINDOW)
                 {
+                    window_and_sunroof_state[0] = command_info[index].flag;
                     if (command_info[index].priority == SAFETY) //안전 명령어라면,
                     {
-                        //오디오 번호 입력
-                        //command_info[AUDIO].sub_command = 안전 창문 제어;
-
                         db_msg.safety_window.B.motor1_smart_state = command_info[index].control_command;
                         command_info[index].counter_action_100ms = TIME_500MS; //500ms 동안 우선순위 점유
                         output_message(&db_msg.safety_window, SAFETY_WINDOW_MSG_ID);
                     }
                     else
                     {
-                        //오디오 번호 입력
-                        //command_info[AUDIO].sub_command = 스마트 창문 여는 제어, 스마트 창문 닫는 제어;
-                        
                         db_msg.smart_window.B.motor1_smart_state = command_info[index].control_command;
                         db_msg.smart_window.B.motor1_state = command_info[index].sub_command; // 창문 열거나 닫아야 하는 정도
                         command_info[index].counter_action_100ms = TIME_1MIN; //1min 동안 우선순위 점유
@@ -640,20 +764,15 @@ void make_can_message()
                 //선루프 제어 명령 생성
                 else if (index == SUNROOF)
                 {
+                    window_and_sunroof_state[1] = command_info[index].flag;
                     if (command_info[index].priority == SAFETY) //안전 명령어라면,
                     {
-                        //오디오 번호 입력
-                        //command_info[AUDIO].sub_command = 안전 선루프 제어;
-
                         db_msg.safety_sunroof.B.motor2_smart_state = command_info[index].control_command;
                         command_info[index].counter_action_100ms = TIME_500MS; //500ms 동안 우선순위 점유
                         output_message(&db_msg.safety_sunroof, SAFETY_SUNROOF_MSG_ID);
                     }
                     else
                     {
-                        //오디오 번호 입력
-                        //command_info[AUDIO].sub_command = 스마트 선루프 여는 제어, 스마트 선루프 닫는 제어;
-
                         db_msg.smart_sunroof.B.motor2_smart_state = command_info[index].control_command;
                         command_info[index].counter_action_100ms = TIME_1MIN; //1min 동안 우선순위 점유
                         output_message(&db_msg.smart_sunroof, SMART_SUNROOF_MSG_ID);
@@ -672,7 +791,14 @@ void make_can_message()
                 else if (index == HEATER)
                 {
                     //오디오 번호 입력
-                    //command_info[AUDIO].sub_command = 스마트 히터 켜는 제어, 스마트 히터 끄는 제어;
+                    if (command_info[index].control_command == TURN_OFF)
+                    {
+                        queue_enqueue(audio_queue, DEACTIVATE_HEATER);
+                    }
+                    else if (command_info[index].control_command == TURN_ON)
+                    {
+                        queue_enqueue(audio_queue, INDOOR_COLD_AND_ACTIVATE_HEATER);
+                    }
 
                     db_msg.smart_heater.B.Heater_state = command_info[index].control_command;
                     command_info[index].counter_action_100ms = TIME_5MIN; //5min 동안 우선순위 점유
@@ -694,7 +820,14 @@ void make_can_message()
                 else if (index == AIR)
                 {
                     //오디오 번호 입력
-                    //command_info[AUDIO].sub_command = 스마트 에어컨 켜는 제어, 스마트 에어컨 끄는 제어;
+                    if (command_info[index].control_command == TURN_OFF)
+                    {
+                        queue_enqueue(audio_queue, DEACTIVATE_AIRCON);
+                    }
+                    else if (command_info[index].control_command == TURN_ON)
+                    {
+                        queue_enqueue(audio_queue, INDOOR_HOT_AND_ACTIVATE_AIRCON);
+                    }
 
                     db_msg.smart_ac.B.Air_state = command_info[index].control_command;
                     command_info[index].counter_action_100ms = TIME_5MIN; //5min 동안 우선순위 점유
@@ -712,34 +845,137 @@ void make_can_message()
                     }
                 }
                 command_info[index].flag += 1; // 메세지 출력 상태로 전환
-            }
-            //오디오 제어 명령 생성
-            //오디오 로직 수정 필요
-            //다른 모듈에서 동시 작동이 수행되면 하나만 출력,
-            //새로운 작동이 1분 내에 동작하면 출력하지 않음,
+            } // 메세지 출력해야 하는 상태 처리
 
-            if (command_info[AUDIO].counter_action_100ms == 0)
+            if (window_and_sunroof_state[0] == 1 && window_and_sunroof_state[1] == 1) // 둘 다 열면,
             {
-                db_msg.smart_audio.B.Audio_file = command_info[AUDIO].sub_command;
-                command_info[index].counter_action_100ms = TIME_1MIN; //1min 동안 우선순위 점유
-                output_message(&db_msg.smart_audio, SMART_AUDIO_MSG_ID);
+                boolean enqueue_audio = FALSE;
+                // 원인
+                if (command_info[WINDOW].priority == TUNNEL && command_info[SUNROOF].priority == TUNNEL)
+                {
+                    queue_enqueue(audio_queue, EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF);
+                    enqueue_audio = TRUE;
+                }
+                // 원인
+                else if (command_info[WINDOW].priority == IN_CO2 && command_info[SUNROOF].priority == IN_CO2)
+                {
+                    queue_enqueue(audio_queue, INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF);
+                    enqueue_audio = TRUE;
+                }
+                if (enqueue_audio == FALSE)
+                {
+                    queue_enqueue(audio_queue, OPEN_WINDOW_AND_SUNROOF);
+                }
+            }
+
+            if (window_and_sunroof_state[0] == 3 && window_and_sunroof_state[1] == 3) // 둘 다 닫으면
+            {
+                boolean enqueue_audio = FALSE;
+                // 원인
+                if (command_info[WINDOW].priority == TUNNEL && command_info[SUNROOF].priority == TUNNEL)
+                {
+                    queue_enqueue(audio_queue, ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF);
+                    enqueue_audio = TRUE;
+                }
+                // 원인
+                else if (command_info[WINDOW].priority == DUST && command_info[SUNROOF].priority == DUST)
+                {
+                    queue_enqueue(audio_queue, HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF);
+                    enqueue_audio = TRUE;
+                }
+
+                if (enqueue_audio == FALSE)
+                {
+                    queue_enqueue(audio_queue, CLOSE_WINDOW_AND_SUNROOF);
+                }
+            }
+
+            else if (window_and_sunroof_state[0] == 1)
+            {
+                queue_enqueue(audio_queue, OPEN_WINDOW);
+            }
+            else if (window_and_sunroof_state[0] == 3)
+            {
+                queue_enqueue(audio_queue, CLOSE_WINDOW);
+            }
+            else if (window_and_sunroof_state[1] == 1)
+            {
+                queue_enqueue(audio_queue, OPEN_SUNROOF);
+            }
+            else if (window_and_sunroof_state[1] == 3)
+            {
+                queue_enqueue(audio_queue, CLOSE_SUNROOF);
+            }
+
+            window_and_sunroof_state[0] = 0;
+            window_and_sunroof_state[1] = 0;
+
+            //오디오 제어 명령 생성
+            if (control_state.audio_state == 2) // 오디오 출력 안하고 있을 때,
+            {
+                while (audio_flag == FALSE && queue_isempty(audio_queue) == FALSE) // 오디오 출력 목록이 있을 경우
+                {
+                    queue_dequeue(audio_queue, &audio_file_num);
+
+                    if (audio_file_num == SMART_CONTROL_PAUSE)
+                    {
+                        audio_flag = TRUE;
+                    }
+
+                    //창문 스마트 제어가 켜진 상태에서 창문 관련 시그널이 오면 유효한 오디오 출력이라고 판단.
+                    else if (command_info[WINDOW].state == ON && (audio_file_num == CLOSE_WINDOW ||
+                            audio_file_num == OPEN_WINDOW))
+                    {
+                        audio_flag = TRUE;
+                    }
+
+                    //선루프 스마트 제어가 켜진 상태에서 창문 관련 시그널이 오면 유효한 오디오 출력이라고 판단.
+                    else if (command_info[SUNROOF].state == ON && (audio_file_num == CLOSE_SUNROOF ||
+                            audio_file_num == OPEN_SUNROOF))
+                    {
+                        audio_flag = TRUE;
+                    }
+
+                    else if ((command_info[WINDOW].state == ON && command_info[SUNROOF].state == ON) &&
+                            (audio_file_num == OPEN_WINDOW_AND_SUNROOF || audio_file_num == CLOSE_WINDOW_AND_SUNROOF))
+                    {
+                        audio_flag = TRUE;
+                    }
+
+                    else if (command_info[AIR].state == ON && (audio_file_num == ACTIVATE_AIRCON ||
+                            audio_file_num == DEACTIVATE_AIRCON))
+                    {
+                        audio_flag = TRUE;
+                    }
+
+                    else if (command_info[HEATER].state == ON && (audio_file_num == ACTIVATE_HEATER ||
+                            audio_file_num == DEACTIVATE_HEATER))
+                    {
+                        audio_flag = TRUE;
+                    }
+                }
+                if (audio_flag == TRUE) // 유효한 오디오 파일이라고 판단하면,
+                {
+                    db_msg.smart_audio.B.Audio_file = audio_file_num;
+                    command_info[index].counter_action_100ms = TIME_2S; //2초 동안 우선순위 점유
+                    output_message(&db_msg.smart_audio, SMART_AUDIO_MSG_ID);
+                }
+                audio_flag = FALSE;
             }
         }
     }
 
     //내부 공기질 센서 데이터 output
+    db_msg.in_air_quality.B.AQ_alive = engine_flag;
     db_msg.in_air_quality.B.air_CO2 = in_gas.CO2;
     db_msg.in_air_quality.B.air_CO = in_gas.CO;
     db_msg.in_air_quality.B.air_NH4 = in_gas.NH4;
     db_msg.in_air_quality.B.air_alch = in_gas.Alcohol;
 
-    //test
-    in_gas.CO2 = 1100;
-    //
-
     output_message(&db_msg.in_air_quality, IN_AIR_QUAILITY_MSG_ID);
 
     //내부 온습도 센서 데이터 output
+    db_msg.TH_sensor.B.Temp_Hum_alive = engine_flag;
     db_msg.TH_sensor.B.Temperature = in_temp_hum.temperaturehigh;
     db_msg.TH_sensor.B.Humiditiy = in_temp_hum.huminityhigh;
 
@@ -767,45 +1003,44 @@ void AppTask100ms(void)
 
     //내부공기질센서
 
-    if (weather_state == RAIN) //비가 오는 상태일 때,
-    {
-        command_function(&command_info[SUNROOF], CLOSE, CLOSE, WEATHER); //선루프는 닫는다.
-        if(command_info[WINDOW].control_command == OPEN) // 창문을 열어야 하는 상황이면,
-        {
-            command_function(&command_info[WINDOW], OPEN, NINTY, WEATHER); // 90% 정도 연다. 
-        }
-    }
-    else if (weather_state == NO_RAIN) // 비가 오지 않는 상태일 때,
-    {
-          //if (차량 속도 xkm/h 이상이면)
-          //{
-          //    if(command_info[WINDOW].control_command == OPEN || command_info[SUNROOF].contorl_command == OPEN) // 창문을 열거나, 선루프를 열어야 하는 상황일 때,
-          //    {
-          //        command_function(&command_info[SUNROOF], OPEN, OPENs, WEATHER); // 안전을 위해 선루프를 연다. 안전이지만 사용자 직접 조작보다는 우선순위가 떨어짐
-          //        command_function(&command_info[WINDOW], CLOSE, CLOSE, WEATHER); // 안전을 위해 창문을 닫는다. 안전이지만 사용자 직접 조작보다는 우선순위가 떨어짐
-          //    }
-          //}
-    }
-
-
     //내부 이산화탄소 1000이상
     if (in_gas.CO2 >= 1000)//Co2 나쁜 상태 매크로 상수) // 환기 필요
     {
-        command_function(&command_info[WINDOW], OPEN, OPEN, IN_CO2);
-        command_function(&command_info[SUNROOF], OPEN, OPEN, IN_CO2);
+        command_function(&command_info[WINDOW], OPEN, FULL_OPEN, IN_CO2);
+        command_function(&command_info[SUNROOF], OPEN, FULL_OPEN, IN_CO2);
     }
 
 
      if (needs_ventilation == TRUE)
      {
-         command_function(&command_info[SUNROOF], OPEN, OPEN, IN_CO2);
-         command_function(&command_info[WINDOW], OPEN, OPEN, IN_CO2);
+         command_function(&command_info[SUNROOF], OPEN, FULL_OPEN, IN_CO2);
+         command_function(&command_info[WINDOW], OPEN, FULL_OPEN, IN_CO2);
      }
 
      if (dust_state >= UNHEALTHY)
      {
-         command_function(&command_info[SUNROOF], CLOSE, CLOSE, DUST);
-         command_function(&command_info[WINDOW], CLOSE, CLOSE, DUST);
+         command_function(&command_info[SUNROOF], CLOSE, FULL_CLOSE, DUST);
+         command_function(&command_info[WINDOW], CLOSE, FULL_CLOSE, DUST);
+     }
+
+     if (weather_state == RAIN) //비가 오는 상태일 때,
+     {
+         command_function(&command_info[SUNROOF], CLOSE, CLOSE, WEATHER); //선루프는 닫는다.
+         if(command_info[WINDOW].control_command == OPEN) // 창문을 열어야 하는 상황이면,
+         {
+             command_function(&command_info[WINDOW], OPEN, NINTY, WEATHER); // 90% 정도 연다.
+         }
+     }
+     else if (weather_state == NO_RAIN) // 비가 오지 않는 상태일 때,
+     {
+      //if (차량 속도 xkm/h 이상이면)
+      //{
+      //    if(command_info[WINDOW].control_command == OPEN || command_info[SUNROOF].contorl_command == OPEN) // 창문을 열거나, 선루프를 열어야 하는 상황일 때,
+      //    {
+      //        command_function(&command_info[SUNROOF], OPEN, FULL_OPEN, WEATHER); // 안전을 위해 선루프를 연다. 안전이지만 사용자 직접 조작보다는 우선순위가 떨어짐
+      //        command_function(&command_info[WINDOW], CLOSE, FULL_CLOSE, WEATHER); // 안전을 위해 창문을 닫는다. 안전이지만 사용자 직접 조작보다는 우선순위가 떨어짐
+      //    }
+      //}
      }
 
      make_can_message();
@@ -820,7 +1055,16 @@ void AppTask1000ms(void)
 {
     stTestCnt.u32nuCnt1000ms++;
 
-    in_temp_hum = get_temp_hum();
+    //스마트 제어 모드가 켜져있거나, 꺼져있는 모듈에 대한 출력
+    db_msg.smart_ctrl_state.B.motor1_smart_control = command_info[WINDOW].state;
+    db_msg.smart_ctrl_state.B.motor2_smart_control = command_info[SUNROOF].state;
+    db_msg.smart_ctrl_state.B.heater_smart_control = command_info[HEATER].state;
+    db_msg.smart_ctrl_state.B.air_smart_control = command_info[AIR].state;
+    db_msg.smart_ctrl_state.B.audio_smart_control = command_info[AUDIO].state;
+
+    output_message(&db_msg.smart_ctrl_state, SMART_CONTROL_STATE_MSG_ID);
+
+
 
     //내부 동작 카운터 줄이기
     for (int index = 1; index <= CONTROL_MODULE; index++)
@@ -836,7 +1080,7 @@ void AppTask1000ms(void)
                 {
                     if (command_info[index].control_command == OPEN) // 환기 5분 수행했을 때,
                     {
-                        command_function(&command_info[index], CLOSE, CLOSE, IN_CO2);
+                        command_function(&command_info[index], CLOSE, FULL_CLOSE, IN_CO2);
                     }
                     else if (command_info[index].control_command == CLOSE) // 닫은 상태로 2시간 이상 주행했을 때,
                     {
@@ -848,12 +1092,18 @@ void AppTask1000ms(void)
                 {
                     if (command_info[index].control_command == TURN_ON) // 에어컨/히터 동작 후 1분 지났을 때,
                     {
-                        command_function(&command_info[index], CLOSE, CLOSE, IN_TEMP);
+                        command_function(&command_info[index], CLOSE, FULL_CLOSE, IN_TEMP);
                     }
                 }
             }
         }
     }
+}
+
+void AppTask5000ms(void)
+{
+    stTestCnt.u32nuCnt5000ms++;
+    in_temp_hum = get_temp_hum();
 }
 
 void AppScheduling(void)
@@ -880,6 +1130,11 @@ void AppScheduling(void)
         {
             stSchedulingInfo.u8nuScheduling1000msFlag = 0u;
             AppTask1000ms();
+        }
+        if (stSchedulingInfo.u8nuScheduling5000msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling5000msFlag = 0u;
+            AppTask5000ms();
         }
     }
 }
