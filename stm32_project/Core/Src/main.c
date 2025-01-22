@@ -267,12 +267,17 @@ int main(void)
 				smart_ac(db_msg.smart_ac.B.Air_state);
 		}
 
-//		// 733
-//		if (db_msg.smart_audio.B.Flag == 1)
-//		{
-//			db_msg.smart_audio.B.Flag == 0;
+		//		// 733
+		if (db_msg.smart_audio.B.Flag == 1)
+		{
+			db_msg.smart_audio.B.Flag = 0;
+			audio_num=db_msg.smart_audio.B.Audio_file;
+			audio_flag=1;
+			if(audio_flag==1 && audio_state==1){
+				Sound_Track(audio_num);
+			}
 //			// 처리 로직 예시
-//		}
+		}
 //		// 712
 		if (db_msg.safety_window.B.Flag == 1)
 		{
@@ -377,6 +382,7 @@ void AppTask10ms(void)
 void AppTask100ms(void)
 {
     stTestCnt.u32nuCnt100ms++;
+    Query_Status();
     {
     	if(actuator_power == 1){
 			update_vehicle_vehicle();
