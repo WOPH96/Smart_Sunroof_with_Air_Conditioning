@@ -1,0 +1,534 @@
+/* USER CODE BEGIN Header */
+/**
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "can.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include "DFPlayer.h"
+
+
+#include "STM_LCD16X2.h"
+#include "LCD_Logic.h"
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+#define MOTOR_SHIELD_IN_PIN GPIO_PIN_8 // 예: PA0 핀
+#define MOTOR_SHIELD_IN_PORT GPIOA
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+void AppScheduling(void);
+void AppTask1ms(void);
+void AppTask10ms(void);
+void AppTask100ms(void);
+void AppTask1000ms(void);
+
+typedef struct
+{
+    uint32_t u32nuCnt1ms;
+    uint32_t u32nuCnt10ms;
+    uint32_t u32nuCnt100ms;
+    uint32_t u32nuCnt1000ms;
+
+} Taskcnt;
+
+Taskcnt stTestCnt;
+
+uint8_t heater_led_state = 0;
+uint8_t ac_led_state = 0;
+uint8_t pan_state = 0;
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+int _write(int file, char *ptr, int len) {
+	HAL_UART_Transmit(&huart2, (uint8_t*) ptr, (uint16_t) len, 100);
+
+	return (len);
+}
+
+
+
+
+//extern CAN_TxHeaderTypeDef TxHeader;
+//extern uint8_t TxData[8];
+//extern uint32_t TxMailbox;
+//
+//extern CAN_FilterTypeDef sFilterConfig;   // 필터 설정 구조체 변수
+//extern CAN_RxHeaderTypeDef RxHeader;
+//extern uint8_t RxData[8];
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_TIM3_Init();
+  MX_TIM2_Init();
+  MX_CAN_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_TIM4_Init();
+  /* USER CODE BEGIN 2 */
+	HAL_TIM_Base_Start_IT(&htim4);//sub timer 1sec
+	DF_Init(16);
+//	Motor_Init();
+//	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+
+
+	set_can_filter();
+	start_can();
+	initCanDB();
+	init_vehicle_state();
+	//can_send_test();
+	printf("Start\r\n");
+
+//	set_motor_speed(700);
+
+	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+
+	while (1) {
+		AppScheduling();
+//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+//		  HAL_Delay(5000);
+//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+//		  HAL_Delay(5000);
+
+		//motor_test();
+		 //722
+//		if (db_msg.driver_window.B.Flag == 1) // on message TH_sensor 느낌
+//		{                                 // ISR이 센서 값 받았다면.
+//			db_msg.driver_air.B.Flag = 0;  // 필수 처리!
+//			// 처리 로직 예시
+//
+//		}
+//		//721
+//		if (db_msg.driver_sunroof.B.Flag == 1) // on message TH_sensor 느낌
+//		{                                 // ISR이 센서 값 받았다면.
+//			db_msg.driver_sunroof.B.Flag == 0;  // 필수 처리!
+//			// 처리 로직 예시
+//
+//		}
+		// 724
+		if (db_msg.driver_heater.B.Flag == 1)
+		{
+			db_msg.driver_heater.B.Flag = 0;
+
+			// 히터가 꺼져있을때만
+			if (heater_led_state == 0)
+			{
+				// 에어컨이 켜져있으면 끈다
+				if (ac_led_state == 1)
+				{
+					ac_led_state = 0;
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+				}
+				// 히터킨다
+				heater_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+
+			}
+			else
+			{
+				heater_led_state = 0;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			}
+
+
+		}
+		// 725
+		if (db_msg.driver_air.B.Flag == 1)
+		{
+			db_msg.driver_air.B.Flag = 0;
+
+			// 에어컨이 꺼져있을때만
+			if (ac_led_state == 0)
+			{
+				// 히터가 켜져있으면 끈다
+				if (heater_led_state == 1)
+				{
+					heater_led_state = 0;
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+				}
+				// 에어컨 킨다
+				ac_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+
+			}
+			else
+			{
+				ac_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			}
+		}
+//		// 726
+//		if (db_msg.driver_engine.B.Flag == 1)
+//		{
+//			db_msg.driver_engine.B.Flag = 0;
+//			// 처리 로직 예시
+//
+//
+//
+//		}
+//		// 720
+//		if (db_msg.driver_control.B.Flag == 1)
+//		{
+//			db_msg.driver_control.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+//		// 748
+//		if (db_msg.light.B.Flag == 1)
+//		{
+//			db_msg.light.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+//		// 732
+//		if (db_msg.smart_window.B.Flag == 1)
+//		{
+//			db_msg.smart_window.B.Flag == 0;
+//			// 처리 로직 예시
+//
+//
+//		}
+//		// 731
+//		if (db_msg.smart_sunroof.B.Flag == 1)
+//		{
+//			db_msg.smart_sunroof.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+		// 734
+		if (db_msg.smart_heater.B.Flag == 1)
+		{
+			db_msg.driver_heater.B.Flag = 0;
+
+			// 히터가 꺼져있을때만
+			if (heater_led_state == 0)
+			{
+				// 에어컨이 켜져있으면 끈다
+				if (ac_led_state == 1)
+				{
+					ac_led_state = 0;
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+				}
+				// 히터킨다
+				heater_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+
+			}
+			else
+			{
+				heater_led_state = 0;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			}
+		}
+		// 735
+		if (db_msg.smart_ac.B.Flag == 1)
+		{
+			db_msg.driver_air.B.Flag = 0;
+
+			// 에어컨이 꺼져있을때만
+			if (ac_led_state == 0)
+			{
+				// 히터가 켜져있으면 끈다
+				if (heater_led_state == 1)
+				{
+					heater_led_state = 0;
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+				}
+				// 에어컨 킨다
+				ac_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+
+			}
+			else
+			{
+				ac_led_state = 1;
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			}
+		}
+
+//		// 733
+//		if (db_msg.smart_audio.B.Flag == 1)
+//		{
+//			db_msg.smart_audio.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+//		// 712
+//		if (db_msg.safety_window.B.Flag == 1)
+//		{
+//			db_msg.safety_window.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+//		// 711
+//		if (db_msg.smart_sunroof.B.Flag == 1)
+//		{
+//			db_msg.smart_sunroof.B.Flag == 0;
+//			// 처리 로직 예시
+//		}
+
+
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	}
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/* USER CODE BEGIN 4 */
+void AppTask1ms(void)
+{
+    stTestCnt.u32nuCnt1ms++;
+    {
+        // 스케쥴링 예시코드 1ms 주기로 공기질 메시지 전송
+//        db_msg.heater.B.Heater_alive = 1;
+//        db_msg.heater.B.Heater_running = 1;
+//        output_message(&db_msg.heater,HEATER_MSG_ID);
+    }
+}
+
+void AppTask10ms(void)
+{
+    stTestCnt.u32nuCnt10ms++;
+    {
+    	// 752
+//		db_msg.motor1_window.B.motor1_alive =1;
+//		db_msg.motor1_window.B.motor1_running = 2;
+//		db_msg.motor1_window.B.motor1_tick_counter = 4399;
+//		output_message(&db_msg.motor1_window,MOTOR1_WINDOW_MSG_ID);
+
+		// 751
+//		db_msg.motor2_sunroof.B.motor2_alive = 0;
+//		db_msg.motor2_sunroof.B.motor2_running = 0;
+//		db_msg.motor2_sunroof.B.motor2_tick_counter = 0;
+//		output_message(&db_msg.motor2_sunroof,MOTOR2_SUNROOF_MSG_ID);
+
+		// 754
+//		db_msg.heater.B.Heater_alive = 0;
+//		db_msg.heater.B.Heater_running = 0;
+//		output_message(&db_msg.heater,HEATER_MSG_ID);
+
+		// 755
+//		db_msg.ac.B.AC_alive = 0;
+//		db_msg.ac.B.AC_running = 0;
+//		output_message(&db_msg.ac,AIRCONDITIONER_MSG_ID);
+
+		//753
+//		db_msg.audio.B.Audio_alive = 0;
+//		db_msg.audio.B.Audio_running = 0;
+//		output_message(&db_msg.audio,AUDIO_MSG_ID);
+
+		//76F
+//		db_msg.battery.B.Battery_alive = 0;
+//		db_msg.battery.B.Battery_spare_state = 0;
+//		db_msg.battery.B.Battery_state = 0;
+//		db_msg.battery.B.Battery_use = 0;
+//		output_message(&db_msg.battery,BATTERY_MSG_ID);
+
+
+
+    }
+}
+
+void AppTask100ms(void)
+{
+    stTestCnt.u32nuCnt100ms++;
+    {
+		update_vehicle_vehicle();
+		show_LCD();
+
+    }
+}
+
+void AppTask1000ms(void)
+{
+
+    stTestCnt.u32nuCnt1000ms++;
+}
+
+void AppScheduling(void)
+{
+
+    if (stSchedulingInfo.u8nuScheduling1msFlag == 1u)
+    {
+        stSchedulingInfo.u8nuScheduling1msFlag = 0u;
+
+        AppTask1ms();
+
+        if (stSchedulingInfo.u8nuScheduling10msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling10msFlag = 0u;
+            AppTask10ms();
+        }
+
+        if (stSchedulingInfo.u8nuScheduling100msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling100msFlag = 0u;
+            AppTask100ms();
+        }
+        if (stSchedulingInfo.u8nuScheduling1000msFlag == 1u)
+        {
+            stSchedulingInfo.u8nuScheduling1000msFlag = 0u;
+            AppTask1000ms();
+        }
+    }
+}
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+	/* User can add his own implementation to report the HAL error return state */
+//  __disable_irq();
+//  while (1)
+//  {
+//  }
+  /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
