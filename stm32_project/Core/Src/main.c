@@ -28,8 +28,8 @@
 #include <stdio.h>
 #include "DFPlayer.h"
 #include "hvac.h"
-
-
+#include "window.h"
+#include "sunroof.h"
 #include "STM_LCD16X2.h"
 #include "LCD_Logic.h"
 
@@ -64,7 +64,24 @@ typedef struct
 
 } Taskcnt;
 
-uint8_t actuator_power = 0;
+uint8_t actuator_power = 0;  //시동 켜지면 1
+
+//창문
+int safety_win=0;
+int motor1_smart=0;
+int motor1_smart_pct=0;
+int override_win=0;
+int car_mode=0;
+int motor1_smart_flag=0;
+int override_flag_win=0;
+int safety_win_flag=0;
+//썬루프
+int saftey_sun=0;
+int override_flag_sun=0;
+int safety_sun_flag=0;
+int motor2_smart_flag=0;
+int override_sun=0;
+int motor2_smart=0;
 
 Taskcnt stTestCnt;
 
@@ -140,9 +157,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim4);//sub timer 1sec
 	DF_Init(16);
-//	Motor_Init();
-//	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -158,27 +173,33 @@ int main(void)
 	//LCD
 	init_LCD();
 	init_vehicle_state();
-	//can_send_test();
+
+	Window_Init();
+	Sunroof_Init();
+
 	printf("Start\r\n");
 
 	while (1) {
 		AppScheduling();
 
-		//motor_test();
-		 //722
-//		if (db_msg.driver_window.B.Flag == 1) // on message TH_sensor 느낌
-//		{                                 // ISR이 센서 값 받았다면.
-//			db_msg.driver_air.B.Flag = 0;  // 필수 처리!
-//			// 처리 로직 예시
-//
-//		}
-//		//721
-//		if (db_msg.driver_sunroof.B.Flag == 1) // on message TH_sensor 느낌
-//		{                                 // ISR이 센서 값 받았다면.
-//			db_msg.driver_sunroof.B.Flag == 0;  // 필수 처리!
-//			// 처리 로직 예시
-//
-//		}
+		//
+	      if (db_msg.driver_window.B.Flag == 1) // on message TH_sensor 느낌
+	      {                                 // ISR이 센서 값 받았다면.
+	    	  override_flag_win=1;
+	    	  db_msg.driver_window.B.Flag = 0;  // 필수 처리!
+	          override_win=db_msg.driver_window.B.driver_window;
+         // 처리 로직 예시
+
+	      }
+		//721
+		if (db_msg.driver_sunroof.B.Flag == 1) // on message TH_sensor 느낌
+		{                                 // ISR이 센서 값 받았다면.
+			override_flag_sun=1;
+			db_msg.driver_sunroof.B.Flag = 0;  // 필수 처리!
+			override_sun = db_msg.driver_window.B.driver_window;
+			// 처리 로직 예시
+
+		}
 		  // 724
 		  if (db_msg.driver_heater.B.Flag == 1)
 		  {
@@ -217,32 +238,37 @@ int main(void)
 			  }
 
 		  }
-//		// 720
-//		if (db_msg.driver_control.B.Flag == 1)
-//		{
-//			db_msg.driver_control.B.Flag == 0;
-//			// 처리 로직 예시
-//		}
+			if (db_msg.driver_control.B.Flag == 1)
+			{
+				db_msg.driver_control.B.Flag = 0;
+				car_mode=db_msg.driver_control.B.mode_smart; //0이면 스마트제어모드 on 1이면 off
+
+				// 처리 로직 예시
+			}
 //		// 748
 //		if (db_msg.light.B.Flag == 1)
 //		{
 //			db_msg.light.B.Flag == 0;
 //			// 처리 로직 예시
 //		}
-//		// 732
-//		if (db_msg.smart_window.B.Flag == 1)
-//		{
-//			db_msg.smart_window.B.Flag == 0;
-//			// 처리 로직 예시
-//
-//
-//		}
-//		// 731
-//		if (db_msg.smart_sunroof.B.Flag == 1)
-//		{
-//			db_msg.smart_sunroof.B.Flag == 0;
-//			// 처리 로직 예시
-//		}
+			// 732
+			if (db_msg.smart_window.B.Flag == 1)
+			{
+				motor1_smart_flag=1;
+				db_msg.smart_window.B.Flag = 0;
+				motor1_smart=db_msg.smart_window.B.motor1_smart_state;
+				motor1_smart_pct=db_msg.smart_window.B.motor1_state;
+	//			// 처리 로직 예시
+			}
+			// 731
+			if (db_msg.smart_sunroof.B.Flag == 1)
+			{
+				db_msg.smart_sunroof.B.Flag = 0;
+				motor2_smart_flag=1;
+				db_msg.smart_sunroof.B.Flag = 0;
+				motor2_smart=db_msg.smart_sunroof.B.motor2_smart_state;
+				// 처리 로직 예시
+			}
 		// 734
 		if (db_msg.smart_heater.B.Flag == 1)
 		{
@@ -265,18 +291,21 @@ int main(void)
 //			// 처리 로직 예시
 //		}
 //		// 712
-//		if (db_msg.safety_window.B.Flag == 1)
-//		{
-//			db_msg.safety_window.B.Flag == 0;
-//			// 처리 로직 예시
-//		}
-//		// 711
-//		if (db_msg.smart_sunroof.B.Flag == 1)
-//		{
-//			db_msg.smart_sunroof.B.Flag == 0;
-//			// 처리 로직 예시
-//		}
+		if (db_msg.safety_window.B.Flag == 1)
+		{
+			safety_win_flag=1;
+			db_msg.safety_window.B.Flag = 0;
+			safety_win=db_msg.safety_window.B.motor1_smart_state;
 
+		}
+//		// 711
+		if (db_msg.safety_sunroof.B.Flag == 1)
+		{
+			safety_sun_flag=1;
+			db_msg.safety_sunroof.B.Flag = 0;
+			// 처리 로직 예시
+	        saftey_sun=db_msg.safety_sunroof.B.motor2_smart_state;
+		}
 
 
     /* USER CODE END WHILE */
@@ -340,28 +369,10 @@ void AppTask1ms(void)
 void AppTask10ms(void)
 {
     stTestCnt.u32nuCnt10ms++;
+    Window_ControlMode();
+    Window_UpdateState();
     {
-    	// 752
-//		db_msg.motor1_window.B.motor1_alive =1;
-//		db_msg.motor1_window.B.motor1_running = 2;
-//		db_msg.motor1_window.B.motor1_tick_counter = 4399;
-//		output_message(&db_msg.motor1_window,MOTOR1_WINDOW_MSG_ID);
 
-		// 751
-//		db_msg.motor2_sunroof.B.motor2_alive = 0;
-//		db_msg.motor2_sunroof.B.motor2_running = 0;
-//		db_msg.motor2_sunroof.B.motor2_tick_counter = 0;
-//		output_message(&db_msg.motor2_sunroof,MOTOR2_SUNROOF_MSG_ID);
-
-		// 754
-		db_msg.heater.B.Heater_alive = actuator_power;
-		db_msg.heater.B.Heater_running = heater_led_state;
-		output_message(&db_msg.heater,HEATER_MSG_ID);
-
-		// 755
-		db_msg.ac.B.AC_alive = actuator_power;
-		db_msg.ac.B.AC_running = ac_led_state;
-		output_message(&db_msg.ac,AIRCONDITIONER_MSG_ID);
 
 		//753
 //		db_msg.audio.B.Audio_alive = 0;
@@ -387,6 +398,32 @@ void AppTask100ms(void)
 		update_vehicle_vehicle();
 		show_LCD();
 
+
+    }
+    {
+		// 754
+		db_msg.heater.B.Heater_alive = actuator_power;
+		db_msg.heater.B.Heater_running = heater_led_state;
+		output_message(&db_msg.heater,HEATER_MSG_ID);
+
+		// 755
+		db_msg.ac.B.AC_alive = actuator_power;
+		db_msg.ac.B.AC_running = ac_led_state;
+		output_message(&db_msg.ac,AIRCONDITIONER_MSG_ID);
+    }
+
+    {
+		db_msg.motor1_window.B.motor1_alive = actuator_power;
+		db_msg.motor1_window.B.motor1_running = running_win;
+		db_msg.motor1_window.B.motor1_tick_counter = window_pulse_count;
+
+		output_message(&db_msg.motor1_window,MOTOR1_WINDOW_MSG_ID);
+
+		db_msg.motor2_sunroof.B.motor2_alive = actuator_power;
+		db_msg.motor2_sunroof.B.motor2_running = running_sunroof;
+		db_msg.motor2_sunroof.B.motor2_tick_counter = sunroof_pulse_count;
+
+		output_message(&db_msg.motor2_sunroof,MOTOR2_SUNROOF_MSG_ID);
     }
 }
 
