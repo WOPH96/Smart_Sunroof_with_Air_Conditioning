@@ -206,4 +206,14 @@ typedef struct
     unsigned int Flag : 1;
 } OurCanSafetySunroofBits;
 
+typedef struct
+{
+    unsigned int motor1_smart_control : 1;  /**< \brief [0:0] motor1 smart state */
+    unsigned int motor2_smart_control : 1;  /**< \brief [1:1] motor2 smart state */
+    unsigned int heater_smart_control : 1;  /**< \brief [2:2] heater smart state */
+    unsigned int air_smart_control : 1;     /**< \brief [3:3] air smart state */
+    unsigned int audio_smart_control : 1;   /**< \brief [4:4] audio smart state */
+    unsigned int Flag : 1;
+} OurCanSmartStateBits;
+
 #endif /* INC_OURCAN_SIGNAL_H_ */

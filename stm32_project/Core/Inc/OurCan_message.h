@@ -45,6 +45,9 @@
 #define SAFETY_WINDOW_MSG_ID 0x712
 #define SAFETY_SUNROOF_MSG_ID 0x711
 
+//추가본
+#define SMART_CONTROL_STATE_MSG_ID 0x770
+
 #define DECLARE_CAN_MESSAGE_UNION(TypeName, BitsName)        \
     typedef union                                            \
     {                                                        \
@@ -87,5 +90,6 @@ DECLARE_CAN_MESSAGE_UNION(OurCanSmartAC, OurCanSmartACBits)
 DECLARE_CAN_MESSAGE_UNION(OurCanSmartAudio, OurCanSmartAudioBits)
 DECLARE_CAN_MESSAGE_UNION(OurCanSafetyWindow, OurCanSafetyWindowBits)
 DECLARE_CAN_MESSAGE_UNION(OurCanSafetySunroof, OurCanSafetySunroofBits)
+DECLARE_CAN_MESSAGE_UNION(OurCanSmartState, OurCanSmartStateBits)
 
 #endif /* INC_OURCAN_MESSAGE_H_ */
