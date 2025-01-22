@@ -48,6 +48,9 @@
 #define CAN0_RX IfxMultican_RXD0B_P20_7_IN
 #define CAN0_TX IfxMultican_TXD0_P20_8_OUT
 
+#define EIGHTBYTE_F 0xFFFFFFFFFFFFFFFF
+#define FOURBYTE_F 0xFFFFFFFF
+
 /*********************************************************************************************************************/
 
 /*********************************************************************************************************************/
@@ -86,6 +89,7 @@ typedef struct
     OurCanSmartAudio smart_audio;
     OurCanSafetyWindow safety_window;
     OurCanSafetySunroof safety_sunroof;
+    OurCanSmartState smart_ctrl_state;
 } DBMessages;
 
 extern DBMessages db_msg;

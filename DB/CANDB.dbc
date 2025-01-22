@@ -36,6 +36,13 @@ BS_:
 BU_: OUT_TC275 IN_TC275 STM32 RPI
 
 
+BO_ 1904 smart_control_state_msg: 8 IN_TC275
+ SG_ audio_smart_control : 4|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ air_smart_control : 3|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ heater_smart_control : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ motor2_smart_control : 1|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ motor1_smart_control : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
 BO_ 1809 safety_control_sunroof_msg: 8 IN_TC275
  SG_ motor2_smart_state : 0|2@1+ (1,0) [0|0] "" Vector__XXX
 
@@ -95,8 +102,8 @@ BO_ 1867 Dust_msg: 8 RPI
  SG_ weather_dust : 0|3@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1869 Weather_msg: 8 RPI
- SG_ weather_real_temp : 7|7@1+ (1,-30) [-30|97] "" Vector__XXX
- SG_ weather_temp : 0|7@1+ (1,-30) [-30|97] "" Vector__XXX
+ SG_ weather_real_temp : 10|10@1+ (1,-30) [-30|993] "" Vector__XXX
+ SG_ weather_temp : 0|10@1+ (1,-30) [-30|993] "" Vector__XXX
 
 BO_ 1824 Driver_C_msg: 8 RPI
  SG_ mode_smart : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -111,10 +118,10 @@ BO_ 1828 Driver_H_msg: 8 RPI
  SG_ driver_heater : 0|1@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1825 Driver_S_msg: 8 RPI
- SG_ driver_sunroof : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ driver_sunroof : 0|2@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 1826 Driver_W_msg: 8 RPI
- SG_ driver_window : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ driver_window : 0|2@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 1903 Battery_msg: 8 STM32
  SG_ Battery_alive : 16|1@1+ (1,0) [0|1] "" Vector__XXX

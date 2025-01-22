@@ -1,5 +1,5 @@
 /**********************************************************************************************************************
- * \file OurCan_regdef.h
+ * \file OurCan_signal.h
  * \copyright Copyright (C) Infineon Technologies AG 2019
  *
  * Use of this file is subject to the terms of use agreed between (i) you or the company in which ordinary course of
@@ -96,13 +96,13 @@ typedef struct
 // Driver Control Signal Definitions
 typedef struct
 {
-    unsigned int driver_window : 1; /**< \brief [0:0] Driver window control */
+    unsigned int driver_window : 2; /**< \brief [0:0] Driver window control */
     unsigned int Flag : 1;
 } OurCanDriverWindowBits;
 
 typedef struct
 {
-    unsigned int driver_sunroof : 1; /**< \brief [0:0] Driver sunroof control */
+    unsigned int driver_sunroof : 2; /**< \brief [0:0] Driver sunroof control */
     unsigned int Flag : 1;
 } OurCanDriverSunroofBits;
 
@@ -133,8 +133,8 @@ typedef struct
 // Environment Sensor Signal Definitions
 typedef struct
 {
-    unsigned int weather_temp : 7;      /**< \brief [6:0] Weather temperature */
-    unsigned int weather_real_temp : 7; /**< \brief [13:7] Real temperature */
+    unsigned int weather_temp : 10;      /**< \brief [6:0] Weather temperature */
+    unsigned int weather_real_temp : 10; /**< \brief [13:7] Real temperature */
     unsigned int Flag : 1;
 } OurCanWeatherBits;
 
@@ -240,6 +240,15 @@ typedef struct
     unsigned int motor2_smart_state : 2; /**< \brief [1:0] Safety sunroof state */
     unsigned int Flag : 1;
 } OurCanSafetySunroofBits;
+typedef struct
+{
+    unsigned int motor1_smart_control : 1;  /**< \brief [0:0] motor1 smart state */
+    unsigned int motor2_smart_control : 1;  /**< \brief [1:1] motor2 smart state */
+    unsigned int heater_smart_control : 1;  /**< \brief [2:2] heater smart state */
+    unsigned int air_smart_control : 1;     /**< \brief [3:3] air smart state */
+    unsigned int audio_smart_control : 1;   /**< \brief [4:4] audio smart state */
+    unsigned int Flag : 1;
+} OurCanSmartStateBits;
 
 /*********************************************************************************************************************/
 
