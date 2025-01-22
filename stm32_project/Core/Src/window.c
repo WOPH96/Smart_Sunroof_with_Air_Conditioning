@@ -7,22 +7,24 @@ volatile uint32_t window_pulse_count = 0;    // 창문 위치 (0~100%)
 volatile uint8_t target_position = 100;               // 목표 위치 (%)
 volatile uint8_t running_win=0;
 
+//전역변수 can
+int safety_win=0;
+int motor1_smart=0;
+int motor1_smart_pct=0;
+int override_win=0;
+int car_mode=0;
+int motor1_smart_flag=0;
+int override_flag_win=0;
+int safety_win_flag=0;
+
 // 창문 상태 전역 변수
 volatile uint8_t window_position = 0;   // 창문 열림 정도 (%)
 volatile WindowState window_state = WINDOW_STOPPED; // 창문 상태
 
-// 창문 관련 변수
-extern int safety_win;
-extern int motor1_smart;
-extern int motor1_smart_pct;
-extern int override_win;
-extern int car_mode;
-extern int motor1_smart_flag;
-extern int override_flag_win;
-extern int safety_win_flag;
-
 
 extern TIM_HandleTypeDef htim3;              // TIM3 핸들러 (PWM 제어용)
+extern uint8_t actuator_power;
+
 // 내부 함수 선언
 static void Window_SetPWM(uint16_t speed);
 static void Window_SetDirection(int direction);
@@ -70,6 +72,10 @@ void Window_ControlMode(void) {
         motor1_smart_flag = 0; // 이벤트 처리 완료, 플래그 초기화
         return;
     }
+    // 4. 전원off
+    if (actuator_power==0){
+    	Window_Stop();
+    }
 }
 
 // 창문 특정 위치까지 열기
@@ -113,6 +119,7 @@ void Window_UpdateState(void) {
         // 목표 위치 도달 시 동작 멈춤
         if (window_pulse_count <= target_position) { // 목표 위치와 같거나 작으면 정지
             Window_Stop();
+            return;
         }
     } else if (window_state == WINDOW_CLOSING) {
         window_timer_ms += 10; // 10ms 단위로 시간 누적
@@ -121,6 +128,7 @@ void Window_UpdateState(void) {
         // 목표 위치 도달 시 동작 멈춤
         if (window_pulse_count >= target_position) { // 목표 위치와 같거나 크면 정지
             Window_Stop();
+            return;
         }
     }
 }

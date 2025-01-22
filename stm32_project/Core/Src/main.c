@@ -66,23 +66,6 @@ typedef struct
 
 uint8_t actuator_power = 0;  //시동 켜지면 1
 
-//창문
-int safety_win=0;
-int motor1_smart=0;
-int motor1_smart_pct=0;
-int override_win=0;
-int car_mode=0;
-int motor1_smart_flag=0;
-int override_flag_win=0;
-int safety_win_flag=0;
-//썬루프
-int saftey_sun=0;
-int override_flag_sun=0;
-int safety_sun_flag=0;
-int motor2_smart_flag=0;
-int override_sun=0;
-int motor2_smart=0;
-
 Taskcnt stTestCnt;
 
 /* USER CODE END PM */
@@ -183,23 +166,23 @@ int main(void)
 		AppScheduling();
 
 		//
-	      if (db_msg.driver_window.B.Flag == 1) // on message TH_sensor 느낌
-	      {                                 // ISR이 센서 값 받았다면.
+	      if (db_msg.driver_window.B.Flag == 1)
+	      {
 	    	  override_flag_win=1;
-	    	  db_msg.driver_window.B.Flag = 0;  // 필수 처리!
+	    	  db_msg.driver_window.B.Flag = 0;
 	          override_win=db_msg.driver_window.B.driver_window;
-         // 처리 로직 예시
+       // 처리 로직 예시
 
 	      }
 		//721
-		if (db_msg.driver_sunroof.B.Flag == 1) // on message TH_sensor 느낌
-		{                                 // ISR이 센서 값 받았다면.
-			override_flag_sun=1;
-			db_msg.driver_sunroof.B.Flag = 0;  // 필수 처리!
-			override_sun = db_msg.driver_window.B.driver_window;
+		  if (db_msg.driver_sunroof.B.Flag == 1)
+		  {
+			  override_flag_sun=1;
+			  db_msg.driver_sunroof.B.Flag = 0;
+			  override_sun = db_msg.driver_window.B.driver_window;
 			// 처리 로직 예시
 
-		}
+		  }
 		  // 724
 		  if (db_msg.driver_heater.B.Flag == 1)
 		  {
