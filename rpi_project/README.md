@@ -42,7 +42,7 @@ dust_module.py : 미세먼지 API 호출
 
 ## 코드 구조
 
-![image](https://github.com/user-attachments/assets/b46798b5-71c0-4543-87ac-eab412b466ee)
+![image](https://github.com/user-attachments/assets/5a0c9a11-323b-4196-b73c-f5eed7a3dca1)
 
 
 
