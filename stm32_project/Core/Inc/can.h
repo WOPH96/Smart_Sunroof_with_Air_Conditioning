@@ -72,6 +72,7 @@ typedef struct
     OurCanSmartAudio smart_audio; //733
     OurCanSafetyWindow safety_window; //712
     OurCanSafetySunroof safety_sunroof; // 711
+    OurCanSmartState smart_ctrl_state;
 } DBMessages;
 
 extern DBMessages db_msg;
