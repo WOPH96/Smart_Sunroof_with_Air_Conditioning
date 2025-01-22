@@ -16,6 +16,7 @@
 */
 
 //***** Header files *****//
+#include <stdio.h>
 #include "STM_LCD16X2.h"
 #include "LCD_Logic.h"
 
@@ -267,7 +268,7 @@ void LCD1602_Begin4BIT(GPIO_TypeDef *PORT_RS_E, uint16_t RS, uint16_t E, GPIO_Ty
 // 3) LCD print string
 void LCD1602_print(char string[])
 {
-	for (uint8_t i = 0; i < 16 && string[i] != NULL; i++)
+	for (uint8_t i = 0; (i < 16 && string[i]); i++)
 	{
 		LCD1602_writeData((uint8_t)string[i]);
 	}

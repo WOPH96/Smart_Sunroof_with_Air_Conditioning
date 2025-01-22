@@ -150,8 +150,12 @@ int main(void)
 
 
 	set_can_filter();
+
+	//CAN
 	start_can();
 	initCanDB();
+
+	//LCD
 	init_LCD();
 	init_vehicle_state();
 	//can_send_test();
