@@ -359,6 +359,9 @@ void AppTask10ms(void)
     stTestCnt.u32nuCnt10ms++;
     Window_ControlMode();
     Window_UpdateState();
+
+    Sunroof_ControlMode();
+    Sunroof_UpdateState();
     {
 
 
