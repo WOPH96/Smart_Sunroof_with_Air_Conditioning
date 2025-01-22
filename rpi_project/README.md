@@ -8,17 +8,18 @@
 
 사용 API : CAN, Weather API, 미세먼지 API(한국환경공단)
 
-![image-20250122144210591](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122144210591.png)
-
-![image-20250122144238463](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122144238463.png)
+![image](https://github.com/user-attachments/assets/7212e9b4-225e-4a9c-88fa-f6034d2c885a)
 
 
+![image](https://github.com/user-attachments/assets/35e905c6-07c1-4460-a2c4-00d338c50e5b)
 
 ---
 
 ## Cluster 구성
 
-![image-20250122153753782](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122153753782.png)
+![image](https://github.com/user-attachments/assets/4937dbad-7d7f-4e2f-add2-b9f490068c5d)
+
+
 
 ---
 
@@ -40,7 +41,8 @@ dust_module.py : 미세먼지 API 호출
 
 ## 코드 구조
 
-![image-20250122151011592](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122151011592.png)
+![image](https://github.com/user-attachments/assets/93f96d80-9c4b-4162-b61c-e05afa544195)
+
 
 - UI : PYQT 사용
 
@@ -53,13 +55,16 @@ dust_module.py : 미세먼지 API 호출
 
   message_structure_c.py → ID 기반으로 필터 리스트 생성 함수
 
-![image-20250122151545083](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122151545083.png)
+![image](https://github.com/user-attachments/assets/dc3bfc61-2240-41fc-9246-ff316a56218b)
+
 
 Cluster.py → ID Filter 생성
 
-![image-20250122151705477](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122151705477.png)
+![image](https://github.com/user-attachments/assets/a39ba09a-16ec-4027-b9f7-19295b5a09ea)
+
 
 can_module.py → CAN thread에 Filter 설정
 
-![image-20250122151727782](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20250122151727782.png)
+![image](https://github.com/user-attachments/assets/a557c6ca-461e-48ae-81b8-5806202ccdff)
+
 
