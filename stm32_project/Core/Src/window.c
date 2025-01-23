@@ -88,7 +88,7 @@ void OpenWindow(int percent) {
         running_win = 2;                 // 모터 상태: 열림
         window_state = WINDOW_OPENING;   // 창문 상태 변경
         target_position = percent;       // 목표 위치 설정
-        window_timer_ms = 0;             // 타이머 초기화
+        window_timer_ms = (100 - window_pulse_count) * WINDOW_OPEN_TIME_MS / 100;             // 타이머 초기화
         Window_SetDirection(1);          // 정방향 설정
         Window_SetPWM(WINDOW_PWM_SPEED); // PWM 활성화
     }
@@ -104,7 +104,7 @@ void CloseWindow(int percent) {
         running_win = 1;                 // 모터 상태: 닫힘
         window_state = WINDOW_CLOSING;   // 창문 상태 변경
         target_position = percent;       // 목표 위치 설정
-        window_timer_ms = 0;             // 타이머 초기화
+        window_timer_ms = window_pulse_count * WINDOW_CLOSE_TIME_MS / 100;
         Window_SetDirection(-1);         // 역방향 설정
         Window_SetPWM(WINDOW_PWM_SPEED); // PWM 활성화
     }
