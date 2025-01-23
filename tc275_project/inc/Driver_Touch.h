@@ -30,8 +30,8 @@
 /***********************************************************************/
 /*Global Function Prototype*/ 
 /***********************************************************************/
-extern IfxPort_State get_touch_condition(void);
+extern IfxPort_State get_touch_condition(uint8);
 extern void init_led(void);
-extern void init_gpio(void);
+extern void init_gpio_touch(uint8);
 
 #endif /* DRIVER_STM */

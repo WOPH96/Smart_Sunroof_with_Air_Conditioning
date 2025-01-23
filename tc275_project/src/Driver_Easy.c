@@ -40,6 +40,12 @@ uint32 get_light_condition(void)
     uint32 lightadcResult = 0;
     lightadcResult = Driver_Adc0_DataObtain(LIGHT_PIN);
     Driver_Adc0_ConvStart();
+    if(lightadcResult<500)
+        lightadcResult = 500;
+    else if(lightadcResult>4000)
+        lightadcResult=4000;
+    lightadcResult-=500;
+    lightadcResult=lightadcResult*100/3500;
     return lightadcResult;
 }
 /**
