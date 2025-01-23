@@ -47,15 +47,15 @@ void Sound_Track(uint8_t nums){
 	if (nums==20){
 		Send_cmd(0x03, 0x00, 1);}
 	if (nums==21){
-		Send_cmd(0x03, 0x00, 2);}
-	if (nums==22){
 		Send_cmd(0x03, 0x00, 3);}
-	if (nums==23){
+	if (nums==22){
 		Send_cmd(0x03, 0x00, 4);}
-	if (nums==24){
+	if (nums==23){
 		Send_cmd(0x03, 0x00, 5);}
-	if (nums==25){
+	if (nums==24){
 		Send_cmd(0x03, 0x00, 6);}
+	if (nums==25){
+		Send_cmd(0x03, 0x00, 7);}
 
 	audio_flag=0;
 }
@@ -70,3 +70,4 @@ void DF_Init (uint8_t volume)
 }
 	//****************************Check_Key Code***************************************//
 
+3

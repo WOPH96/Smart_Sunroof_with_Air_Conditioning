@@ -433,6 +433,10 @@ void AppTask1000ms(void)
     stTestCnt.u32nuCnt1000ms++;
     {
     	battery_data_out();
+		db_msg.audio.B.Audio_alive = actuator_power;
+		db_msg.audio.B.Audio_running = 0;
+		output_message(&db_msg.audio,AUDIO_MSG_ID);
+
     }
 }
 
