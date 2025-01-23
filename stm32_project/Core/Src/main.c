@@ -388,6 +388,7 @@ void AppTask100ms(void)
     stTestCnt.u32nuCnt100ms++;
     Query_Status();
     {
+    	db_msg.battery.B.Battery_alive = actuator_power;
     	if(actuator_power == 1){
     		LCD1602_display();
 			update_vehicle_vehicle();
