@@ -41,11 +41,12 @@ void charge_solar_battery()
 {
 	//하드웨어랑 합의보고, 선루프가 열리는 정도에 대한 비례식을 세울지 말지 고민 - Tick_count = 0~100
 	// 선루프가 닫혔을 때
-	if (db_msg.motor2_sunroof.B.motor2_alive == 1 && db_msg.motor2_sunroof.B.motor2_tick_counter>0)
-	{																	// 선루프가 닫혀 있을 때만 충전
+	if (db_msg.motor2_sunroof.B.motor2_alive == ALIVE && db_msg.motor2_sunroof.B.motor2_tick_counter!=OPEN)
+	{														//선루프가 OPEN = 0, 풀로 닫힘 == 100
 		//light.B.Light_pct = 일단 60정도면 어두운데, 임의로 값 조정
-//		float charge_amount = (ECOBAT_CHARGING * db_msg.light.B.Light_pct * 0.01); // 조도에 비례한 충전
-		float charge_amount = (ECOBAT_CHARGING * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
+		float charge_amount = (db_msg.light.B.Light_pct * 0.0001 * // 조도, 선루프 닫힘에 비례한 충전
+				db_msg.motor2_sunroof.B.motor2_tick_counter * ECOBAT_CHARGING);
+//		float charge_amount = (ECOBAT_CHARGING * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
 
 		if (vehicle.solar_battery + charge_amount < MAX_CHARGE_ECO)
 		{
@@ -53,7 +54,7 @@ void charge_solar_battery()
 		}
 		else
 		{
-			vehicle.solar_battery = MAX_CHARGE_ECO - 1;
+			vehicle.solar_battery = MAX_CHARGE_ECO - 0.01;
 		}
 	}
 }
@@ -62,10 +63,10 @@ void charge_solar_battery()
 void consume_solar_battery()
 {
 	float consumption = 0.0;
-	if (db_msg.ac.B.AC_alive==1 && db_msg.ac.B.AC_running>=1) // 에어컨 사용
+	if (db_msg.ac.B.AC_alive==ALIVE && db_msg.ac.B.AC_running>=WEAK) // 에어컨 사용
 	{
 		switch (db_msg.ac.B.AC_running){
-		case (WEAK): // enum 데이터로 변경
+		case (WEAK):
 		{
 			consumption += AC_WEAK_CONSUM;
 			break;
@@ -75,27 +76,27 @@ void consume_solar_battery()
 			break;
 		}
 	}
-	if (db_msg.heater.B.Heater_alive==1 && db_msg.heater.B.Heater_running>=1) // 에어컨 사용
+	if (db_msg.heater.B.Heater_alive==ALIVE && db_msg.heater.B.Heater_running>=WEAK) // 에어컨 사용
 	{
 		switch (db_msg.heater.B.Heater_running){
-		case (WEAK): // enum 데이터로 변경
+		case (WEAK): // 약풍 제어 명령일 때
 		{
 			consumption += HEATER_WEAK_CONSUM; // 히터 사용
 			break;
 		}
-		case (STRONG):
+		case (STRONG): // 강풍 제어 명령일 때
 			consumption += HEATER_WEAK_CONSUM * 1.5;
 			break;
 		}
 	}
 
-	if (db_msg.motor1_window.B.motor1_alive == 1 && db_msg.motor1_window.B.motor1_running >= 1)
+	if (db_msg.motor1_window.B.motor1_alive == ALIVE && db_msg.motor1_window.B.motor1_running >= 1)
 		consumption += WINDOW_CONSUM; // 창문 작동
 
-	if (db_msg.motor2_sunroof.B.motor2_alive == 1 && db_msg.motor2_sunroof.B.motor2_running >=1)
+	if (db_msg.motor2_sunroof.B.motor2_alive == ALIVE && db_msg.motor2_sunroof.B.motor2_running >=1)
 		consumption += SUNROOF_CONSUM; // 선루프 작동
 
-	if (db_msg.audio.B.Audio_alive == 1 && db_msg.audio.B.Audio_running ==1){
+	if (db_msg.audio.B.Audio_alive == ALIVE && db_msg.audio.B.Audio_running ==1){
 		consumption += AUDIO_CONSUM;
 	}
 
@@ -113,7 +114,6 @@ void consume_solar_battery()
 // 상태 업데이트 함수
 void update_vehicle_vehicle()
 {
-
 	consume_car_battery();
 	charge_solar_battery();
 	consume_solar_battery();
@@ -133,8 +133,6 @@ void init_vehicle_state()
 }
 
 void battery_data_out(){
-	db_msg.battery.B.Battery_alive = actuator_power;
-
 
 	output_message(&db_msg.battery, BATTERY_MSG_ID);
 }

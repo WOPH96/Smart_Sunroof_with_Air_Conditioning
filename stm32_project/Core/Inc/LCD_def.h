@@ -14,6 +14,15 @@ typedef enum
 	STRONG
 }WindIntensity;
 
+typedef enum{
+	OPEN
+}SunroofState;
+
+typedef enum{
+	DIE,
+	ALIVE
+}AliveState;
+
 #define MOTOR_CONSUM			(3)
 
 #define AC_WEAK_CONSUM 			(4) // (8)
@@ -22,6 +31,6 @@ typedef enum
 #define SUNROOF_CONSUM 			(3)
 #define AUDIO_CONSUM 			(4)
 
-#define ECOBAT_CHARGING			(15)
+#define ECOBAT_CHARGING			(13)
 
 #endif /* INC_LCD_DEF_H_ */
