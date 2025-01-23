@@ -57,21 +57,46 @@ typedef enum{
     DEACTIVATE_HEATER,          // 히터를 종료합니다.
     OPEN_WINDOW_AND_SUNROOF,    // 창문과 선루프가 열립니다.
     CLOSE_WINDOW_AND_SUNROOF,   // 창문과 선루프가 닫힙니다.
-    SMART_CONTROL_PAUSE,        // 스마트 제어가 종료되고, 10분 후에 다시 작동합니다.
-    HIGH_FINE_DUST,             // 미세먼지가 많습니다.
+
+    HIGH_FINE_DUST = 12,        // 미세먼지가 많습니다.
     IS_RAIN_DETECTED,           // 비가 옵니다.
     INDOOR_HOT,                 // 실내가 덥습니다.
     INDOOR_COLD,                // 실내가 춥습니다.
     INDOOR_AIR_BAD,             // 실내 공기가 안 좋습니다.
     ENTER_TUNNEL,               // 터널에 진입합니다.
     EXIT_TUNNEL,                // 터널을 통과했습니다.
-    EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF, // 터널 통과 + 창문과 선루프가 열린다.
-    INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF, // 실내 공기 안좋아 + 창문과 선루프가 열린다.
-    ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF, // 터널 진입 + 창문과 선루프를 닫는다.
-    HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF, // 미세먼지 많아 + 창문과 선루프를 닫는다.
-    IS_RAIN_DETECTED_AND_CLOSE_SUNROOF, // 비가 온다 + 선루프를 닫는다.
-    INDOOR_HOT_AND_ACTIVATE_AIRCON, // 실내가 덥다 + 에어컨을 작동한다.
-    INDOOR_COLD_AND_ACTIVATE_HEATER, // 실내가 춥다 + 히터를 작동한다.
+    ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF, // 터널을 진입합니다. 창문과 선루프를 닫습니다.
+    INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF, // 실내 공기 안좋습니다. 창문과 선루프를 닫습니다.
+    EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF, // 터널 통과했습니다. 창문과 선루프가 열립니다.
+    HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF, // 미세먼지가 많습니다. 창문과 선루프를 닫습니다.
+    IS_RAIN_DETECTED_AND_CLOSE_SUNROOF, // 비가 옵니다. 선루프를 닫는다.
+    INDOOR_HOT_AND_ACTIVATE_AIRCON, // 실내가 덥습니다. 에어컨을 작동합니다.
+    INDOOR_COLD_AND_ACTIVATE_HEATER, // 실내가 춥습니다. 히터를 작동합니다.
+    SAFETY_OPEN_WINDOW,         // 끼임 방지를 위해 창문을 엽니다.
+    SAFETY_OPEN_SUNROOF,        // 끼임 방지를 위해 선루프를 엽니다.
+    ENTER_TUNNEL_AND_CLOSE_WINDOW, // 터널을 진입합니다. 창문을 닫습니다.
+    ENTER_TUNNEL_AND_CLOSE_SUNROOF, // 터널을 진입합니다. 선루프를 닫습니다.
+    EXIT_TUNNEL_AND_OPEN_WINDOW, // 터널을 통과했습니다. 창문이 열립니다.
+    EXIT_TUNNEL_AND_OPEN_SUNROOF, // 터널을 통과했습니다. 선루프가 열립니다.
+    AIRCON_AND_CLOSE_WINDOW_AND_SUNROOF, // 냉방 효율을 위해 창문과 선루프를 닫습니다.
+    AIRCON_AND_CLOSE_WINDOW, // 냉방 효율을 위해 창문을 닫습니다
+    AIRCON_AND_CLOSE_SUNROOF, // 냉방 효율을 위해 선루프를 닫습니다.
+    HEATER_AND_CLOSE_WINDOW_AND_SUNROOF, // 난방 효율을 위해 창문과 선루프를 닫습니다.
+    HEATER_AND_CLOSE_WINDOW, // 난방 효율을 위해 창문을 닫습니다
+    HEATER_AND_CLOSE_SUNROOF, // 난방 효율을 위해 선루프를 닫습니다
+    SOLAR_AND_CLOSE_SUNROOF, // 태양광 충전을 위해 선루프를 닫습니다.
+    INDOOR_AIR_BAD_AND_OPEN_WINDOW, // 실내 공기가 안좋습니다. 창문을 엽니다.
+    INDOOR_AIR_BAD_AND_OPEN_SUNROOF, // 실내 공기가 안좋습니다. 선루프를 엽니다
+    FINISH_VENT_CLOSE_WINDOW_AND_SUNROOF, // 환기가 끝났습니다. 창문과 선루프를 닫습니다
+    FINISH_VENT_CLOSE_WINDOW, // 환기가 끝났습니다. 창문을 닫습니다
+    FINISH_VENT_CLOSE_SUNROOF, // 환기가 끝났습니다. 선루프를 닫습니다
+    SMART_CONTROL_PAUSE,        // 스마트 제어가 종료되고 10분 후에 다시 작동합니다.
+    TURN_OFF_SMART_CONTROL,     // 스마트 제어를 종료합니다.
+    TURN_ON_SMART_CONTROL,      // 스마트 제어를 시작합니다.
+    NOISE_AND_CLOSE_WINDOW_AND_SUNROOF, // 소음을 감지하여 창문과 선루프를 닫습니다.
+    NOISE_AND_CLOSE_WINDOW, // 소음을 감지하여 창문을 닫습니다
+    NOISE_AND_CLOSE_SUNROOF, // 소음을 감지하여 선루프를 닫습니다.
+    IS_RAIN_DETECTED_AND_OPEN_WINDOW, // 비가 옵니다. 창문을 조금만 열겠습니다.
 
     DEFAULT = 99                // 초기값
 }AudioControlState;
