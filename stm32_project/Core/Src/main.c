@@ -64,7 +64,7 @@ typedef struct
 
 } Taskcnt;
 
-uint8_t actuator_power = 1;  //시동 켜지면 1
+uint8_t actuator_power = 0;  //시동 켜지면 1
 
 Taskcnt stTestCnt;
 
@@ -81,14 +81,6 @@ int _write(int file, char *ptr, int len) {
 
 
 
-
-//extern CAN_TxHeaderTypeDef TxHeader;
-//extern uint8_t TxData[8];
-//extern uint32_t TxMailbox;
-//
-//extern CAN_FilterTypeDef sFilterConfig;   // 필터 설정 구조체 변수
-//extern CAN_RxHeaderTypeDef RxHeader;
-//extern uint8_t RxData[8];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -140,6 +132,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim4);//sub timer 1sec
 	DF_Init(20);
+	//Send_cmd(0x03, 0x00, 5);
+	//HAL_Delay(10000);
 
   /* USER CODE END 2 */
 
@@ -276,7 +270,7 @@ int main(void)
 			printf("audio : %d \r\n",db_msg.smart_audio.B.Audio_file);
 			audio_num=db_msg.smart_audio.B.Audio_file;
 			audio_flag=1;
-			if(audio_flag==1 && audio_state==1){
+			if(audio_flag==1){
 				Sound_Track(audio_num);
 			}
 //			// 처리 로직 예시
