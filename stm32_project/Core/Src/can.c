@@ -294,6 +294,10 @@ void can_send_test(void)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 	//printf("%s\r\n", __FUNCTION__);
 	/* Get RX message */
+	for (int i = 0 ;i<8;i++){
+		RxData[i] = 0;
+	}
+
 	if (HAL_CAN_GetRxMessage(CanHandle, CAN_RX_FIFO0, &RxHeader, RxData)
 			!= HAL_OK) {
 		/* Reception Error */
@@ -313,7 +317,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.safety_sunroof.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.safety_sunroof.U |= RxData[i] >> (i * 8);
+				db_msg.safety_sunroof.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.safety_sunroof.B.Flag = 1;
@@ -324,7 +328,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.safety_window.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.safety_window.U |= RxData[i] >> (i * 8);
+				db_msg.safety_window.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.safety_window.B.Flag = 1;
@@ -335,7 +339,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_control.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_control.U |= RxData[i] >> (i * 8);
+				db_msg.driver_control.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_control.B.Flag = 1;
@@ -346,7 +350,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_sunroof.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_sunroof.U |= RxData[i] >> (i * 8);
+				db_msg.driver_sunroof.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_sunroof.B.Flag = 1;
@@ -357,7 +361,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_window.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_window.U |= RxData[i] >> (i * 8);
+				db_msg.driver_window.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_window.B.Flag = 1;
@@ -369,7 +373,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_heater.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_heater.U |= RxData[i] >> (i * 8);
+				db_msg.driver_heater.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_heater.B.Flag = 1;
@@ -380,7 +384,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_air.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_air.U |= RxData[i] >> (i * 8);
+				db_msg.driver_air.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_air.B.Flag = 1;
@@ -391,7 +395,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.driver_engine.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.driver_engine.U |= RxData[i] >> (i * 8);
+				db_msg.driver_engine.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.driver_engine.B.Flag = 1;
@@ -401,7 +405,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.smart_sunroof.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.smart_sunroof.U |= RxData[i] >> (i * 8);
+				db_msg.smart_sunroof.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.smart_sunroof.B.Flag = 1;
@@ -412,7 +416,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.smart_window.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.smart_window.U |= RxData[i] >> (i * 8);
+				//db_msg.smart_window.U |= ((uint64_t)RxData[i]) << (i * 8);
+				db_msg.smart_window.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.smart_window.B.Flag = 1;
@@ -423,7 +428,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.smart_audio.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.smart_audio.U |= RxData[i] >> (i * 8);
+				db_msg.smart_audio.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.smart_audio.B.Flag = 1;
@@ -434,7 +439,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.smart_heater.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.smart_heater.U |= RxData[i] >> (i * 8);
+				db_msg.smart_heater.U |= ((uint64_t)RxData[i]) << (i * 8);
 			}
 			db_msg.smart_heater.B.Flag = 1;
 
@@ -444,7 +449,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.smart_ac.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.smart_ac.U |= RxData[i] >> (i * 8);
+				db_msg.smart_ac.U |= ((uint64_t)RxData[i]) << (i * 8);
 			}
 			db_msg.smart_ac.B.Flag = 1;
 
@@ -454,7 +459,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle) {
 		{
 			db_msg.light.U = 0;
 			for(int i=0;i<8;i++){
-				db_msg.light.U |= RxData[i] >> (i * 8);
+				db_msg.light.U |= ((uint64_t)RxData[i]) << (i * 8);
 
 			}
 			db_msg.light.B.Flag = 1;
@@ -554,7 +559,7 @@ void output_message(void *msg, uint32_t msgID) {
 //	}
 	while (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK) {
 	    //printf("Retrying CAN transmission...\n");
-	    HAL_Delay(1); // 10ms 대기
+	    //HAL_Delay(1); // 10ms 대기
 	}
 
 }

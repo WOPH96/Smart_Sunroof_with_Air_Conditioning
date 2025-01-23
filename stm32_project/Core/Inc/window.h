@@ -29,7 +29,7 @@ extern int safety_win_flag;
 // 상수 정의
 #define WINDOW_OPEN_TIME_MS 5000    // 창문이 완전히 열리는데 걸리는 시간 (ms)
 #define WINDOW_CLOSE_TIME_MS 5000   // 창문이 완전히 닫히는데 걸리는 시간 (ms)
-#define WINDOW_PWM_SPEED 700        // 모터 PWM 기본 속도
+#define WINDOW_PWM_SPEED 300        // 모터 PWM 기본 속도
 
 // 함수 선언
 void Window_Init(void);                    // 창문 초기화
