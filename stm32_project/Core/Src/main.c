@@ -64,7 +64,7 @@ typedef struct
 
 } Taskcnt;
 
-uint8_t actuator_power = 0;  //시동 켜지면 1
+uint8_t actuator_power = 1;  //시동 켜지면 1
 
 Taskcnt stTestCnt;
 
@@ -139,7 +139,7 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim4);//sub timer 1sec
-	DF_Init(16);
+	DF_Init(20);
 
   /* USER CODE END 2 */
 
@@ -257,6 +257,7 @@ int main(void)
 		if (db_msg.smart_heater.B.Flag == 1)
 		{
 			db_msg.smart_heater.B.Flag = 0;
+			//printf("heater %d\r\n",db_msg.smart_heater.B.Heater_state);
 			if (actuator_power == 1)
 				smart_heater(db_msg.smart_heater.B.Heater_state);
 		}
@@ -272,6 +273,7 @@ int main(void)
 		if (db_msg.smart_audio.B.Flag == 1)
 		{
 			db_msg.smart_audio.B.Flag = 0;
+			printf("audio : %d \r\n",db_msg.smart_audio.B.Audio_file);
 			audio_num=db_msg.smart_audio.B.Audio_file;
 			audio_flag=1;
 			if(audio_flag==1 && audio_state==1){
