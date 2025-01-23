@@ -114,7 +114,7 @@ void Sunroof_UpdateState(void) {
         sunroof_pulse_count = 100-(sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
 
         // 목표 위치 도달 시 동작 멈춤
-        if (sunroof_pulse_count >= target_position_sun) {
+        if (sunroof_pulse_count <= target_position_sun) {
             Sunroof_Stop();
             return;
         }
@@ -122,7 +122,7 @@ void Sunroof_UpdateState(void) {
         sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
         sunroof_pulse_count = (sunroof_timer_ms * 100) / SUNROOF_OPEN_TIME_MS;
         // 목표 위치 도달 시 동작 멈춤
-        if (sunroof_pulse_count <= target_position_sun) {
+        if (sunroof_pulse_count >= target_position_sun) {
             Sunroof_Stop();
             return;
         }
@@ -134,6 +134,7 @@ void Sunroof_Stop(void) {
     sunroof_state = SUNROOF_STOPPED;
     Sunroof_SetPWM(0); // PWM 듀티를 0으로 설정하여 모터 정지
     running_sunroof = 0; // 모터 상태 초기화
+    sunroof_timer_ms=0;
 }
 
 // PWM 듀티 사이클 설정
