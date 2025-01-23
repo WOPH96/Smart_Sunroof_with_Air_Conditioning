@@ -96,7 +96,7 @@ void consume_solar_battery()
 	if (db_msg.motor2_sunroof.B.motor2_alive == ALIVE && db_msg.motor2_sunroof.B.motor2_running >=1)
 		consumption += SUNROOF_CONSUM; // 선루프 작동
 
-	if (db_msg.audio.B.Audio_alive == ALIVE && db_msg.audio.B.Audio_running ==1){
+	if (db_msg.audio.B.Audio_alive == ALIVE && audio_flag == 1){
 		consumption += AUDIO_CONSUM;
 	}
 

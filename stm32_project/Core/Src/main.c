@@ -64,7 +64,7 @@ typedef struct
 
 } Taskcnt;
 
-uint8_t actuator_power = 0;  //시동 켜지면 1
+uint8_t actuator_power = 1;  //시동 켜지면 1
 
 Taskcnt stTestCnt;
 
@@ -132,8 +132,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim4);//sub timer 1sec
 	DF_Init(20);
-	//Send_cmd(0x03, 0x00, 5);
+	//Send_cmd(0x03, 0x00, 1);
 	//HAL_Delay(10000);
+
+    Sound_Track(13);
+
+
 
   /* USER CODE END 2 */
 
@@ -156,6 +160,7 @@ int main(void)
 	//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 700);
 
 	printf("Start\r\n");
+
 
 	while (1) {
 		AppScheduling();
@@ -232,8 +237,8 @@ int main(void)
 			// 732
 			if (db_msg.smart_window.B.Flag == 1)
 			{
-				motor1_smart_flag=1;
 				db_msg.smart_window.B.Flag = 0;
+				motor1_smart_flag=1;
 				motor1_smart=db_msg.smart_window.B.motor1_smart_state;
 				motor1_smart_pct=db_msg.smart_window.B.motor1_state;
 	//			// 처리 로직 예시
@@ -243,7 +248,6 @@ int main(void)
 			{
 				db_msg.smart_sunroof.B.Flag = 0;
 				motor2_smart_flag=1;
-				db_msg.smart_sunroof.B.Flag = 0;
 				motor2_smart=db_msg.smart_sunroof.B.motor2_smart_state;
 				// 처리 로직 예시
 			}
@@ -344,10 +348,7 @@ void AppTask1ms(void)
 {
     stTestCnt.u32nuCnt1ms++;
     {
-        // 스케쥴링 예시코드 1ms 주기로 공기질 메시지 전송
-//        db_msg.heater.B.Heater_alive = 1;
-//        db_msg.heater.B.Heater_running = 1;
-//        output_message(&db_msg.heater,HEATER_MSG_ID);
+
     }
 }
 
@@ -433,6 +434,8 @@ void AppTask1000ms(void)
 		db_msg.audio.B.Audio_alive = actuator_power;
 		db_msg.audio.B.Audio_running = 0;
 		output_message(&db_msg.audio,AUDIO_MSG_ID);
+		printf("window %ld \r\n", window_pulse_count);
+		printf("sunroof %ld \r\n",sunroof_pulse_count);
 
     }
 }

@@ -71,103 +71,126 @@ void Sound_Track(uint8_t nums){
             Send_cmd(0x03, 0x00, 9); // 009.mp3 실행
             break;
         case 3:
-            Send_cmd(0x03, 0x00, 10); // 017.mp3 실행
+            Send_cmd(0x03, 0x00, 10); // 008.mp3 실행
             break;
-        case 5:
-            Send_cmd(0x03, 0x00, 11); // 018.mp3 실행
+        case 12:
+            Send_cmd(0x03, 0x00, 11); // 009.mp3 실행
             break;
+        case 13:
+            Send_cmd(0x03, 0x00, 12); // 017.mp3 실행
+            break;
+        case 14:
+             Send_cmd(0x03, 0x00, 13); // 008.mp3 실행
+             break;
+         case 15:
+             Send_cmd(0x03, 0x00, 14); // 009.mp3 실행
+             break;
+         case 16:
+             Send_cmd(0x03, 0x00, 15); // 017.mp3 실행
+             break;
+
+        case 17:
+            Send_cmd(0x03, 0x00, 17); // 017.mp3 실행
+            break;
+
         case 6:
-            Send_cmd(0x03, 0x00, 12); // 019.mp3 실행
+            Send_cmd(0x03, 0x00, 19); // 019.mp3 실행
             break;
         case 7:
-            Send_cmd(0x03, 0x00, 13); // 020.mp3 실행
+            Send_cmd(0x03, 0x00, 20); // 020.mp3 실행
             break;
         case 8:
-            Send_cmd(0x03, 0x00, 14); // 021.mp3 실행
+            Send_cmd(0x03, 0x00, 21); // 021.mp3 실행
             break;
         case 9:
-            Send_cmd(0x03, 0x00, 15); // 022.mp3 실행
+            Send_cmd(0x03, 0x00, 22); // 022.mp3 실행
             break;
         case 10:
-            Send_cmd(0x03, 0x00, 16); // 023.mp3 실행
+            Send_cmd(0x03, 0x00, 23); // 023.mp3 실행
             break;
         case 11:
-            Send_cmd(0x03, 0x00, 17); // 024.mp3 실행
+            Send_cmd(0x03, 0x00, 24); // 024.mp3 실행
             break;
         case 43:
-            Send_cmd(0x03, 0x00, 18); // 025.mp3 실행
+            Send_cmd(0x03, 0x00, 25); // 025.mp3 실행
             break;
         case 26:
-            Send_cmd(0x03, 0x00, 19); // 026.mp3 실행
+            Send_cmd(0x03, 0x00, 26); // 026.mp3 실행
             break;
         case 27:
-            Send_cmd(0x03, 0x00, 20); // 027.mp3 실행
+            Send_cmd(0x03, 0x00, 27); // 027.mp3 실행
             break;
         case 28:
-            Send_cmd(0x03, 0x00, 21); // 028.mp3 실행
+            Send_cmd(0x03, 0x00, 28); // 028.mp3 실행
             break;
         case 29:
-            Send_cmd(0x03, 0x00, 22); // 029.mp3 실행
+            Send_cmd(0x03, 0x00, 29); // 029.mp3 실행
             break;
         case 30:
-            Send_cmd(0x03, 0x00, 23); // 030.mp3 실행
+            Send_cmd(0x03, 0x00, 30); // 030.mp3 실행
             break;
         case 31:
-            Send_cmd(0x03, 0x00, 24); // 031.mp3 실행
+            Send_cmd(0x03, 0x00, 31); // 031.mp3 실행
             break;
         case 32:
-            Send_cmd(0x03, 0x00, 25); // 032.mp3 실행
+            Send_cmd(0x03, 0x00, 32); // 032.mp3 실행
             break;
         case 33:
-            Send_cmd(0x03, 0x00, 26); // 033.mp3 실행
+            Send_cmd(0x03, 0x00, 33); // 033.mp3 실행
             break;
         case 34:
-            Send_cmd(0x03, 0x00, 27); // 034.mp3 실행
+            Send_cmd(0x03, 0x00, 34); // 034.mp3 실행
             break;
         case 35:
-            Send_cmd(0x03, 0x00, 28); // 035.mp3 실행
+            Send_cmd(0x03, 0x00, 35); // 035.mp3 실행
             break;
         case 36:
-            Send_cmd(0x03, 0x00, 29); // 036.mp3 실행
+            Send_cmd(0x03, 0x00, 36); // 036.mp3 실행
             break;
         case 37:
-            Send_cmd(0x03, 0x00, 30); // 037.mp3 실행
+            Send_cmd(0x03, 0x00, 37); // 037.mp3 실행
             break;
         case 38:
-            Send_cmd(0x03, 0x00, 31); // 038.mp3 실행
+            Send_cmd(0x03, 0x00, 38); // 038.mp3 실행
             break;
         case 39:
-            Send_cmd(0x03, 0x00, 32); // 039.mp3 실행
+            Send_cmd(0x03, 0x00, 39); // 039.mp3 실행
             break;
         case 40:
-            Send_cmd(0x03, 0x00, 33); // 040.mp3 실행
+            Send_cmd(0x03, 0x00, 40); // 040.mp3 실행
             break;
         case 41:
-            Send_cmd(0x03, 0x00, 34); // 041.mp3 실행
+            Send_cmd(0x03, 0x00, 41); // 041.mp3 실행
             break;
         case 42:
-            Send_cmd(0x03, 0x00, 35); // 042.mp3 실행
+            Send_cmd(0x03, 0x00, 42); // 042.mp3 실행
             break;
         case 44:
-            Send_cmd(0x03, 0x00, 36); // 043.mp3 실행
+            Send_cmd(0x03, 0x00, 43); // 043.mp3 실행
             break;
         case 45:
-            Send_cmd(0x03, 0x00, 37); // 044.mp3 실행
+            Send_cmd(0x03, 0x00, 44); // 044.mp3 실행
             break;
         case 46:
-            Send_cmd(0x03, 0x00, 38); // 045.mp3 실행
+            Send_cmd(0x03, 0x00, 45); // 045.mp3 실행
             break;
         case 47:
-            Send_cmd(0x03, 0x00, 39); // 046.mp3 실행
+            Send_cmd(0x03, 0x00, 46); // 046.mp3 실행
             break;
         case 48:
-            Send_cmd(0x03, 0x00, 40); // 047.mp3 실행
+            Send_cmd(0x03, 0x00, 47); // 047.mp3 실행
             break;
         case 49:
-            Send_cmd(0x03, 0x00, 41); // 048.mp3 실행
+            Send_cmd(0x03, 0x00, 48); // 048.mp3 실행
             break;
         case 50:
-            Send_cmd(0x03, 0x00, 42); // 049.mp3 실행
+            Send_cmd(0x03, 0x00, 49); // 049.mp3 실행
+
+        case 51:
+                   Send_cmd(0x03, 0x00, 50); // 049.mp3 실행
+            break;
+        case 52:
+                   Send_cmd(0x03, 0x00, 51); // 049.mp3 실행
             break;
         default:
             // 기본 동작이 필요한 경우 처리
