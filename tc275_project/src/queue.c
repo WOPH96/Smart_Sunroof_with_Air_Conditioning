@@ -49,81 +49,50 @@
 
 /*********************************************************************************************************************/
 /*---------------------------------------------Function Implementations----------------------------------------------*/
-QUEUE *queue_create()
+void init_queue(Queue *queue)
 {
-    QUEUE *queue;
-    queue = (QUEUE*)malloc(sizeof(QUEUE));
-
-    queue->head = NULL;
-    queue->tail = NULL;
-
-    return queue;
+    queue->head = 0;
+    queue->tail = 0;
+    queue->size = 0;
 }
 
-
-boolean queue_isempty(QUEUE *q)
+// Queue가 비어 있는지 확인
+boolean queue_isempty(Queue *queue)
 {
-    if (q->head == NULL || q->tail == NULL)
-    {
-        return TRUE;
-    }
-
-    return FALSE;
+    return (queue->size == 0);
 }
 
-
-void queue_enqueue(QUEUE *q, AudioControlState value)
+// Queue가 가득 차 있는지 확인
+boolean queue_isfull(Queue *queue)
 {
-
-    NODE *new_head_node = NULL;
-    new_head_node = (NODE*)malloc(sizeof(NODE));
-
-    new_head_node->value = value;
-    new_head_node->prev = NULL;
-    new_head_node->next = NULL;
-
-    if(q->head == NULL)
-    {
-        q->head = new_head_node;
-        q->tail = new_head_node;
-
-        return;
-    }
-
-    q->head->prev = new_head_node;
-    new_head_node->next = q->head;
-    q->head = new_head_node;
-
-    return;
+    return (queue->size == QUEUE_MAX_SIZE);
 }
 
-
-void queue_dequeue(QUEUE *q, AudioControlState *value)
+// Queue에 데이터 삽입
+void enqueue_queue(Queue *queue, AudioControlState value)
 {
-    NODE *old_tail_node;
-
-    if (q->tail == NULL)
-    {
-        return;
+    if (queue_isfull(queue)) {
+        // 큐가 가득 차 있으면 가장 오래된 데이터를 덮어씀
+        queue->tail = (queue->tail + 1) % QUEUE_MAX_SIZE;
+        queue->size--;
     }
 
-    old_tail_node = q->tail;
-
-
-    *value = q->tail->value;
-    q->tail = q->tail->prev;
-
-    if (q->tail != NULL)
-    {
-        q->tail->next = NULL;
-    }
-    else
-    {
-        q->head = NULL;
-    }
-
-    free(old_tail_node);
-
-    return;
+    queue->buffer[queue->head] = value;
+    queue->head = ((queue->head + 1) % QUEUE_MAX_SIZE);
+    queue->size++;
 }
+
+// Queue에서 데이터 제거
+boolean dequeue_queue(Queue *queue, AudioControlState *value)
+{
+    if (queue_isempty(queue)) {
+        return FALSE; // 큐가 비어 있음
+    }
+
+    *value = queue->buffer[queue->tail];
+    queue->tail = (queue->tail + 1) % QUEUE_MAX_SIZE;
+    queue->size--;
+    return TRUE;
+}
+
 /*********************************************************************************************************************/

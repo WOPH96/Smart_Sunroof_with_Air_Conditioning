@@ -84,6 +84,10 @@ void STM_Int0Handler(void)
     {
         stSchedulingInfo.u8nuScheduling1000msFlag = 1u;
     }
+    if((u32nuCounter1ms % 5000) == 0u)
+    {
+        stSchedulingInfo.u8nuScheduling5000msFlag = 1u;
+    }
 
     if(u32nuCounter1ms >= 10000000 ){
         u32nuCounter1ms = 0;

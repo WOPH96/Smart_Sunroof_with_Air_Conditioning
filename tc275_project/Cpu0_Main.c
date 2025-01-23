@@ -1,7 +1,7 @@
 /**********************************************************************************************************************
  * @file    Cpu0_Main.c
  * @brief   Logic Inner TC275
- * @version 0.7
+ * @version 0.9
  * @date    2025-01-22
  *********************************************************************************************************************/
 
@@ -195,7 +195,7 @@ SmartControlState control_state;
 
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
-Gas in_gas = {0, 0, 0, 0};
+Gas in_gas = {0, 0, 0, 0, 0};
 IfxPort_State suntouch = 0;
 IfxPort_State wintouch = 0;
 Temp_Hum in_temp_hum = { 0, 20, 20, 20, 20 };
@@ -218,7 +218,7 @@ uint8 tunnel_window_state = 100; //터널 진입 시 현재 창문 위치 기록
 uint8 tunnel_sunroof_state = 100; //터널 진입 시 현재 선루프 위치 기록
 
 boolean audio_flag = FALSE;
-QUEUE *audio_queue;
+Queue audio_queue;
 AudioControlState audio_file_num = DEFAULT;
 
 boolean engine_flag = FALSE;
@@ -273,8 +273,7 @@ void core0_main(void)
     // init sensor
     init_led();
     init_sensor_driver(AIR_PIN); //Air
-    init_sensor_driver(LIGHT_PIN); //Light
-    init_sensor_driver(R_PIN); //Resistance
+    //init_sensor_driver(R_PIN); //Resistance
     init_gpio_touch(SUN_TOUCH_PIN);
     init_gpio_touch(WIN_TOUCH_PIN);
 
@@ -288,7 +287,7 @@ void core0_main(void)
     Driver_Stm_Init();
     initShellInterface();
 
-    audio_queue = queue_create();
+    init_queue(&audio_queue);
 
     while (1)
     {
@@ -590,9 +589,9 @@ void smart_control_mode_off(ControlCommandInfo* command_info, ControlType contro
             (command_info + index)->counter_action_100ms = 0;
         }
 
-        while(queue_isempty(audio_queue) == FALSE) // 스마트 제어 모드 끌 때, 모든 audio_queue를 비운다.
+        while(queue_isempty(&audio_queue) == FALSE) // 스마트 제어 모드 끌 때, 모든 audio_queue를 비운다.
         {
-            queue_dequeue(audio_queue, &audio_file_num);
+            dequeue_queue(&audio_queue, &audio_file_num);
         }
     }
 
@@ -600,7 +599,7 @@ void smart_control_mode_off(ControlCommandInfo* command_info, ControlType contro
     {
         if (command_info->state == ON)
         {
-            queue_enqueue(audio_queue, SMART_CONTROL_PAUSE);
+            enqueue_queue(&audio_queue, SMART_CONTROL_PAUSE);
         }
         command_info->state = OFF;
         command_info->flag = 0;
@@ -703,8 +702,10 @@ void make_can_message()
             {
                 if (command_info[index].flag == 0 || command_info[index].flag == 1 || command_info[index].flag == 2) //초기화된 상태거나 현재 동작과 반대되는 상태였다면,
                 {
-                    if ((index == WINDOW && window_state >= 95) || (index == SUNROOF && sunroof_state >= 95) ||
-                            (index == HEATER && control_state.heater_state == 0) || (index == AIR && control_state.air_state == 0))
+                    if ((index == WINDOW && (window_state >= 95 || control_state.motor1_state == CLOSE)) ||
+                            (index == SUNROOF && (sunroof_state >= 95 || control_state.motor2_state == CLOSE)) ||
+                            (index == HEATER && control_state.heater_state == 0) ||
+                            (index == AIR && control_state.air_state == 0))
                     {
                         command_info[index].flag = 4; //닫혀있는 상태
                     }
@@ -720,8 +721,10 @@ void make_can_message()
             {
                 if (command_info[index].flag == 0 || command_info[index].flag == 3 || command_info[index].flag == 4) //초기화된 상태거나 현재 동작과 반대되는 상태였다면,
                 {
-                    if ((index == WINDOW && window_state < 95) || (index == SUNROOF && sunroof_state < 95) ||
-                            (index == HEATER && control_state.heater_state == 1) || (index == AIR && control_state.air_state == 1))
+                    if ((index == WINDOW && (window_state < 95 || control_state.motor1_state == OPEN)) ||
+                            (index == SUNROOF && (sunroof_state < 95 || control_state.motor2_state == OPEN)) ||
+                            (index == HEATER && control_state.heater_state == 1) ||
+                            (index == AIR && control_state.air_state == 1))
                     {
                         command_info[index].flag = 2; // 켜져있는 상태
                     }
@@ -793,11 +796,11 @@ void make_can_message()
                     //오디오 번호 입력
                     if (command_info[index].control_command == TURN_OFF)
                     {
-                        queue_enqueue(audio_queue, DEACTIVATE_HEATER);
+                        enqueue_queue(&audio_queue, DEACTIVATE_HEATER);
                     }
                     else if (command_info[index].control_command == TURN_ON)
                     {
-                        queue_enqueue(audio_queue, INDOOR_COLD_AND_ACTIVATE_HEATER);
+                        enqueue_queue(&audio_queue, INDOOR_COLD_AND_ACTIVATE_HEATER);
                     }
 
                     db_msg.smart_heater.B.Heater_state = command_info[index].control_command;
@@ -822,11 +825,11 @@ void make_can_message()
                     //오디오 번호 입력
                     if (command_info[index].control_command == TURN_OFF)
                     {
-                        queue_enqueue(audio_queue, DEACTIVATE_AIRCON);
+                        enqueue_queue(&audio_queue, DEACTIVATE_AIRCON);
                     }
                     else if (command_info[index].control_command == TURN_ON)
                     {
-                        queue_enqueue(audio_queue, INDOOR_HOT_AND_ACTIVATE_AIRCON);
+                        enqueue_queue(&audio_queue, INDOOR_HOT_AND_ACTIVATE_AIRCON);
                     }
 
                     db_msg.smart_ac.B.Air_state = command_info[index].control_command;
@@ -853,18 +856,18 @@ void make_can_message()
                 // 원인
                 if (command_info[WINDOW].priority == TUNNEL && command_info[SUNROOF].priority == TUNNEL)
                 {
-                    queue_enqueue(audio_queue, EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF);
                     enqueue_audio = TRUE;
                 }
                 // 원인
                 else if (command_info[WINDOW].priority == IN_CO2 && command_info[SUNROOF].priority == IN_CO2)
                 {
-                    queue_enqueue(audio_queue, INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF);
                     enqueue_audio = TRUE;
                 }
                 if (enqueue_audio == FALSE)
                 {
-                    queue_enqueue(audio_queue, OPEN_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, OPEN_WINDOW_AND_SUNROOF);
                 }
             }
 
@@ -874,37 +877,37 @@ void make_can_message()
                 // 원인
                 if (command_info[WINDOW].priority == TUNNEL && command_info[SUNROOF].priority == TUNNEL)
                 {
-                    queue_enqueue(audio_queue, ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF);
                     enqueue_audio = TRUE;
                 }
                 // 원인
                 else if (command_info[WINDOW].priority == DUST && command_info[SUNROOF].priority == DUST)
                 {
-                    queue_enqueue(audio_queue, HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF);
                     enqueue_audio = TRUE;
                 }
 
                 if (enqueue_audio == FALSE)
                 {
-                    queue_enqueue(audio_queue, CLOSE_WINDOW_AND_SUNROOF);
+                    enqueue_queue(&audio_queue, CLOSE_WINDOW_AND_SUNROOF);
                 }
             }
 
             else if (window_and_sunroof_state[0] == 1)
             {
-                queue_enqueue(audio_queue, OPEN_WINDOW);
+                enqueue_queue(&audio_queue, OPEN_WINDOW);
             }
             else if (window_and_sunroof_state[0] == 3)
             {
-                queue_enqueue(audio_queue, CLOSE_WINDOW);
+                enqueue_queue(&audio_queue, CLOSE_WINDOW);
             }
             else if (window_and_sunroof_state[1] == 1)
             {
-                queue_enqueue(audio_queue, OPEN_SUNROOF);
+                enqueue_queue(&audio_queue, OPEN_SUNROOF);
             }
             else if (window_and_sunroof_state[1] == 3)
             {
-                queue_enqueue(audio_queue, CLOSE_SUNROOF);
+                enqueue_queue(&audio_queue, CLOSE_SUNROOF);
             }
 
             window_and_sunroof_state[0] = 0;
@@ -913,9 +916,9 @@ void make_can_message()
             //오디오 제어 명령 생성
             if (control_state.audio_state == 2) // 오디오 출력 안하고 있을 때,
             {
-                while (audio_flag == FALSE && queue_isempty(audio_queue) == FALSE) // 오디오 출력 목록이 있을 경우
+                while (audio_flag == FALSE && queue_isempty(&audio_queue) == FALSE) // 오디오 출력 목록이 있을 경우
                 {
-                    queue_dequeue(audio_queue, &audio_file_num);
+                    dequeue_queue(&audio_queue, &audio_file_num);
 
                     if (audio_file_num == SMART_CONTROL_PAUSE)
                     {
@@ -1054,6 +1057,8 @@ void AppTask100ms(void)
 void AppTask1000ms(void)
 {
     stTestCnt.u32nuCnt1000ms++;
+
+    in_gas = get_air_condition();
 
     //스마트 제어 모드가 켜져있거나, 꺼져있는 모듈에 대한 출력
     db_msg.smart_ctrl_state.B.motor1_smart_control = command_info[WINDOW].state;
