@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FourEver</title>
+</head>
+<body>
+    <h1>스마트 선루프 & 공조 시스템</h1>
+
+    <!-- 서버 연결결 -->
+    <button id="connectBtn">서버 연결</button>
+
+    <div id="messages"></div>
+
+    <script>
+        let socket;
+         // JSON 파싱한 데이터를 변수에 저장
+        let engine_on =0;  // 예시: "data"
+        let window_status=0;    // 예시: 123
+        let sunroof_status=0; 
+        // 서버에 연결하는 함수
+        function connectToServer() {
+            // WebSocket 연결
+            socket = new WebSocket("ws://15bd-112-218-95-58.ngrok-free.app"); 
+
+            // 연결되었을 때
+            socket.onopen = function() {
+                console.log("서버에 연결됨");
+                document.getElementById("messages").innerText = "서버에 연결되었습니다!";
+            };
+
+            // 서버로부터 메시지를 받을 때
+            socket.onmessage = function(event) {
+                const message = event.data;
+                const data = JSON.parse(message);  // JSON 데이터를 객체로 변환
+                console.log("받은 메시지:", data);
+                
+                // JSON 파싱한 데이터를 변수에 저장
+                engine_on = data.engine_signal;  // 예시: "data"
+                window_status = data.window_status;    // 예시: 123
+                sunroof_status = data.sunroof_status;    // 예시: 123
+                
+                // 받은 데이터를 화면에 표시
+                let messageText = `시동: ${engine_on}, 창문 상태: ${window_status}, 썬루프 상태: ${sunroof_status}`;
+                
+                // #messages div의 내용을 비우지 않고 메시지만 추가
+                const messagesDiv = document.getElementById("messages");//messagesid를 가진 div에 버튼 추가하려고 만든거
+                messagesDiv.innerHTML = "";  // 기존 내용 비우기
+                // 'ON' 버튼을 동적으로 생성하여 추가
+                const engine_button = document.createElement("button");
+                engine_button.innerText = engine_on === 0 ? " 시동 OFF " : " 시동 ON "; // 예시: engine_signal에 따라 버튼 텍스트 변경
+                engine_button.id = "engine"; // 버튼에 id를 지정
+
+                const window_button = document.createElement("button");
+                window_button.innerText = window_status === 0 ? " 창문 닫힘 " : " 창문 열림 "; // 예시: engine_signal에 따라 버튼 텍스트 변경
+                window_button.id = "window_status"; // 버튼에 id를 지정
+                
+                // 메시지 텍스트 아래에 버튼을 추가
+                messagesDiv.appendChild(engine_button); // 시동 버튼 추가
+                messagesDiv.appendChild(window_button); // 창문 버튼 추가
+
+                // 버튼 클릭 이벤트 추가 (시동 버튼)
+                engine_button.onclick = function() {
+                    if(engine_on==0)engine_on=1;
+                    else if(engine_on==1)engine_on=0;
+                    engine_button.innerText = engine_on === 0 ? " 시동 OFF " : " 시동 ON "; 
+                    sendUpdatedValues();
+                    // 여기에 시동 버튼 클릭 시 수행할 작업을 추가할 수 있습니다
+                };
+
+                // 버튼 클릭 이벤트 추가 (창문 버튼)
+                window_button.onclick = function() {
+                    if(window_status==0)window_status=1;
+                    else if(window_status==1)window_status=0;
+                    engine_button.innerText = engine_on === 0 ? " 시동 OFF " : " 시동 ON ";
+                    window_button.innerText = window_status === 0 ? " 창문 닫힘 " : " 창문 열림 "; // 예시: engine_signal에 따라 버튼 텍스트 변경
+                    sendUpdatedValues();
+                    // 여기에 창문 버튼 클릭 시 수행할 작업을 추가할 수 있습니다
+                };
+
+                // 다른 곳에서 변수 사용 가능
+                console.log("시동 :", engine_on);
+                console.log("window_status 값:", window_status);
+            };
+
+            // WebSocket 연결 에러가 발생했을 때
+            socket.onerror = function(error) {
+                console.error("WebSocket 오류:", error);
+                document.getElementById("messages").innerText = "웹소켓 오류 발생!";
+            };
+
+            // WebSocket 연결이 종료되었을 때
+            socket.onclose = function() {
+                console.log("서버와의 연결이 종료되었습니다.");
+                document.getElementById("messages").innerText = "서버와의 연결이 종료되었습니다.";
+            };
+        }
+        function sendUpdatedValues() {
+            const updatedData = {
+                engine_signal: engine_on,  // 변경된 시동 상태
+                window_status: window_status  // 변경된 창문 상태
+            };
+
+            // WebSocket을 통해 서버로 JSON 데이터 전송
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(updatedData));  // JSON으로 변환하여 전송
+                console.log("서버로 전송된 데이터:", updatedData);
+            } else {
+                console.log("WebSocket이 열리지 않았습니다.");
+            }
+        }
+
+        // 버튼 클릭 시 서버에 연결
+        document.getElementById("connectBtn").onclick = function() {
+            connectToServer();
+        };
+    </script>
+</body>
+</html>
