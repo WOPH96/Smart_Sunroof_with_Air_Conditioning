@@ -11,7 +11,7 @@ typedef enum {
 } SunroofState;
 
 // 상수 정의
-#define SUNROOF_PWM_SPEED 700          // PWM 기본 속도
+#define SUNROOF_PWM_SPEED 300          // PWM 기본 속도
 #define SUNROOF_OPEN_TIME_MS 5000      // 선루프 완전히 열리는 데 걸리는 시간 (ms)
 #define SUNROOF_CLOSE_TIME_MS 5000     // 선루프 완전히 닫히는 데 걸리는 시간 (ms)
 
