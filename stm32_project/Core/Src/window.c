@@ -1,5 +1,6 @@
 #include "window.h"
 #include "can.h"
+#include "main.h"
 
 // 전역 변수 정의
 volatile uint32_t window_timer_ms = 0;       // 창문 동작 시간(ms)
@@ -66,7 +67,8 @@ void Window_ControlMode(void) {
     if (motor1_smart_flag == 1) {
         if (motor1_smart == 2) { // 창문 열기 명령
             OpenWindow(motor1_smart_pct); // 목표 열림 비율만큼 열기
-        } else if (motor1_smart == 1) { // 창문 닫기 명령
+            }
+        else if (motor1_smart == 1) { // 창문 닫기 명령
             CloseWindow(motor1_smart_pct); // 목표 닫힘 비율만큼 닫기
         }
         motor1_smart_flag = 0; // 이벤트 처리 완료, 플래그 초기화

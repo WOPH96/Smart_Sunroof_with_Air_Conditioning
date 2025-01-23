@@ -45,7 +45,7 @@ void Sound_Track(uint8_t nums){
 	if (nums==19){
 	Send_cmd(0x03, 0x00, 1);}
 	if (nums==20){
-		Send_cmd(0x03, 0x00, 1);}
+		Send_cmd(0x03, 0x00, 2);}
 	if (nums==21){
 		Send_cmd(0x03, 0x00, 3);}
 	if (nums==22){
@@ -56,6 +56,15 @@ void Sound_Track(uint8_t nums){
 		Send_cmd(0x03, 0x00, 6);}
 	if (nums==25){
 		Send_cmd(0x03, 0x00, 7);}
+	if (nums==1){
+		Send_cmd(0x03, 0x00, 8);}
+	if (nums==2){
+		Send_cmd(0x03, 0x00, 9);}
+	if (nums==3){
+		Send_cmd(0x03, 0x00, 10);}
+	if (nums==4){
+		Send_cmd(0x03, 0x00, 11);}
+
 
 	audio_flag=0;
 }
@@ -64,10 +73,10 @@ void Sound_Track(uint8_t nums){
 void DF_Init (uint8_t volume)
 {
 	Send_cmd(0x3F, 0x00, Source);
-	//HAL_Delay(200);
+	HAL_Delay(200);
 	Send_cmd(0x06, 0x00, volume);
-	//HAL_Delay(500);
+	HAL_Delay(500);
 }
 	//****************************Check_Key Code***************************************//
 
-3
+
