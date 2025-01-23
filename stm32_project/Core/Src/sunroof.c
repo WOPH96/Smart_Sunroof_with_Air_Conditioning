@@ -85,7 +85,7 @@ void Sunroof_Open(int percent) {
         running_sunroof = 2;                // 모터 상태: 열림
         sunroof_state = SUNROOF_OPENING;    // 선루프 상태 변경
         target_position_sun = percent;     // 목표 위치 설정
-        sunroof_timer_ms = 0;              // 타이머 초기화
+        sunroof_timer_ms =(100-sunroof_pulse_count) * SUNROOF_OPEN_TIME_MS / 100;           // 타이머 초기화
         Sunroof_SetDirection(1);           // 정방향 설정
         Sunroof_SetPWM(SUNROOF_PWM_SPEED); // PWM 활성화
     }
@@ -101,7 +101,7 @@ void Sunroof_Close(int percent) {
         running_sunroof = 1;                // 모터 상태: 닫힘
         sunroof_state = SUNROOF_CLOSING;    // 선루프 상태 변경
         target_position_sun = percent;     // 목표 위치 설정
-        sunroof_timer_ms = 0;              // 타이머 초기화
+        sunroof_timer_ms = sunroof_pulse_count * SUNROOF_CLOSE_TIME_MS / 100;              // 타이머 초기화
         Sunroof_SetDirection(-1);          // 역방향 설정
         Sunroof_SetPWM(SUNROOF_PWM_SPEED); // PWM 활성화
     }
