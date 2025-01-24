@@ -32,6 +32,7 @@
 #include "sunroof.h"
 #include "STM_LCD16X2.h"
 #include "LCD_Logic.h"
+#include "Common_def.h"
 
 /* USER CODE END Includes */
 
@@ -203,19 +204,20 @@ int main(void)
 			  db_msg.driver_engine.B.Flag = 0;
 
 			  // 시동 OFF
-			  if (db_msg.driver_engine.B.engine_mode == 0)
+			  if (db_msg.driver_engine.B.engine_mode == ENGINE_OFF)
 			  {
 				  off_heater();
 				  off_ac();
 				  actuator_power = 0;
 			  }
 			  // 저전력
-			  else if (db_msg.driver_engine.B.engine_mode == 1)
+			  else if (db_msg.driver_engine.B.engine_mode == UTILITY)
 			  {
 				  actuator_power = 1;
+
 			  }
 			  // 시동 ON
-			  else if (db_msg.driver_engine.B.engine_mode == 2)
+			  else if (db_msg.driver_engine.B.engine_mode == DRIVING)
 			  {
 				  actuator_power = 1;
 			  }
@@ -430,12 +432,15 @@ void AppTask1000ms(void)
 
     stTestCnt.u32nuCnt1000ms++;
     {
-    	battery_data_out();
+    	output_message(&db_msg.battery, BATTERY_MSG_ID);
+    }
+    {
 		db_msg.audio.B.Audio_alive = actuator_power;
 		db_msg.audio.B.Audio_running = 0;
 		output_message(&db_msg.audio,AUDIO_MSG_ID);
-		printf("window %ld \r\n", window_pulse_count);
-		printf("sunroof %ld \r\n",sunroof_pulse_count);
+
+//		printf("window %ld \r\n", window_pulse_count);
+//		printf("sunroof %ld \r\n",sunroof_pulse_count);
 
     }
 }
