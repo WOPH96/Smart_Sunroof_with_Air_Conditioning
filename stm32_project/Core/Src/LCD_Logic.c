@@ -13,11 +13,13 @@
 #include <stdio.h>
 
 #include "LCD_Logic.h"
-#include "LCD_def.h"
-
+#include "Common_def.h"
+#include "DFPlayer.h"
 
 VehicleState vehicle;
-
+float *use_battery = NULL;
+float *other_battery = NULL;
+int is_solar_battery_charging = 0;
 // 차량 배터리 소모 계산
 void consume_car_battery()
 {
@@ -25,13 +27,28 @@ void consume_car_battery()
 	{
 		// 메시지 생기면 대체
 		int consumption = MOTOR_CONSUM * vehicle.motor_speed; // 차량 이동 속도 (모터) 값에 비례
-		if (vehicle.car_battery >= consumption)
+		if(is_solar_battery_charging)// 충전중이면, 원래 로직으로 사용
 		{
-			vehicle.car_battery -= consumption;
+			if (vehicle.car_battery >= consumption)
+			{
+				vehicle.car_battery -= consumption;
+			}
+			else
+			{
+				vehicle.car_battery = 0;
+			}
 		}
 		else
 		{
-			vehicle.car_battery = 0;
+			if (*use_battery >= consumption)
+			{
+				*use_battery -= consumption;
+			}
+			else
+			{
+				*other_battery -= (consumption - *use_battery);
+				*use_battery = 0;
+			}
 		}
 	}
 }
@@ -46,8 +63,8 @@ void charge_solar_battery()
 		//light.B.Light_pct = 일단 60정도면 어두운데, 임의로 값 조정
 		float charge_amount = (db_msg.light.B.Light_pct * 0.0001 * // 조도, 선루프 닫힘에 비례한 충전
 				db_msg.motor2_sunroof.B.motor2_tick_counter * ECOBAT_CHARGING);
-//		float charge_amount = (ECOBAT_CHARGING * vehicle.light_intensity * 0.01); // 조도에 비례한 충전
 
+		is_solar_battery_charging = charge_amount >0 ? 1 : 0;
 		if (vehicle.solar_battery + charge_amount < MAX_CHARGE_ECO)
 		{
 			vehicle.solar_battery += charge_amount;
@@ -100,23 +117,67 @@ void consume_solar_battery()
 		consumption += AUDIO_CONSUM;
 	}
 
-	if (vehicle.solar_battery >= consumption)
-		vehicle.solar_battery -= consumption;
+	if (is_solar_battery_charging) // 충전중이면, 원래 로직으로 사용
+	{
+		if (vehicle.solar_battery >= consumption)
+			vehicle.solar_battery -= consumption;
+		else
+		{
+			// 모자란 부분 car_battery에서 감소
+			vehicle.car_battery -= (consumption - vehicle.solar_battery);
+			// 태양광 에너지 = 0
+			vehicle.solar_battery = 0;
+		}
+	}
 	else
 	{
-		// 모자란 부분 car_battery에서 감소
-		vehicle.car_battery -= (consumption - vehicle.solar_battery);
-		// 태양광 에너지 = 0
-		vehicle.solar_battery = 0;
+		if (*use_battery >= consumption)
+			*use_battery -= consumption;
+		else
+		{
+			*other_battery -= (consumption - *use_battery);
+			*use_battery = 0;
+		}
 	}
 }
-
+void switching_battery()
+{
+	if (vehicle.car_battery < MAX_CHARGE_CAR*0.3) // 차량 배터리가 30% 미만이면,
+	{
+		use_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
+		other_battery = &vehicle.car_battery;
+	}
+	else
+	{
+		// More nuanced battery selection
+		if (vehicle.solar_battery >= MAX_CHARGE_ECO*0.5) // 태양광 배터리가 50% 이상이면,
+		{
+			use_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
+			other_battery = &vehicle.car_battery;
+		}
+		else
+		{
+			use_battery = &vehicle.car_battery; // 차량 배터리도 30퍼 이상이고, 태양광배터리도 50퍼 미만이면
+			other_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
+		}
+	}
+}
+void battery_out_check()
+{
+	if(vehicle.car_battery == 0 && vehicle.solar_battery == 0)
+	{
+		// 배터리가 없어 종료됩니다!
+		Sound_Track(53);
+	}
+}
 // 상태 업데이트 함수
 void update_vehicle_vehicle()
 {
+	switching_battery();
 	consume_car_battery();
 	charge_solar_battery();
 	consume_solar_battery();
+	battery_out_check();
 
 }
 
@@ -128,11 +189,8 @@ void init_vehicle_state()
 
 	//임의 값들
 	vehicle.light_intensity = 80;
-	vehicle.is_driving = 1;
+	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
 	vehicle.motor_speed = 6;
 }
 
-void battery_data_out(){
 
-	output_message(&db_msg.battery, BATTERY_MSG_ID);
-}
