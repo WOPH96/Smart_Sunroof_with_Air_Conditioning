@@ -1,12 +1,12 @@
 /*
- * LCD_def.h
+ * Common_def.h
  *
  *  Created on: Jan 22, 2025
  *      Author: USER
  */
 
-#ifndef INC_LCD_DEF_H_
-#define INC_LCD_DEF_H_
+#ifndef INC_COMMON_DEF_H_
+#define INC_COMMON_DEF_H_
 
 typedef enum
 {
@@ -14,14 +14,21 @@ typedef enum
 	STRONG
 }WindIntensity;
 
-typedef enum{
+typedef enum
+{
 	OPEN
-}SunroofState;
+}SunroofOpenState;
 
 typedef enum{
 	DIE,
 	ALIVE
 }AliveState;
+
+typedef enum{
+	ENGINE_OFF,
+	UTILITY,
+	DRIVING
+}EngineState;
 
 #define MOTOR_CONSUM			(3)
 
@@ -33,4 +40,4 @@ typedef enum{
 
 #define ECOBAT_CHARGING			(13)
 
-#endif /* INC_LCD_DEF_H_ */
+#endif /* INC_COMMON_DEF_H_ */

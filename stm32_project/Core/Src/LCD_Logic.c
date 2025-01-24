@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #include "LCD_Logic.h"
-#include "LCD_def.h"
+#include "Common_def.h"
 #include "DFPlayer.h"
 
 VehicleState vehicle;
@@ -27,7 +27,7 @@ void consume_car_battery()
 	{
 		// 메시지 생기면 대체
 		int consumption = MOTOR_CONSUM * vehicle.motor_speed; // 차량 이동 속도 (모터) 값에 비례
-		if(is_solar_battery_charging)
+		if(is_solar_battery_charging)// 충전중이면, 원래 로직으로 사용
 		{
 			if (vehicle.car_battery >= consumption)
 			{
@@ -117,7 +117,7 @@ void consume_solar_battery()
 		consumption += AUDIO_CONSUM;
 	}
 
-	if (is_solar_battery_charging)
+	if (is_solar_battery_charging) // 충전중이면, 원래 로직으로 사용
 	{
 		if (vehicle.solar_battery >= consumption)
 			vehicle.solar_battery -= consumption;
@@ -142,23 +142,23 @@ void consume_solar_battery()
 }
 void switching_battery()
 {
-	if (vehicle.car_battery < MAX_CHARGE_CAR*0.3)
+	if (vehicle.car_battery < MAX_CHARGE_CAR*0.3) // 차량 배터리가 30% 미만이면,
 	{
-		use_battery = &vehicle.solar_battery;
+		use_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
 		other_battery = &vehicle.car_battery;
 	}
 	else
 	{
 		// More nuanced battery selection
-		if (vehicle.solar_battery >= MAX_CHARGE_ECO*0.5)
+		if (vehicle.solar_battery >= MAX_CHARGE_ECO*0.5) // 태양광 배터리가 50% 이상이면,
 		{
-			use_battery = &vehicle.solar_battery;
+			use_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
 			other_battery = &vehicle.car_battery;
 		}
 		else
 		{
-			use_battery = &vehicle.car_battery;
-			other_battery = &vehicle.solar_battery;
+			use_battery = &vehicle.car_battery; // 차량 배터리도 30퍼 이상이고, 태양광배터리도 50퍼 미만이면
+			other_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
 		}
 	}
 }
@@ -189,11 +189,8 @@ void init_vehicle_state()
 
 	//임의 값들
 	vehicle.light_intensity = 80;
-	vehicle.is_driving = 1;
+	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
 	vehicle.motor_speed = 6;
 }
 
-void battery_data_out(){
 
-	output_message(&db_msg.battery, BATTERY_MSG_ID);
-}

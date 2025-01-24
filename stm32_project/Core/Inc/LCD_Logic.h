@@ -38,6 +38,5 @@ void switching_battery();
 void battery_out_check();
 void update_vehicle_vehicle();
 void init_vehicle_state();
-void battery_data_out();
 
 #endif /* INC_LCD_LOGIC_H_ */
