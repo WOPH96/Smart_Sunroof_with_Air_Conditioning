@@ -396,6 +396,7 @@ void AppTask100ms(void)
     	}
     	else{
     		LCD1602_noDisplay();
+    		battery_out_check();
     		db_msg.battery.B.Battery_use = 0;
     		db_msg.battery.B.Battery_state = 0;
     		db_msg.battery.B.Battery_spare_state = 0;

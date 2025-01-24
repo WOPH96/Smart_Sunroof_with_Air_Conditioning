@@ -27,7 +27,7 @@ void consume_car_battery()
 	{
 		// 메시지 생기면 대체
 		int consumption = MOTOR_CONSUM * vehicle.motor_speed; // 차량 이동 속도 (모터) 값에 비례
-		if(is_solar_battery_charging)// 충전중이면, 원래 로직으로 사용
+		if(0)//is_solar_battery_charging)// 충전중이면, 원래 로직으로 사용
 		{
 			if (vehicle.car_battery >= consumption)
 			{
@@ -117,7 +117,7 @@ void consume_solar_battery()
 		consumption += AUDIO_CONSUM;
 	}
 
-	if (is_solar_battery_charging) // 충전중이면, 원래 로직으로 사용
+	if (0)//is_solar_battery_charging) // 충전중이면, 원래 로직으로 사용
 	{
 		if (vehicle.solar_battery >= consumption)
 			vehicle.solar_battery -= consumption;
@@ -178,7 +178,7 @@ void update_vehicle_vehicle()
 	consume_car_battery();
 	charge_solar_battery();
 	consume_solar_battery();
-	battery_out_check();
+//	battery_out_check();
 
 }
 
