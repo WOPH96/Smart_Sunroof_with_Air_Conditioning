@@ -43,17 +43,16 @@ void Window_Init(void) {
 // 창문 제어 모드
 void Window_ControlMode(void) {
     // 1. 손 끼임 발생 시 즉시 모터 정지
-    if (safety_win_flag == 1 && safety_win == 1) {
+    if (safety_win_flag == 1 && safety_win == 2) {
         Window_Stop();       // 창문 정지
         OpenWindow(0);      // 창문 다 열기
         safety_win_flag = 0; // 이벤트 처리 완료, 플래그 초기화
-        safety_win = 0;
         return;
     }
 
     // 2. 운전자 개입 발생 시
-    if (override_flag_win == 1&& safety_win_flag == 0) {
-    	Window_Stop();
+    if (override_flag_win == 1 && safety_win==0) {
+    	//Window_Stop();
         if (override_win == 0) { // 창문 열기 버튼 누름
             OpenWindow(0); // 창문 완전히 열기
         } else if (override_win == 2) { // 창문 닫기 버튼 누름
@@ -67,7 +66,8 @@ void Window_ControlMode(void) {
     }
 
     // 3. 스마트 제어 발생 시
-    if (motor1_smart_flag == 1&& safety_win_flag == 0) {
+    if (motor1_smart_flag == 1) {
+    	//Window_Stop();
         if (motor1_smart == 2) { // 창문 열기 명령
             OpenWindow(motor1_smart_pct); // 목표 열림 비율만큼 열기
             }
@@ -137,6 +137,9 @@ void Window_UpdateState(void) {
             return;
         }
     }
+    if (window_pulse_count==0){
+    	safety_win=0;
+    }
 }
 
 // 창문 정지
@@ -144,6 +147,7 @@ void Window_Stop(void) {
     window_state = WINDOW_STOPPED;
     Window_SetPWM(0); // PWM 듀티를 0으로 설정하여 모터 정지
     running_win = 0;  // 모터 상태 초기화
+    //safety_win = 0;
     window_timer_ms = 0;
 }
 
