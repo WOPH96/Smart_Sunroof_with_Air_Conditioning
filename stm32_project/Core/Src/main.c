@@ -64,7 +64,7 @@ typedef struct
 
 } Taskcnt;
 
-uint8_t actuator_power = 1;  //시동 켜지면 1
+uint8_t actuator_power = 0;  //시동 켜지면 1
 
 Taskcnt stTestCnt;
 

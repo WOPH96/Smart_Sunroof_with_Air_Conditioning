@@ -192,6 +192,9 @@ void Sound_Track(uint8_t nums){
         case 52:
                    Send_cmd(0x03, 0x00, 51); // 049.mp3 실행
             break;
+        case 53:
+                   Send_cmd(0x03, 0x00, 52); // 053.mp3 실행
+            break;
         default:
             // 기본 동작이 필요한 경우 처리
             break;
