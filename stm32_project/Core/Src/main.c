@@ -275,8 +275,8 @@ int main(void)
 			db_msg.smart_audio.B.Flag = 0;
 			printf("audio : %d \r\n",db_msg.smart_audio.B.Audio_file);
 			audio_num=db_msg.smart_audio.B.Audio_file;
-			audio_flag=1;
-			if(audio_flag==1){
+			checkState_DF();
+			if(audio_state==2){
 				Sound_Track(audio_num);
 			}
 //			// 처리 로직 예시
@@ -385,7 +385,7 @@ void AppTask10ms(void)
 void AppTask100ms(void)
 {
     stTestCnt.u32nuCnt100ms++;
-    Query_Status();
+
     {
     	db_msg.battery.B.Battery_alive = actuator_power;
     	if(actuator_power == 1){
@@ -436,7 +436,7 @@ void AppTask1000ms(void)
     }
     {
 		db_msg.audio.B.Audio_alive = actuator_power;
-		db_msg.audio.B.Audio_running = 0;
+		db_msg.audio.B.Audio_running = audio_state;
 		output_message(&db_msg.audio,AUDIO_MSG_ID);
 
 //		printf("window %ld \r\n", window_pulse_count);

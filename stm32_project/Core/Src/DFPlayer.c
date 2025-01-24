@@ -10,6 +10,18 @@ int audio_state=0;
 
 extern UART_HandleTypeDef huart3;
 
+void checkState_DF() {
+    if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_4) == GPIO_PIN_RESET) {
+        // Busy 핀이 Low: 오디오 재생 중
+        audio_state=1;
+    } else {
+        // Busy 핀이 High: 오디오 재생 중이 아님
+       audio_state=2;
+    }
+}
+
+
+
 
 
 void Send_cmd (uint8_t cmd, uint8_t Parameter1, uint8_t Parameter2)
