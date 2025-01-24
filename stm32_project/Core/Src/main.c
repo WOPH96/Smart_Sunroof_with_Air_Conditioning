@@ -284,8 +284,9 @@ int main(void)
 //		// 712
 		if (db_msg.safety_window.B.Flag == 1)
 		{
-			safety_win_flag=1;
 			db_msg.safety_window.B.Flag = 0;
+			safety_win_flag=1;
+
 			safety_win=db_msg.safety_window.B.motor1_smart_state;
 
 		}

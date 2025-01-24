@@ -39,16 +39,16 @@ void Sunroof_Init(void) {
 // 선루프 제어 모드
 void Sunroof_ControlMode(void) {
     // 1. 손 끼임 발생 시 즉시 모터 정지
-    if (safety_sun_flag == 1 && saftey_sun == 1) {
+    if (safety_sun_flag == 1 && saftey_sun == 2) {
         Sunroof_Stop();         // 선루프 정지
         Sunroof_Open(0);       // 선루프 70% 열기
         safety_sun_flag = 0;    // 이벤트 처리 완료, 플래그 초기화
-        saftey_sun=0;
         return;
     }
 
     // 2. 운전자 개입 발생 시
     if (override_flag_sun == 1 && saftey_sun == 0) {
+    	//Sunroof_Stop();
         if (override_sun == 0) { // 선루프 열기 버튼 누름
             Sunroof_Open(0);  // 선루프 완전히 열기
         } else if (override_sun == 2) { // 선루프 닫기 버튼 누름
@@ -62,7 +62,8 @@ void Sunroof_ControlMode(void) {
 
     // 3. 스마트 제어 발생 시
     if (motor2_smart_flag == 1 && saftey_sun == 0) {
-        if (motor2_smart == 2) { // 선루프 열기 명령
+    	//Window_Stop();
+    	if (motor2_smart == 2) { // 선루프 열기 명령
             Sunroof_Open(0); // 목표 열림 비율만큼 열기
         } else if (motor2_smart == 1) { // 선루프 닫기 명령
             Sunroof_Close(100); // 목표 닫힘 비율만큼 닫기
@@ -129,6 +130,9 @@ void Sunroof_UpdateState(void) {
             return;
         }
     }
+    if (sunroof_pulse_count==0){
+    	saftey_sun=0;
+    }
 }
 
 // 선루프 정지
@@ -137,6 +141,7 @@ void Sunroof_Stop(void) {
     Sunroof_SetPWM(0); // PWM 듀티를 0으로 설정하여 모터 정지
     running_sunroof = 0; // 모터 상태 초기화
     sunroof_timer_ms=0;
+    //saftey_sun=0;
 }
 
 // PWM 듀티 사이클 설정
