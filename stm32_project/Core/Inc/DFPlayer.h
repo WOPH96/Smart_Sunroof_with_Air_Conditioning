@@ -23,4 +23,5 @@ void Send_cmd (uint8_t cmd, uint8_t Parameter1, uint8_t Parameter2);
 void DF_Init (uint8_t volume);
 void Query_Status(void);
 void Sound_Track(uint8_t nums);
+void checkState_DF();
 #endif
