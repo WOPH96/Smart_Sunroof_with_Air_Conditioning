@@ -43,11 +43,12 @@ void Sunroof_ControlMode(void) {
         Sunroof_Stop();         // 선루프 정지
         Sunroof_Open(0);       // 선루프 70% 열기
         safety_sun_flag = 0;    // 이벤트 처리 완료, 플래그 초기화
+        saftey_sun=0;
         return;
     }
 
     // 2. 운전자 개입 발생 시
-    if (override_flag_sun == 1) {
+    if (override_flag_sun == 1 && saftey_sun == 0) {
         if (override_sun == 0) { // 선루프 열기 버튼 누름
             Sunroof_Open(0);  // 선루프 완전히 열기
         } else if (override_sun == 2) { // 선루프 닫기 버튼 누름
@@ -60,13 +61,14 @@ void Sunroof_ControlMode(void) {
     }
 
     // 3. 스마트 제어 발생 시
-    if (motor2_smart_flag == 1) {
+    if (motor2_smart_flag == 1 && saftey_sun == 0) {
         if (motor2_smart == 2) { // 선루프 열기 명령
             Sunroof_Open(0); // 목표 열림 비율만큼 열기
         } else if (motor2_smart == 1) { // 선루프 닫기 명령
             Sunroof_Close(100); // 목표 닫힘 비율만큼 닫기
         }
         motor2_smart_flag = 0; // 이벤트 처리 완료, 플래그 초기화
+        motor2_smart=0;
         return;
     }
     // 4. 전원off

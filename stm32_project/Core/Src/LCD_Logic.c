@@ -173,6 +173,7 @@ void battery_out_check()
 // 상태 업데이트 함수
 void update_vehicle_vehicle()
 {
+	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
 	switching_battery();
 	consume_car_battery();
 	charge_solar_battery();
