@@ -34,6 +34,8 @@ extern VehicleState vehicle;
 void consume_car_battery();
 void charge_solar_battery();
 void consume_solar_battery();
+void switching_battery();
+void battery_out_check();
 void update_vehicle_vehicle();
 void init_vehicle_state();
 void battery_data_out();
