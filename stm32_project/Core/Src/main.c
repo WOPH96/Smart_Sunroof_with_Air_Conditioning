@@ -390,16 +390,17 @@ void AppTask100ms(void)
     {
     	db_msg.battery.B.Battery_alive = actuator_power;
     	if(actuator_power == 1){
+    		db_msg.battery.B.Battery_use = 3;
     		LCD1602_display();
 			update_vehicle_vehicle();
 			show_LCD();
     	}
     	else{
+//    		battery_out_check();
     		LCD1602_noDisplay();
-    		battery_out_check();
     		db_msg.battery.B.Battery_use = 0;
-    		db_msg.battery.B.Battery_state = 0;
-    		db_msg.battery.B.Battery_spare_state = 0;
+//    		db_msg.battery.B.Battery_state = 0;
+//    		db_msg.battery.B.Battery_spare_state = 0;
     	}
     }
     {

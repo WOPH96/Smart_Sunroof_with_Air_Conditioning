@@ -46,8 +46,16 @@ void consume_car_battery()
 			}
 			else
 			{
-				*other_battery -= (consumption - *use_battery);
-				*use_battery = 0;
+				if(*other_battery <= consumption)
+				{
+					*use_battery = 0;
+					*other_battery = 0;
+				}
+				else
+				{
+					*other_battery -= (consumption - *use_battery);
+					*use_battery = 0;
+				}
 			}
 		}
 	}
@@ -135,8 +143,16 @@ void consume_solar_battery()
 			*use_battery -= consumption;
 		else
 		{
-			*other_battery -= (consumption - *use_battery);
-			*use_battery = 0;
+			if(*other_battery <= consumption)
+			{
+				*use_battery = 0;
+				*other_battery = 0;
+			}
+			else
+			{
+				*other_battery -= (consumption - *use_battery);
+				*use_battery = 0;
+			}
 		}
 	}
 }
@@ -158,13 +174,14 @@ void switching_battery()
 		else
 		{
 			use_battery = &vehicle.car_battery; // 차량 배터리도 30퍼 이상이고, 태양광배터리도 50퍼 미만이면
-			other_battery = &vehicle.solar_battery; // 메인 배터리를 태양광 배터리로 사용
+			other_battery = &vehicle.solar_battery; // 메인 배터리를 차량 배터리로 사용
 		}
 	}
 }
 void battery_out_check()
 {
-	if(vehicle.car_battery == 0 && vehicle.solar_battery == 0)
+	if(db_msg.battery.B.Battery_spare_state == 0 &&
+			db_msg.battery.B.Battery_state == 0)
 	{
 		// 배터리가 없어 종료됩니다!
 		Sound_Track(53);
@@ -178,7 +195,7 @@ void update_vehicle_vehicle()
 	consume_car_battery();
 	charge_solar_battery();
 	consume_solar_battery();
-//	battery_out_check();
+	battery_out_check();
 
 }
 
@@ -186,10 +203,10 @@ void init_vehicle_state()
 {
 
 	vehicle.car_battery = MAX_CHARGE_CAR ;	// 77.4k = 100% 초기값 38700
-	vehicle.solar_battery = MAX_CHARGE_ECO/2 ; // 4.8k = 100% 초기값 2400
+	vehicle.solar_battery = MAX_CHARGE_ECO*0.7 ; // 4.8k = 100% 초기값 2400
 
 	//임의 값들
-	vehicle.light_intensity = 80;
+//	vehicle.light_intensity = 80;
 	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
 	vehicle.motor_speed = 6;
 }
