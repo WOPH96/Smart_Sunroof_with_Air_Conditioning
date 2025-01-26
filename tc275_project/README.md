@@ -100,10 +100,7 @@ acceptanceMask → 비교하고자 하는 ID = 0x0으로 설정
 /*Cpu0_Main.c/core0_main()*/
 initCan();
 initCanDB();
-
-Can과 CanDB 초기화 함수를 사용하여, CAN 통신을 활성화하고 DB를 초기화한다.
-
-
+//Can과 CanDB 초기화 함수를 사용하여, CAN 통신을 활성화하고 DB를 초기화한다.
 
 while(1)
 {
@@ -111,6 +108,8 @@ while(1)
   {
     db_msg.TH_sensor.B.Flag = 0; // 필수 처리!
     //처리 로직
+    db_msg.smart_ac.B.Air_fan_speed = 2;
+    output_message(&db_msg.smart_ac, SMART_AC_MSG_ID);
   }
 }
 ```
