@@ -62,9 +62,23 @@ canMsgObjConfig.rxInterrupt.srcId = TC275_CAN0;
 IFX_INTERRUPT(RX_Int0Handler, 0, 101);
 
 /*OurCan.c/RX_Int0Handler() */
+
 void RX_Int0Handler (void)
 {
-    /**/
+    if (IfxMultican_Can_MsgObj_readMessage(&canMsgObjRx, &readmsg) == IfxMultican_Status_newData)
+    {
+        switch (readmsg.id)
+        {
+        case MOTOR1_WINDOW_MSG_ID:
+        {
+            db_msg.motor1_window.U = ((uint64)readmsg.data[1] << 32) | ((uint64)readmsg.data[0]);
+            db_msg.motor1_window.B.Flag = 1;
+            //            db_msg.motor1_window = *(OurCanMotor1Window*)readmsg.data;
+            //            db_msg.motor1_window.B.Flag = 1;
+            break;
+        }
+        }
+        /**/
 }
 ```
 
