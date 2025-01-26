@@ -50,7 +50,7 @@ DB에 순서와 상관없이 메시지들을 추가한다.
 ## 인터럽트 정의
 
 ```c
-/*OurCac.c/initCan()*/
+/*OurCan.c/initCan()*/
 //CAN0 인터럽트 활성화
 canConfig.nodePointer[TC275_CAN0].priority      = 101;
 canConfig.nodePointer[TC275_CAN0].typeOfService = IfxSrc_Tos_cpu0;
@@ -58,10 +58,10 @@ canConfig.nodePointer[TC275_CAN0].typeOfService = IfxSrc_Tos_cpu0;
 canMsgObjConfig.rxInterrupt.enabled = TRUE;
 canMsgObjConfig.rxInterrupt.srcId = TC275_CAN0;
 
-/*OurCac.c*/
+/*OurCan.c*/
 IFX_INTERRUPT(RX_Int0Handler, 0, 101);
 
-/*OurCac.c/RX_Int0Handler() */
+/*OurCan.c/RX_Int0Handler() */
 void RX_Int0Handler (void)
 {
     /**/
@@ -79,7 +79,7 @@ Handler를 정의하여 내부에 인터럽트가 걸렸을 때 어떤 작업을
 필터를 통해 특정 메시지만 들어오게 설정 가능
 
 ```c
-/*OurCac.c/initCan()*/
+/*OurCan.c/initCan()*/
 // Rx 메시지 객체 초기화
 canMsgObjConfig.msgObjId    = 1;  // 메시지 객체 ID
 canMsgObjConfig.messageId   = CAN_RX_MESSAGE_ID;
