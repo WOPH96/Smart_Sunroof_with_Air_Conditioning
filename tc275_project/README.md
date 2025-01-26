@@ -73,8 +73,6 @@ void RX_Int0Handler (void)
         {
             db_msg.motor1_window.U = ((uint64)readmsg.data[1] << 32) | ((uint64)readmsg.data[0]);
             db_msg.motor1_window.B.Flag = 1;
-            //            db_msg.motor1_window = *(OurCanMotor1Window*)readmsg.data;
-            //            db_msg.motor1_window.B.Flag = 1;
             break;
         }
         }
