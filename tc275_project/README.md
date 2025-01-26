@@ -52,14 +52,14 @@ DB에 순서와 상관없이 메시지들을 추가한다.
 ```c
 /*OurCac.c/initCan()*/
 //CAN0 인터럽트 활성화
-canConfig.nodePointer[TC275_CAN0].priority      = 10;
+canConfig.nodePointer[TC275_CAN0].priority      = 101;
 canConfig.nodePointer[TC275_CAN0].typeOfService = IfxSrc_Tos_cpu0;
 
 canMsgObjConfig.rxInterrupt.enabled = TRUE;
 canMsgObjConfig.rxInterrupt.srcId = TC275_CAN0;
 
 /*OurCac.c*/
-IFX_INTERRUPT(RX_Int0Handler, 0, 10);
+IFX_INTERRUPT(RX_Int0Handler, 0, 101);
 
 /*OurCac.c/RX_Int0Handler() */
 void RX_Int0Handler (void)
