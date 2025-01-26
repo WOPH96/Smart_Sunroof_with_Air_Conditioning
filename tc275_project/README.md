@@ -25,9 +25,9 @@ typedef struct
 
 typedef union
 {
-    unsigned int U;                         /**< \brief Unsigned access */
-    signed int I;                           /**< \brief Signed access */
-    OurCanTHSensorBits B;                   /**< \brief Bitfield access */
+    unsigned long long U;                         /**< \brief Unsigned access */
+    signed long long I;                           /**< \brief Signed access */
+    OurCanTHSensorBits B;                         /**< \brief Bitfield access */
 }OurCanTHSensor;
 ```
 
