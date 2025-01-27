@@ -196,8 +196,8 @@ PyQt5
 pyqtgraph   
 인터넷 연결 (날씨, 미세먼지 정보 수신용)  
 CAN 통신 인터페이스(PCAN Driver : https://www.peak-system.com/PCAN-USB-FD.365.0.html?&L=1) 리눅스용 드라이버 다운  
-Aurix IDE
-Cube IDE, Cube MX
+Aurix IDE  
+STM32Cube IDE, STM32Cube MX
 
 ## 6. 필요 센서  
 공기질 센서, 빗물 센서, 소음감지 센서, 터치 센서, DC 모터, 팬, MP3모듈, 스피커, LCD 16x2, 라즈베리파이용 모니터, CAN 트랜시버, PCAN 등.
