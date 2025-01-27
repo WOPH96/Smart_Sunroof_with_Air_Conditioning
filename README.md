@@ -107,7 +107,7 @@
 
 ### 2.3 제어 기능
 
-<기본 제어 - 수동조작>
+**<기본 제어 - 수동조작>**
 
 ![image](https://github.com/user-attachments/assets/a178fa3b-ff80-4f98-8423-9a675c92da15)
 
@@ -136,7 +136,7 @@
 
 
 
-<스마트 제어>
+**<스마트 제어>**
 
 **- 차량 외부 상태에 따른 창문 및 선루프 제어**    
 ![image](https://github.com/user-attachments/assets/fc9fe366-26c7-487b-9496-9f0c226080e7)
