@@ -27,6 +27,7 @@ class MessageIDs:
     AIRCONDITIONER = 0x755
     AUDIO = 0x753
     BATTERY = 0x76F
+    SMART_CONTROL_STATE = 0x770
 
     @classmethod
     def get_filters(cls):
@@ -130,6 +131,16 @@ class BatteryMsg(BaseMsg):
         ("reserved", c_uint64, 15)             # 나머지 15비트
     ]
     
+# 스마트 컨트롤 상태 메세지
+class SmartCtrlStateMsg(BaseMsg):
+    _fields_ = [
+        ("motor1_smart_control", c_uint64, 1),     # 1비트 (0-1)
+        ("motor2_smart_control", c_uint64, 1),     # 1비트 (0-1)
+        ("heater_smart_control", c_uint64, 1),     # 1비트 (0-1)
+        ("air_smart_control", c_uint64, 1),        # 1비트 (0-1)
+        ("audio_smart_control", c_uint64, 1),       # 1비트 (0-1)
+        ("reserved", c_uint64, 27)             # 나머지 reserved비트
+    ]
     
 # 비트 처리를 위한 도우미 함수들
 def encode_temp(temp: float) -> int:
@@ -153,6 +164,6 @@ def recv_msg_print(*args, **kwargs):
         print(*args, **kwargs)
 
 # 전역에서 설정
-debug_print.enabled = True  
-send_msg_print.enabled = True
-recv_msg_print.enabled = True
+debug_print.enabled = False  
+send_msg_print.enabled = False
+recv_msg_print.enabled = False

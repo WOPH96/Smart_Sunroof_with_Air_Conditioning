@@ -6,7 +6,6 @@
 # @date 2025-01-19
 #******************************************************************************
 
-# can_module.py
 import can
 import threading
 from PyQt5.QtCore import QThread, pyqtSignal
