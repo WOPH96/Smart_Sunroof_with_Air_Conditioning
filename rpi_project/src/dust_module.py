@@ -6,7 +6,6 @@
 # @date 2025-01-19
 #******************************************************************************
 
-# dust_module.py
 from PyQt5.QtCore import QThread, pyqtSignal
 import requests
 import pandas as pd

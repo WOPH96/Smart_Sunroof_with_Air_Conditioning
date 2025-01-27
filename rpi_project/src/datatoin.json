@@ -1,0 +1,8 @@
+{
+    "engine_status": 10,
+    "ac_status": 10,
+    "heater_status": 10,
+    "smart_control": 10,
+    "window_control": 10,
+    "sunroof_control": 10
+}
