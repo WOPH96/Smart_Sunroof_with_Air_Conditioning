@@ -7,12 +7,12 @@
 #******************************************************************************
 
 # API Keys
-WEATHER_API_KEY = "5c8184daf3eaa4713c92d2da77b46ac8"
+WEATHER_API_KEY = "개인키"
 DUST_API_KEY = "개인키"
 
 # API URLs
 WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
-DUST_API_URL = "개인키"
+DUST_API_URL = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty"
 
 # Default locations
 DEFAULT_LATITUDE = 37.5665    # Seoul
