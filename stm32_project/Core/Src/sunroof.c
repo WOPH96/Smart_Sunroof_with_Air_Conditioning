@@ -90,7 +90,7 @@ void Sunroof_Open(int percent) {
         target_position_sun = percent;     // 목표 위치 설정
         sunroof_timer_ms =(100-sunroof_pulse_count) * SUNROOF_OPEN_TIME_MS / 100;           // 타이머 초기화
         Sunroof_SetDirection(1);           // 정방향 설정
-        Sunroof_SetPWM(SUNROOF_PWM_SPEED); // PWM 활성화
+        Sunroof_SetPWM(1); // PWM 활성화
     }
 }
 
@@ -106,29 +106,45 @@ void Sunroof_Close(int percent) {
         target_position_sun = percent;     // 목표 위치 설정
         sunroof_timer_ms = sunroof_pulse_count * SUNROOF_CLOSE_TIME_MS / 100;              // 타이머 초기화
         Sunroof_SetDirection(-1);          // 역방향 설정
-        Sunroof_SetPWM(SUNROOF_PWM_SPEED); // PWM 활성화
+        Sunroof_SetPWM(1); // PWM 활성화
     }
 }
 
 // 선루프 상태 업데이트
 void Sunroof_UpdateState(void) {
     if (sunroof_state == SUNROOF_OPENING) {
-        sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
-        sunroof_pulse_count = 100-(sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
+    	sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
+    	if (sunroof_timer_ms > SUNROOF_OPEN_TIME_MS) {
+    	            sunroof_timer_ms = SUNROOF_OPEN_TIME_MS;
+    	        }
 
+    	sunroof_pulse_count = 100-(sunroof_timer_ms * 100) / SUNROOF_OPEN_TIME_MS;
+        //if (sunroof_pulse_count >= 100)sunroof_pulse_count=100;
+        //if (sunroof_pulse_count <= 0)sunroof_pulse_count=0;
         // 목표 위치 도달 시 동작 멈춤
-        if (sunroof_pulse_count <= target_position_sun) {
+        if (sunroof_pulse_count <= target_position_sun || sunroof_pulse_count >100) {
             Sunroof_Stop();
             return;
+
         }
     } else if (sunroof_state == SUNROOF_CLOSING) {
         sunroof_timer_ms += 10; // 10ms 단위로 시간 누적
-        sunroof_pulse_count = (sunroof_timer_ms * 100) / SUNROOF_OPEN_TIME_MS;
+    	if (sunroof_timer_ms > SUNROOF_CLOSE_TIME_MS) {
+    	            sunroof_timer_ms = SUNROOF_CLOSE_TIME_MS;
+    	        }
+
+        sunroof_pulse_count = (sunroof_timer_ms * 100) / SUNROOF_CLOSE_TIME_MS;
+        //if (sunroof_pulse_count >= 100)sunroof_pulse_count=100;
+        //if (sunroof_pulse_count <= 0)sunroof_pulse_count=0;
         // 목표 위치 도달 시 동작 멈춤
         if (sunroof_pulse_count >= target_position_sun) {
             Sunroof_Stop();
             return;
         }
+    }
+    else
+    {
+        Sunroof_Stop();
     }
     if (sunroof_pulse_count==0){
     	saftey_sun=0;

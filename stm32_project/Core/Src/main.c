@@ -158,7 +158,7 @@ int main(void)
 
 	Window_Init();
 	Sunroof_Init();
-	//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 700);
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 0);
 
 	printf("Start\r\n");
 
