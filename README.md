@@ -59,9 +59,9 @@ ESC 키를 눌러 프로그램을 종료
 시스템 재시작
 
 ## 5. 시스템 요구사항
-라즈베리파이 운영체제
-Python 3.12.4
-PyQt5
-pyqtgraph
-인터넷 연결 (날씨, 미세먼지 정보 수신용)
-CAN 통신 인터페이스(PCAN Driver : https://www.peak-system.com/PCAN-USB-FD.365.0.html?&L=1) 리눅스용 드라이버 다운
+라즈베리파이 운영체제 
+Python 3.12.4 
+PyQt5 
+pyqtgraph  
+인터넷 연결 (날씨, 미세먼지 정보 수신용)  
+CAN 통신 인터페이스(PCAN Driver : https://www.peak-system.com/PCAN-USB-FD.365.0.html?&L=1) 리눅스용 드라이버 다운  
