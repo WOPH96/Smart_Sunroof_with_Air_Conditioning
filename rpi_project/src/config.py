@@ -8,10 +8,10 @@
 
 # API Keys
 WEATHER_API_KEY = "개인키"
-DUST_API_KEY = "ddLxxvxf7ilhxYYFCuqwEHp64Fr0faPtVQKfSjNsl/hxhKClf5sJ5DobzIWE4qzvmb1VW7L+grNkH1dmF5SAyg=="
+DUST_API_KEY = "개인키"
 
 # API URLs
-WEATHER_API_URL = "개인키"
+WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
 DUST_API_URL = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty"
 
 # Default locations
