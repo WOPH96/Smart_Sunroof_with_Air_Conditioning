@@ -70,8 +70,7 @@ Discord : 자료 공유, 프로젝트 업무 분장, 대화
 # User Guide
 
 ## 1. 시스템 개요
-
-이 시스템은 차량의 다양한 기능을 제어하고 모니터링하는 인터페이스를 제공합니다.
+![image](https://github.com/user-attachments/assets/4bc8bd64-cb7a-4bb7-ac43-c45efc27238c)
 
 ## 2. 주요 기능
 
