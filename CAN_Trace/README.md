@@ -1,6 +1,6 @@
 # CAN Tracer 사용법
 
-## requirement
+## Requirement
 
 1. Python 설치
 2. venv 활성화 (venv 디렉토리 activate 실행)
