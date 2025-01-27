@@ -54,8 +54,8 @@
 #define TWO_HOUR 1440 // (24분)
 
 // 100ms 기준
-#define TIME_1S 10
 #define TIME_2S 20 // 20
+#define TIME_3S 30
 #define TIME_1MIN 300 // (30초)
 #define TIME_5MIN 1500 // (2분 30초)
 
@@ -612,27 +612,48 @@ void core0_main(void)
                 command_info[AIR].timer.next_priority = NONE;
                 command_info[AIR].timer.trigger_reserved = FALSE;
             }
+            command_info[WINDOW].timer.trigger_reserved = TRUE;
+            command_info[SUNROOF].timer.trigger_reserved = TRUE;
         }
 
         else if (db_msg.motor1_window.B.motor1_tick_counter < 95 ||
                 db_msg.motor2_sunroof.B.motor2_tick_counter < 95) // 창문, 선루프 둘 중 하나라도 94%라도 열린 일 때, 환기 했다고 판단.
         {
-            if (command_info[WINDOW].timer.trigger_counter_1s == 0 && command_info[SUNROOF].timer.trigger_counter_1s == 0) //타이머가 돌아가지 않을 때,
+            if (command_info[WINDOW].timer.next_command == OPEN && command_info[SUNROOF].timer.next_priority == IN_CO2)
             {
                 command_info[WINDOW].timer.trigger_counter_1s = 0;
                 command_info[WINDOW].timer.next_command = 0;
                 command_info[WINDOW].timer.next_sub_command = 0;
                 command_info[WINDOW].timer.next_priority = NONE;
                 command_info[WINDOW].timer.trigger_reserved = FALSE;
+            }
 
+            if (command_info[WINDOW].timer.next_command == OPEN && command_info[SUNROOF].timer.next_priority == IN_CO2)
+            {
                 command_info[SUNROOF].timer.trigger_counter_1s = 0;
                 command_info[SUNROOF].timer.next_command = 0;
                 command_info[SUNROOF].timer.next_sub_command = 0;
                 command_info[SUNROOF].timer.next_priority = NONE;
                 command_info[SUNROOF].timer.trigger_reserved = FALSE;
-
-                needs_ventilation = FALSE; // 환기가 필요 없음
             }
+
+
+//            if (command_info[WINDOW].timer.trigger_counter_1s == 0 && command_info[SUNROOF].timer.trigger_counter_1s == 0) //타이머가 돌아가지 않을 때,
+//            {
+//                command_info[WINDOW].timer.trigger_counter_1s = 0;
+//                command_info[WINDOW].timer.next_command = 0;
+//                command_info[WINDOW].timer.next_sub_command = 0;
+//                command_info[WINDOW].timer.next_priority = NONE;
+//                command_info[WINDOW].timer.trigger_reserved = FALSE;
+//
+//                command_info[SUNROOF].timer.trigger_counter_1s = 0;
+//                command_info[SUNROOF].timer.next_command = 0;
+//                command_info[SUNROOF].timer.next_sub_command = 0;
+//                command_info[SUNROOF].timer.next_priority = NONE;
+//                command_info[SUNROOF].timer.trigger_reserved = FALSE;
+//
+//                needs_ventilation = FALSE; // 환기가 필요 없음
+//            }
             if (control_state.heater_state == 1 && (command_info[WINDOW].state == ON ||
                     command_info[SUNROOF].state == ON))
                      //타이머가 돌아가지 않을 때,
@@ -838,7 +859,7 @@ void command_function(ControlCommandInfo* command_info, uint8 command, uint8 sub
 
                 if (priority == SAFETY)
                 {
-                    command_info->timer.action_counter_100ms = TIME_1S;
+                    command_info->timer.action_counter_100ms = TIME_3S;
                 } 
                 else if (priority != IN_TEMP)
                 {
