@@ -439,7 +439,7 @@ void AppTask1000ms(void)
     }
     {
 		db_msg.audio.B.Audio_alive = actuator_power;
-		db_msg.audio.B.Audio_running = audio_state;
+		db_msg.audio.B.Audio_running = 2;
 		output_message(&db_msg.audio,AUDIO_MSG_ID);
 
 //		printf("window %ld \r\n", window_pulse_count);

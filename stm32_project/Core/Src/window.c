@@ -112,7 +112,7 @@ void CloseWindow(int percent) {
         target_position = percent;       // 목표 위치 설정
         window_timer_ms = window_pulse_count * WINDOW_CLOSE_TIME_MS / 100;
         Window_SetDirection(-1);         // 역방향 설정
-        Window_SetPWM(WINDOW_PWM_SPEED); // PWM 활성화
+        Window_SetPWM(400); // PWM 활성화
     }
 }
 

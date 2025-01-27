@@ -202,7 +202,7 @@ void update_vehicle_vehicle()
 void init_vehicle_state()
 {
 
-	vehicle.car_battery = MAX_CHARGE_CAR ;	// 77.4k = 100% 초기값 38700
+	vehicle.car_battery = MAX_CHARGE_CAR*0.9 ;	// 77.4k = 100% 초기값 38700
 	vehicle.solar_battery = MAX_CHARGE_ECO*0.7 ; // 4.8k = 100% 초기값 2400
 
 	//임의 값들
