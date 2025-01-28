@@ -1,8 +1,8 @@
 /*
  * Common_def.h
  *
- *  Created on: Jan 22, 2025
- *      Author: USER
+ *  Created on: Jan 28, 2025
+ *      Author: Wonphil
  */
 
 #ifndef INC_COMMON_DEF_H_
@@ -30,7 +30,10 @@ typedef enum{
 	DRIVING
 }EngineState;
 
-#define MOTOR_CONSUM			(3)
+#define INIT_CAR_BATTERY		(90) // 초기값 90%
+#define INIT_SOLAR_BATTERY		(70) // 초기값 70%
+
+#define MOTOR_CONSUM			(2) // 3->2
 
 #define AC_WEAK_CONSUM 			(4) // (8)
 #define HEATER_WEAK_CONSUM 		(2) // (5)
@@ -38,6 +41,6 @@ typedef enum{
 #define SUNROOF_CONSUM 			(3)
 #define AUDIO_CONSUM 			(4)
 
-#define ECOBAT_CHARGING			(13)
+#define ECOBAT_CHARGING			(10) // 13->10
 
 #endif /* INC_COMMON_DEF_H_ */

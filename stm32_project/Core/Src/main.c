@@ -392,7 +392,7 @@ void AppTask100ms(void)
     	if(actuator_power == 1){
     		db_msg.battery.B.Battery_use = 3;
     		LCD1602_display();
-			update_vehicle_vehicle();
+			update_vehicle_state();
 			show_LCD();
     	}
     	else{
