@@ -2,7 +2,7 @@
  * LCD_Logic.h
  *
  *  Created on: Jan 22, 2025
- *      Author: USER
+ *      Author: Wonphil
  */
 
 #ifndef INC_LCD_LOGIC_H_
@@ -36,7 +36,7 @@ void charge_solar_battery();
 void consume_solar_battery();
 void switching_battery();
 void battery_out_check();
-void update_vehicle_vehicle();
+void update_vehicle_state();
 void init_vehicle_state();
 
 #endif /* INC_LCD_LOGIC_H_ */
