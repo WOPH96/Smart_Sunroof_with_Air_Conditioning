@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FOUREVER</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 375px;
+            margin: 0 auto;
+            padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .image-section {
+            width: 90%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .image-sections {
+            width: 90%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 1.0em;
+            font-weight: bold;
+        }
+
+        .button-box {
+            width: 90%;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .button {
+            padding: 15px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .red {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .blue {
+            background-color: #4d94ff;
+            color: white;
+        }
+
+        .default {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .yellow {
+            background-color: #ffeb3b;
+            color: black;
+        }
+
+        .skyblue {
+            background-color: #87ceeb;
+            color: white;
+        }
+
+        .green {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .white {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        .button:hover {
+            opacity: 0.8;
+        }
+
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* 화면의 중앙으로 */
+            transform: translate(-50%, -50%);
+            /* 요소의 크기의 절반만큼 이동 */
+            width: 375px;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-content {
+            width: 90%;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .popup-contents {
+            width: 50%;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .popup .header {
+            justify-content: center;
+        }
+
+        .popup-box {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .popup-item {
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .popup-item.red {
+            padding: 10px;
+            background-color: #ff4d4d;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .close-button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .close-button:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            border: 2px solid black;
+            padding: 20px;
+            width: 90%;
+            max-width: 350px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group label {
+            flex: 0 0 100px;
+            text-align: right;
+            margin-right: 10px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .button {
+            margin-top: 20px;
+            width: 100%;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .buttond {
+            margin-top: 20px;
+            width: 100%;
+            background-color: e0e0e0;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .button:hover {
+            background-color: darkred;
+        }
+
+        .battery-container {
+            display: flex;
+            flex-direction: column;
+            /* 세로 정렬 */
+            align-items: flex-start;
+            /* 오른쪽 정렬 */
+        }
+    </style>
+    <script>
+        function toggleColor(button, defaultColor, activeColor) {
+            if (button.dataset.toggled === "true") {
+                button.style.backgroundColor = defaultColor;
+                button.dataset.toggled = "false";
+            } else {
+                button.style.backgroundColor = activeColor;
+                button.dataset.toggled = "true";
+            }
+        }
+
+        function showPopup() {
+            document.getElementById("popup").style.display = "flex";
+        }
+
+        function hidePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+        function hidePopupsStart() {
+            document.getElementById("start").style.display = "none";
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div>FOUREVER</div>
+        <div class="battery-container">
+            <div>Battery</div>
+            <div id="main_battery">Battery</div>
+            <div id="sub_battery">Battery</div>
+        </div>
+
+    </div>
+
+    <div class="image-sections">
+        <div id="welcome"></div> 
+    </div>
+
+    <div class="image-section">
+        <img src="images/car2.png"
+            alt="Car Image" class="image-section" />
+    </div>
+
+
+
+    <div class="button-box">
+        <button class="buttond" id="engine_status">시동</button>
+        <button class="buttond" id="engine_status2">Utility</button>
+        <button class="buttond" id="window_now">창문</button>
+        <button class="buttond" id="sunroof_now">선루프</button>
+        <button class="buttond" id="ac_status">에어컨</button>
+        <button class="buttond" id="heater_status">히터</button>
+        <button class="buttond" id="smart_control">스마트 제어</button>
+        <button class="buttond" id="dtc" onclick="showPopup()">진단</button>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <div class="header">진단</div>
+            <div class="popup-box">
+                <div id="solar_s" div class="popup-item">태양광 충전</div>
+                <div id="battery_s" div class="popup-item">배터리</div>
+                <div id="window_s" div class="popup-item">창문</div>
+                <div id="sunroof_s" div class="popup-item">선루프</div>
+                <div id="ac_s" div class="popup-item">에어컨</div>
+                <div id="heater_s" div class="popup-item">히터</div>
+                <div id="touch1_s" div class="popup-item">창문 터치 센서</div>
+                <div id="touch2_s" div class="popup-item">선루프 터치 센서</div>
+                <div id="air_s" div class="popup-item red">공기질 센서</div>
+                <div id="rain_s" div class="popup-item">빗물 센서</div>
+                <div id="light_s" div class="popup-item">조도 센서</div>
+                <div id="sound_s" div class="popup-item">소리 센서</div>
+            </div>
+            <button class="close-button" onclick="hidePopup()">닫기</button>
+        </div>
+    </div>
+
+    <div id="start" class="popup">
+        <div class="popup-contents">
+            <h2>FOUREVER</h2>
+            <div class="input-group">
+                <label for="username">사용자 이름 :</label>
+                <input type="text" id="username" placeholder="이름">
+            </div>
+            <div class="input-group">
+                <label for="carid">차량 ID :</label>
+                <input type="password" id="carid" placeholder="ID">
+            </div>
+            <button class="button" onclick="connect()">CONNECT</button>
+        </div>
+    </div>
+
+
+</body>
+<script>
+    // 처음 시작 시 진단 창이 숨겨져 있도록 설정
+    document.getElementById("popup").style.display = "none";
+    //showPopupStart();
+    //document.getElementById("start").style.display = "flex";
+    // let socket;
+    //      // JSON 파싱한 데이터를 변수에 저장
+    let socket;
+    let username = "Guest";
+
+    let engine_status_v = 0;
+    let window_now_v = 100;
+    let sunroof_now_v = 100;
+    let ac_status_v = 0;
+    let heater_status_v = 0;
+    let smart_control_v = 0;
+
+    let window_alive_v = 0;
+    let sunroof_alive_v = 0;
+    let heater_alive_v = 0;
+    let ac_alive_v = 0;
+    let audio_alive_v = 0;
+    let battery_alive_v = 0;
+    let battery_using_status_v = 0;
+    let battery_status_v = 0;
+    let sub_battery_status_v = 0;
+    let temperature_v = 0;
+    let feels_like_v = 0;
+    let humidity_v = 0;
+    let dust_level_v = 0;
+    let weather_v = 0;
+    let window_control_v = 10;
+    let sunroof_control_v = 10;
+    let dtc_v = 0;
+    let engine_status_v_send = 10;
+    let ac_status_v_send = 10;
+    let heater_status_v_send = 10;
+    let smart_control_v_send = 10;
+    let window_control_v_send = 10;
+    let sunroof_control_v_send = 10;
+
+    function connectToServer() {
+        // WebSocket 연결
+        socket = new WebSocket("wss://8b2b-112-218-95-58.ngrok-free.app"); //서버
+
+        // 연결되었을 때
+        socket.onopen = function () {
+            console.log("서버에 연결됨");
+            //document.getElementById("messages").innerText = "서버에 연결되었습니다!";
+        };
+        // 서버로부터 메시지를 받을 때
+        engine_status_v_send = 10;
+        ac_status_v_send = 10;
+        heater_status_v_send = 10;
+        smart_control_v_send = 10;
+        window_control_v_send = 10;
+        sunroof_control_v_send = 10;
+
+        socket.onmessage = function (event) {
+            const message = event.data;
+            const data = JSON.parse(message);  // JSON 데이터를 객체로 변환
+            console.log("받은 메시지:", data);
+            engine_status_v = data.engine_status;
+            window_now_v = data.window_now;
+            sunroof_now_v = data.sunroof_now;
+
+            ac_status_v = data.ac_status;
+            heater_status_v = data.heater_status;
+            smart_control_v = data.smart_control;
+            window_alive_v = data.window_alive;
+            sunroof_alive_v = data.sunroof_alive;
+            heater_alive_v = data.heater_alive;
+            ac_alive_v = data.ac_alive;
+
+            audio_alive_v = data.audio_alive;
+            battery_alive_v = data.battery_alive;
+            battery_using_status_v = data.battery_using_status;
+            battery_status_v = data.battery_status;
+            sub_battery_status_v = data.sub_battery_status;
+            temperature_v = data.temperature;
+            feels_like_v = data.feels_like;
+            humidity_v = data.humidity;
+            dust_level_v = data.dust_level;
+            weather_v = data.weather;
+
+            document.getElementById('main_battery').innerHTML = `Car  : ${battery_status_v}%`;
+            document.getElementById('sub_battery').innerHTML = `Echo : ${sub_battery_status_v}%`;
+            const engine_status = document.getElementById('engine_status');
+            dtc.style.backgroundColor = '#ffeb3b';
+            engine_status.innerText = engine_status_v === 0 ? " 시동 OFF " : " 시동 ON ";
+            engine_status.style.backgroundColor = engine_status_v === 0 ? '#ff4d4d' : '#4caf50';
+            engine_status.onclick = function () {
+                if (engine_status_v == 0) engine_status_v_send = 2;
+                else if (engine_status_v == 2) engine_status_v_send = 0;
+                //engine_status.innerText = engine_status_v_send === 0 ? " 시동 OFF " : " 시동 ON ";
+                //engine_status.style.backgroundColor = engine_status_v_send === 0 ? '#ff4d4d' : '#4caf50';
+            };
+
+            ///utility
+            const engine_status2 = document.getElementById('engine_status2');
+            engine_status2.innerText = engine_status_v === 1 ? " Utility ON " : " Utility OFF ";
+            engine_status2.style.backgroundColor = engine_status_v === 1 ? '#ffeb3b' : '#e0e0e0';
+            engine_status2.onclick = function () {
+                if (engine_status_v == 1) engine_status_v_send = 0;
+                else if (engine_status_v == 2) engine_status_v_send = 1;
+               // engine_status2.innerText = engine_status_v_send === 1 ? " Utility ON " : " Utility OFF ";
+               // engine_status2.style.backgroundColor = engine_status_v_send === 1 ? '#ffeb3b' : '#e0e0e0';
+            };
+
+            //창문
+            const window_now = document.getElementById('window_now');
+            window_now.innerHTML = window_now_v === 100 ? `창문 열기<br>${window_now_v}%` : `창문 닫기<br>${window_now_v}%`;
+            window_now.style.backgroundColor = window_now_v === 100 ? '#e0e0e0' : '#87ceeb';
+            if (window_control_v == 0)
+                window_control_v_send = 0;
+            else if (window_control_v == 2)
+                window_control_v_send = 2;
+
+            if (window_now_v == 0 && window_control_v == 0)//열림 신호를 보낸 후 다 열렸다
+            {
+                window_control_v = 1;
+                window_control_v_send = 1;
+            }
+            else if (window_now_v == 100 && window_control_v == 2)//닫힘 신호 보낸 후 다 닫혔다
+            {
+                window_control_v = 3;
+                window_control_v_send = 3;
+            }
+            window_now.onclick = function () {
+                if (window_now_v == 100) {
+                    window_control_v = 0;
+                    window_control_v_send = 0;
+                }
+                else if (window_now_v == 0) {
+                    window_control_v = 2;
+                    window_control_v_send = 2;
+                }
+                //innerHTML = window_now_v === 100 ? `창문 열기<br>${window_now_v}%` : `창문 닫기<br>${window_now_v}%`;
+                //window_now.style.backgroundColor = window_now_v === 100 ? '#e0e0e0' : '#87ceeb';
+            };
+
+            //선루프
+            const sunroof_now = document.getElementById('sunroof_now');
+            sunroof_now.innerHTML = sunroof_now_v === 100 ? `선루프 열기<br>${sunroof_now_v}%` : `선루프 닫기<br>${sunroof_now_v}%`;
+            sunroof_now.style.backgroundColor = sunroof_now_v === 100 ? '#e0e0e0' : '#87ceeb';
+            if (sunroof_control_v == 0)
+                sunroof_control_v_send = 0;
+            else if (sunroof_control_v == 2)
+                sunroof_control_v_send = 2;
+
+            if (sunroof_now_v == 0 && sunroof_control_v == 0)//열림 신호를 보낸 후 다 열렸다
+            {
+                sunroof_control_v = 1;
+                sunroof_control_v_send = 1;
+            }
+            else if (sunroof_now_v == 100 && sunroof_control_v == 2)//닫힘 신호 보낸 후 다 닫혔다
+            {
+                sunroof_control_v = 3;
+                sunroof_control_v_send = 3;
+            }
+
+            sunroof_now.onclick = function () {
+                if (sunroof_now_v == 100) {
+
+                    sunroof_control_v = 0;
+                    sunroof_control_v_send = 0;
+                }
+                else if (sunroof_now_v == 0) {
+                    sunroof_control_v = 2;
+                    sunroof_control_v_send = 0;
+                }
+                //sunroof_now.innerHTML = sunroof_now_v === 100 ? `선루프 열기<br>${sunroof_now_v}%` : ` 선루프 닫기<br>${sunroof_now_v}%`;
+                //sunroof_now.style.backgroundColor = sunroof_now_v === 100 ? '#e0e0e0' : '#87ceeb';
+            };
+
+            //에어컨
+            const ac_status = document.getElementById('ac_status');
+            ac_status.innerText = ac_status_v === 0 ? " 에어컨 OFF " : " 에어컨 ON ";
+            ac_status.style.backgroundColor = ac_status_v === 0 ? '#e0e0e0' : '#4d94ff';
+            ac_status.onclick = function () {
+                if (ac_status_v == 0) ac_status_v_send = 1;
+                else if (ac_status_v == 1) ac_status_v_send = 0;
+                //ac_status.innerText = ac_status_v_send === 0 ? " 에어컨 OFF " : " 에어컨 ON ";
+                //ac_status.style.backgroundColor = ac_status_v_send === 0 ? '#e0e0e0' : '#4d94ff';
+            };
+
+            //히터
+            const heater_status = document.getElementById('heater_status');
+            heater_status.innerText = heater_status_v === 0 ? " 히터 OFF " : " 히터 ON ";
+            heater_status.style.backgroundColor = heater_status_v === 0 ? '#e0e0e0' : '#ff4d4d';
+            heater_status.onclick = function () {
+                if (heater_status_v == 0) heater_status_v_send = 1;
+                else if (heater_status_v == 1) heater_status_v_send = 0;
+                //heater_status.innerText = heater_status_v_send === 0 ? " 히터 OFF " : " 히터 ON ";
+                //heater_status.style.backgroundColor = heater_status_v_send === 0 ? '#e0e0e0' : '#ff4d4d';
+            };
+
+            //스마트컨트롤
+            const smart_control = document.getElementById('smart_control');
+            smart_control.innerText = smart_control_v === 0 ? " 스마트 컨트롤 ON " : " 스마트 컨트롤 OFF ";
+            smart_control.style.backgroundColor = smart_control_v === 0 ? '#4caf50' : '#e0e0e0';
+            smart_control.onclick = function () {
+                if (smart_control_v == 0) smart_control_v_send = 1;
+                else if (smart_control_v == 1) smart_control_v_send = 0;
+                //smart_control.innerText = smart_control_v_send === 0 ? " 스마트 컨트롤 ON " : " 스마트 컨트롤 OFF ";
+                //smart_control.style.backgroundColor = smart_control_v_send === 0 ? '#4caf50' : '#e0e0e0';
+            };
+            console.log("엔진 : ",engine_status_v_send)
+            sendUpdatedValues();
+            engine_status_v_send = 10;
+            ac_status_v_send = 10;
+            heater_status_v_send = 10;
+            smart_control_v_send = 10;
+            window_control_v_send = 10;
+            sunroof_control_v_send = 10;
+        }
+        // WebSocket 연결 에러가 발생했을 때
+        socket.onerror = function (error) {
+            console.error("WebSocket 오류:", error);
+            ///document.getElementById("messages").innerText = "웹소켓 오류 발생!";
+        };
+        
+
+        // WebSocket 연결이 종료되었을 때
+        socket.onclose = function () {
+            console.log("서버와의 연결이 종료되었습니다.");
+            //document.getElementById("messages").innerText = "서버와의 연결이 종료되었습니다.";
+        };
+
+
+    }
+    function sendUpdatedValues() {
+        const updatedData = {
+            engine_status: engine_status_v_send,
+            ac_status: ac_status_v_send,
+            heater_status: heater_status_v_send,
+            smart_control: smart_control_v_send,
+            window_control: window_control_v_send,
+            sunroof_control: sunroof_control_v_send
+
+
+            //window_alive: window_alive_v,
+            //sunroof_alive: sunroof_alive_v,
+            //heater_alive: heater_alive_v,
+            //ac_alive: ac_alive_v,
+            //audio_alive: audio_alive_v,
+            //battery_alive: battery_alive_v,
+            //battery_using_status: battery_using_status_v,
+            //battery_status: battery_status_v,
+            //sub_battery_status: sub_battery_status_v,
+
+            //temperature: temperature_v,
+            //feels_like: feels_like_v,
+            //humidity: humidity_v,
+            //dust_level: dust_level_v,
+            //weather: weather_v,
+        };
+
+        // WebSocket을 통해 서버로 JSON 데이터 전송
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(updatedData));  // JSON으로 변환하여 전송
+            console.log("서버로 전송된 데이터:", updatedData);
+        } else {
+            console.log("WebSocket이 열리지 않았습니다.");
+        }
+    }
+
+    function connect() {
+        username = document.getElementById('username').value.trim();
+        const carid = document.getElementById('carid').value.trim();
+        const validCarID = "hrimcar";
+
+        if (carid === validCarID) {
+            // 시작 창 숨기기
+            hidePopupsStart();
+            connectToServer();
+
+            // 사용자 이름 표시
+            document.getElementById('welcome').innerText = `안녕하세요 ${username}님!`;
+        } else {
+            alert("차량 ID가 올바르지 않습니다. 다시 시도해주세요.");
+        }
+    }
+
+    document.getElementById("connectBtn").onclick = function () {
+
+    };
+</script>
+
+</html>
