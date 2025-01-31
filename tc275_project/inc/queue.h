@@ -48,6 +48,59 @@
 /*-------------------------------------------------Data Structures---------------------------------------------------*/
 typedef enum{
     CLOSE_WINDOW = 1,           // 창문을 닫습니다.
+<<<<<<< HEAD
+    OPEN_WINDOW = 2,                // 창문이 열립니다.
+    CLOSE_SUNROOF = 3,              // 선루프를 닫습니다.
+    OPEN_SUNROOF = 12,               // 선루프가 열립니다.
+    ACTIVATE_AIRCON = 13,            // 에어컨을 작동합니다.
+    DEACTIVATE_AIRCON = 14,          // 에어컨을 종료합니다.
+    ACTIVATE_HEATER = 15,            // 히터를 작동합니다.
+    DEACTIVATE_HEATER = 16,          // 히터를 종료합니다.
+    CLOSE_WINDOW_AND_SUNROOF = 17,   // 창문과 선루프가 닫힙니다.
+    OPEN_WINDOW_AND_SUNROOF = 52,    // 창문과 선루프가 열립니다.
+
+    HIGH_FINE_DUST = 6,        // 미세먼지가 많습니다.
+    IS_RAIN_DETECTED = 7,           // 비가 옵니다.
+    INDOOR_HOT = 8,                 // 실내가 덥습니다.
+    INDOOR_COLD = 9,                // 실내가 춥습니다.
+    INDOOR_AIR_BAD = 10,             // 실내 공기가 안 좋습니다.
+    ENTER_TUNNEL = 11,               // 터널에 진입합니다.
+    EXIT_TUNNEL = 43,                // 터널을 통과했습니다.
+    ENTER_TUNNEL_AND_CLOSE_WINDOW_AND_SUNROOF = 19, // 터널을 진입합니다. 창문과 선루프를 닫습니다.
+    INDOOR_AIR_BAD_AND_OPEN_WINDOW_AND_SUNROOF = 20, // 실내 공기 안좋습니다. 창문과 선루프를 닫습니다.
+    EXIT_TUNNEL_AND_OPEN_WINDOW_AND_SUNROOF = 21, // 터널 통과했습니다. 창문과 선루프가 열립니다.
+    HIGH_FINE_DUST_AND_CLOSE_WINDOW_AND_SUNROOF = 22, // 미세먼지가 많습니다. 창문과 선루프를 닫습니다.
+    IS_RAIN_DETECTED_AND_CLOSE_SUNROOF = 23, // 비가 옵니다. 선루프를 닫는다.
+    INDOOR_HOT_AND_ACTIVATE_AIRCON = 24, // 실내가 덥습니다. 에어컨을 작동합니다.
+    INDOOR_COLD_AND_ACTIVATE_HEATER = 25, // 실내가 춥습니다. 히터를 작동합니다.
+    SAFETY_OPEN_WINDOW = 26,         // 끼임 방지를 위해 창문을 엽니다.
+    SAFETY_OPEN_SUNROOF = 27,        // 끼임 방지를 위해 선루프를 엽니다.
+    ENTER_TUNNEL_AND_CLOSE_WINDOW = 28, // 터널을 진입합니다. 창문을 닫습니다.
+    ENTER_TUNNEL_AND_CLOSE_SUNROOF = 29, // 터널을 진입합니다. 선루프를 닫습니다.
+    EXIT_TUNNEL_AND_OPEN_WINDOW = 30, // 터널을 통과했습니다. 창문이 열립니다.
+    EXIT_TUNNEL_AND_OPEN_SUNROOF = 31, // 터널을 통과했습니다. 선루프가 열립니다.
+    AIRCON_AND_CLOSE_WINDOW_AND_SUNROOF = 32, // 냉방 효율을 위해 창문과 선루프를 닫습니다.
+    AIRCON_AND_CLOSE_WINDOW = 33, // 냉방 효율을 위해 창문을 닫습니다
+    AIRCON_AND_CLOSE_SUNROOF = 34, // 냉방 효율을 위해 선루프를 닫습니다.
+    HEATER_AND_CLOSE_WINDOW_AND_SUNROOF = 35, // 난방 효율을 위해 창문과 선루프를 닫습니다.
+    HEATER_AND_CLOSE_WINDOW = 36, // 난방 효율을 위해 창문을 닫습니다
+    HEATER_AND_CLOSE_SUNROOF = 37, // 난방 효율을 위해 선루프를 닫습니다
+    SOLAR_AND_CLOSE_SUNROOF = 38, // 태양광 충전을 위해 선루프를 닫습니다.
+    INDOOR_AIR_BAD_AND_OPEN_WINDOW = 39, // 실내 공기가 안좋습니다. 창문을 엽니다.
+    INDOOR_AIR_BAD_AND_OPEN_SUNROOF = 40, // 실내 공기가 안좋습니다. 선루프를 엽니다
+    FINISH_VENT_CLOSE_WINDOW_AND_SUNROOF = 41, // 환기가 끝났습니다. 창문과 선루프를 닫습니다
+    FINISH_VENT_CLOSE_WINDOW = 42, // 환기가 끝났습니다. 창문을 닫습니다
+    FINISH_VENT_CLOSE_SUNROOF = 44, // 환기가 끝났습니다. 선루프를 닫습니다
+    SMART_CONTROL_PAUSE = 45,        // 스마트 제어가 종료되고 10분 후에 다시 작동합니다.
+    TURN_OFF_SMART_CONTROL = 46,     // 스마트 제어를 종료합니다.
+    TURN_ON_SMART_CONTROL = 47,      // 스마트 제어를 시작합니다.
+    NOISE_AND_CLOSE_WINDOW_AND_SUNROOF = 48, // 소음을 감지하여 창문과 선루프를 닫습니다.
+    NOISE_AND_CLOSE_WINDOW = 49, // 소음을 감지하여 창문을 닫습니다
+    NOISE_AND_CLOSE_SUNROOF = 50, // 소음을 감지하여 선루프를 닫습니다.
+    IS_RAIN_DETECTED_AND_OPEN_WINDOW = 51, // 비가 옵니다. 창문을 조금만 열겠습니다.
+
+    DEFAULT = 63                // 초기값
+=======
     OPEN_WINDOW,                // 창문이 열립니다.
     CLOSE_SUNROOF,              // 선루프를 닫습니다.
     OPEN_SUNROOF,               // 선루프가 열립니다.
@@ -99,6 +152,7 @@ typedef enum{
     IS_RAIN_DETECTED_AND_OPEN_WINDOW, // 비가 옵니다. 창문을 조금만 열겠습니다.
 
     DEFAULT = 99                // 초기값
+>>>>>>> 32c56d5c152b3c2d7a6c445aaf0e13a9c2559f38
 }AudioControlState;
 
 typedef struct

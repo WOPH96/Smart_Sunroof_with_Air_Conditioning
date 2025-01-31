@@ -30,6 +30,7 @@ typedef struct
 /***********************************************************************/
 App_Stm g_Stm; /**< \brief Stm global data */
 uint32 u32nuCounter1ms = 0u;
+uint32 u32nuCounter1ms_2 = 0u;
 SchedulingFlag stSchedulingInfo;
 
 /***********************************************************************/
@@ -65,6 +66,7 @@ void STM_Int0Handler(void)
     IfxStm_increaseCompare(g_Stm.stmSfr, g_Stm.stmConfig.comparator, 100000u);
 
     u32nuCounter1ms++;
+    u32nuCounter1ms_2++;
 
     if((u32nuCounter1ms % 1) == 0u)
     {
@@ -88,9 +90,20 @@ void STM_Int0Handler(void)
     {
         stSchedulingInfo.u8nuScheduling5000msFlag = 1u;
     }
+<<<<<<< HEAD
+
+    if ((u32nuCounter1ms_2 % 5000) == 0u)
+    {
+        stSchedulingInfo.u8nuScheduling5000ms_2Flag = 1u;
+    }
+=======
+>>>>>>> 32c56d5c152b3c2d7a6c445aaf0e13a9c2559f38
 
     if(u32nuCounter1ms >= 10000000 ){
         u32nuCounter1ms = 0;
+    }
+    if (u32nuCounter1ms_2 >= 10000000){
+        u32nuCounter1ms_2 = 0;
     }
 }
 

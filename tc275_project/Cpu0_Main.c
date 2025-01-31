@@ -37,6 +37,40 @@
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
 #define AIR_PIN 4
+<<<<<<< HEAD
+#define SUN_TOUCH_PIN 1
+#define WIN_TOUCH_PIN 0
+
+#define CONTROL_MODULE 5
+
+//#define ONE_MINUTE 18 // 18초
+//#define FIVE_MINUTE 90 // (1분 30초)
+//#define TEN_MINUTE 180 // (3분)
+//#define TWO_HOUR 1440 // (24분)
+
+//test 모드
+#define ONE_MINUTE 12 // 10s 60
+#define FIVE_MINUTE 30 // 50s 300
+#define TEN_MINUTE 60 // 100s 600
+#define TWO_HOUR 90 // 300s 7200
+//test 모드
+
+
+// 100ms 기준
+//#define TIME_2S 20 // 20
+//#define TIME_3S 30
+//#define TIME_1MIN 300 // (30초)
+//#define TIME_5MIN 1500 // (2분 30초)
+
+//test 모드
+#define TIME_2S 20 // 20
+#define TIME_3S 30
+#define TIME_1MIN 200 // (20초)
+#define TIME_5MIN 350 // (35초)
+//test 모드
+
+
+=======
 #define SUN_TOUCH_PIN 0
 #define WIN_TOUCH_PIN 1
 
@@ -59,6 +93,7 @@
 #define TIME_1MIN 300 // (30초)
 #define TIME_5MIN 1500 // (2분 30초)
 
+>>>>>>> 32c56d5c152b3c2d7a6c445aaf0e13a9c2559f38
 #define ON 0
 #define OFF 1
 
