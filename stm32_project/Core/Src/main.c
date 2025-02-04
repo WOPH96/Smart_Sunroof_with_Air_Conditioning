@@ -158,7 +158,7 @@ int main(void)
 
 	Window_Init();
 	Sunroof_Init();
-	//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 700);
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 0);
 
 	printf("Start\r\n");
 
@@ -392,7 +392,7 @@ void AppTask100ms(void)
     	if(actuator_power == 1){
     		db_msg.battery.B.Battery_use = 3;
     		LCD1602_display();
-			update_vehicle_vehicle();
+			update_vehicle_state();
 			show_LCD();
     	}
     	else{

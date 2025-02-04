@@ -1,14 +1,9 @@
 /*
  * LCD_Logic.c
  *
- *  Created on: Jan 22, 2025
- *      Author: USER
+ *  Created on: Jan 28, 2025
+ *      Author: Wonphil
  */
-
-/*
- * 100ms scheduling 내부에 넣기
- * 숫자는 일단 ㄱㄱ
- * */
 
 #include <stdio.h>
 
@@ -188,7 +183,7 @@ void battery_out_check()
 	}
 }
 // 상태 업데이트 함수
-void update_vehicle_vehicle()
+void update_vehicle_state()
 {
 	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
 	switching_battery();
@@ -202,13 +197,16 @@ void update_vehicle_vehicle()
 void init_vehicle_state()
 {
 
-	vehicle.car_battery = MAX_CHARGE_CAR*0.9 ;	// 77.4k = 100% 초기값 38700
-	vehicle.solar_battery = MAX_CHARGE_ECO*0.7 ; // 4.8k = 100% 초기값 2400
+	vehicle.car_battery = MAX_CHARGE_CAR * INIT_CAR_BATTERY * 0.01 ;	// 77.4k = 100%
+	vehicle.solar_battery = MAX_CHARGE_ECO * INIT_SOLAR_BATTERY * 0.01 ; // 4.8k = 100% 초기값 70%
+
+	db_msg.battery.B.Battery_state = INIT_CAR_BATTERY;
+	db_msg.battery.B.Battery_spare_state = INIT_SOLAR_BATTERY;
 
 	//임의 값들
 //	vehicle.light_intensity = 80;
 	vehicle.is_driving = (db_msg.driver_engine.B.engine_mode == DRIVING);
-	vehicle.motor_speed = 6;
+	vehicle.motor_speed = 6; //6->3
 }
 
 
